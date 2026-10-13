@@ -93,7 +93,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 130, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
             color: var(--green);
             font-size: 12px;
@@ -111,8 +111,8 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 187, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 187, 129, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 187, 130, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 188, 130, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 188, 129, 0); }
         }
 
@@ -329,7 +329,7 @@
             font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.13s ease;
         }
 
         .side-btn.buy.active {
@@ -367,7 +367,7 @@
             border-radius: 6px;
             font-size: 13px;
             outline: none;
-            transition: border-color 0.15s;
+            transition: border-color 0.13s;
         }
 
         .form-input:focus, .form-select:focus {
@@ -376,7 +376,7 @@
 
         .submit-btn {
             margin-top: 8px;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #54a58a, #059669);
             color: #fff;
             border: none;
             padding: 12px;
@@ -811,7 +811,7 @@
 
         function triggerSimulationBurst() {
             showToast('Simulating 10 high-frequency market orders...');
-            for (let i = 0; i <=10; i++) {
+            for (let i = 0; i <=8; i++) {
                 setTimeout(() => {
                     orderCounter++;
                     const side = Math.random() > 0.5 ? 'BUY' : 'SELL';
