@@ -11,9 +11,11 @@ SRC_DIR = ROOT_DIR / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
+from api.dashboard import get_dashboard_html
 from chronosmatch.engine import MatchingEngine
 from chronosmatch.protocol import (
     CancelOrderMsg,
@@ -88,14 +90,18 @@ class CancelOrderRequest(BaseModel):
     client_id: int = 1
 
 
-@app.get("/")
-def read_root():
-    """Service status and engine summary."""
+@app.get("/", response_model=None)
+def read_root(request: Request):
+    """Serve interactive web trading terminal to browsers, or JSON to API callers."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return HTMLResponse(content=get_dashboard_html())
     return {
         "service": "ChronosMatch: Zero-Copy HFT Matching Engine",
         "status": "online",
         "uptime_seconds": round(time.time() - _start_time, 2),
         "docs_url": "/docs",
+        "dashboard_url": "/dashboard",
         "supported_features": [
             "Price-Time Priority (FIFO)",
             "Zero-Copy Memory Semantics",
@@ -104,6 +110,12 @@ def read_root():
             "Limit, Market, IOC, FOK Orders",
         ],
     }
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+def get_dashboard():
+    """Direct URL for web trading terminal UI."""
+    return HTMLResponse(content=get_dashboard_html())
 
 
 @app.get("/health")

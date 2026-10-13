@@ -1,0 +1,21 @@
+{
+  "name": "chronosmatch",
+  "version": "0.1.0",
+  "description": "Zero-Copy High-Frequency Trading Matching Engine",
+  "scripts": {
+    "dev": "python run_dev.py",
+    "start": "python run_dev.py --no-reload",
+    "test": "python run_tests.py",
+    "sim": "python run_simulation.py",
+    "bench": "python run_benchmarks.py"
+  },
+  "keywords": [
+    "hft",
+    "trading-engine",
+    "order-book",
+    "zero-copy",
+    "fintech"
+  ],
+  "author": "ChronosMatch Engineering",
+  "license": "MIT"
+}
