@@ -3,7 +3,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from api.main import app
+from api.index import app
 from chronosmatch.engine import OrderBook
 from chronosmatch.protocol import NewOrderMsg, Side, OrderType, price_to_fixed
 

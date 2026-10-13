@@ -28,7 +28,7 @@ def main():
             port = sys.argv[i + 1]
 
     py_exe = find_python()
-    cmd = [py_exe, "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", port]
+    cmd = [py_exe, "-m", "uvicorn", "api.index:app", "--host", "0.0.0.0", "--port", port]
     if reload_flag:
         cmd.append(reload_flag)
 
