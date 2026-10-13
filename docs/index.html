@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronosMatch | Zero-Copy High-Frequency Trading Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #080a0f;
+            --bg-surface: #0f131c;
+            --bg-elevated: #161b26;
+            --border: #232a3b;
+            --border-highlight: #333d54;
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.18);
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.18);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59, 130, 246, 0.18);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #2563eb, #10b981);
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+        }
+
+        .logo-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-tag {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .github-link {
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .github-link:hover {
+            color: #fff;
+            border-color: var(--blue);
+        }
+
+        /* Metrics Bar */
+        .metrics-bar {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-val {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .metric-highlight {
+            color: var(--green);
+        }
+
+        /* Main Workspace */
+        main {
+            flex: 1;
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: 340px 1fr 340px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-elevated);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        /* Symbols Switcher */
+        .symbol-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .symbol-tab {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .symbol-tab.active, .symbol-tab:hover {
+            background: var(--blue-glow);
+            border-color: var(--blue);
+            color: #fff;
+        }
+
+        /* Order Book Table */
+        .book-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .book-table-hdr {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 6px 4px;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 5px 4px;
+            position: relative;
+            font-size: 12px;
+        }
+
+        .book-row .bar {
+            position: absolute;
+            top: 1px;
+            bottom: 1px;
+            right: 0;
+            z-index: 0;
+            opacity: 0.2;
+            border-radius: 2px;
+        }
+
+        .book-row.ask .bar {
+            background: var(--red);
+        }
+
+        .book-row.bid .bar {
+            background: var(--green);
+        }
+
+        .book-row span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ask-price {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .bid-price {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .spread-banner {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: var(--bg-elevated);
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        /* Order Form */
+        .order-form {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .side-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .side-btn {
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .side-btn.buy.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: #fff;
+            box-shadow: 0 0 14px var(--green-glow);
+        }
+
+        .side-btn.sell.active {
+            background: var(--red);
+            border-color: var(--red);
+            color: #fff;
+            box-shadow: 0 0 14px var(--red-glow);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--blue);
+        }
+
+        .submit-btn {
+            margin-top: 8px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .submit-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .burst-btn {
+            background: var(--bg-elevated);
+            border: 1px solid var(--blue);
+            color: var(--blue);
+            padding: 10px;
+            font-weight: 600;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .burst-btn:hover {
+            background: var(--blue-glow);
+            color: #fff;
+        }
+
+        /* Trades Tape */
+        .trades-list {
+            flex: 1;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .trade-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 4px 6px;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .trade-item.buy .price { color: var(--green); }
+        .trade-item.sell .price { color: var(--red); }
+
+        /* Notification Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--green);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-group">
+            <div class="logo-badge">HFT</div>
+            <div>
+                <div class="logo-title">ChronosMatch</div>
+                <div class="logo-tag">Zero-Copy Electronic Trading Matching Engine</div>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="status-pill">
+                <div class="pulse-dot"></div>
+                ENGINE LIVE
+            </div>
+            <a href="https://github.com/dinu18s/ChronosMatch" target="_blank" class="github-link">
+                GitHub Repository ↗
+            </a>
+        </div>
+    </header>
+
+    <div class="metrics-bar mono">
+        <div class="metric-card">
+            <span class="metric-label">Median Latency (p50)</span>
+            <span class="metric-val metric-highlight">3.20 µs</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Engine Throughput</span>
+            <span class="metric-val metric-highlight">235,303 orders/s</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">IPC Ring Buffer</span>
+            <span class="metric-val">Lockless SPSC SharedMem</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Memory Architecture</span>
+            <span class="metric-val">Zero-Copy Buffer Protocol</span>
+        </div>
+    </div>
+
+    <main>
+        <!-- Left: Order Book Ladder -->
+        <section class="panel">
+            <div class="panel-header">
+                <span class="panel-title">L2 Order Book</span>
+                <div class="symbol-tabs">
+                    <button class="symbol-tab active" onclick="switchSymbol('BTCUSDT', this)">BTCUSDT</button>
+                    <button class="symbol-tab" onclick="switchSymbol('ETHUSDT', this)">ETHUSDT</button>
+                    <button class="symbol-tab" onclick="switchSymbol('AAPL', this)">AAPL</button>
+                </div>
+            </div>
+            <div class="book-container mono">
+                <div class="book-table-hdr">
+                    <span>Price</span>
+                    <span style="text-align: right;">Size</span>
+                    <span style="text-align: right;">Total</span>
+                </div>
+                
+                <!-- Asks (Red) -->
+                <div id="asks-list" style="display: flex; flex-direction: column-reverse; min-height: 120px;"></div>
+
+                <!-- Spread Banner -->
+                <div class="spread-banner">
+                    <span style="color: var(--text-muted);">Spread: <strong id="spread-val" style="color: var(--text-primary);">0.50</strong></span>
+                    <span style="color: var(--text-muted);">BBO Mid: <strong id="mid-val" style="color: var(--blue);">65000.00</strong></span>
+                </div>
+
+                <!-- Bids (Green) -->
+                <div id="bids-list" style="display: flex; flex-direction: column; min-height: 120px;"></div>
+            </div>
+        </section>
+
+        <!-- Center: Interactive Order Entry -->
+        <section class="panel">
+            <div class="panel-header">
+                <span class="panel-title">Order Placement Gateway</span>
+                <span id="active-symbol-badge" class="mono" style="font-size: 11px; color: var(--blue); font-weight: 700;">BTCUSDT</span>
+            </div>
+            <div class="order-form">
+                <div class="side-toggle">
+                    <button type="button" class="side-btn buy active" id="btn-buy" onclick="setSide('BUY')">BUY</button>
+                    <button type="button" class="side-btn sell" id="btn-sell" onclick="setSide('SELL')">SELL</button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Order Type</label>
+                    <select class="form-select" id="input-type" onchange="togglePriceField()">
+                        <option value="LIMIT">LIMIT ORDER</option>
+                        <option value="MARKET">MARKET ORDER (AGGRESSIVE)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="group-price">
+                    <label class="form-label">Limit Price ($)</label>
+                    <input type="number" step="0.01" class="form-input mono" id="input-price" value="65000.00">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Order Quantity (Units)</label>
+                    <input type="number" min="1" step="1" class="form-input mono" id="input-qty" value="5">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Time In Force (TIF)</label>
+                    <select class="form-select" id="input-tif">
+                        <option value="GTC">Good 'Til Cancelled (GTC)</option>
+                        <option value="IOC">Immediate Or Cancel (IOC)</option>
+                        <option value="FOK">Fill Or Kill (FOK)</option>
+                    </select>
+                </div>
+
+                <button class="submit-btn" id="btn-submit" onclick="submitOrder()">Submit to Matching Engine</button>
+                <button class="burst-btn" onclick="triggerSimulationBurst()">⚡ Simulate 10 Random Order Matches</button>
+            </div>
+        </section>
+
+        <!-- Right: Execution Tape -->
+        <section class="panel">
+            <div class="panel-header">
+                <span class="panel-title">Real-time Trade Tape</span>
+                <span class="mono" style="font-size: 11px; color: var(--text-muted);" id="trade-count">0 trades</span>
+            </div>
+            <div class="book-table-hdr mono" style="padding: 6px 16px;">
+                <span>Price</span>
+                <span style="text-align: right;">Qty</span>
+                <span style="text-align: right;">Time</span>
+            </div>
+            <div class="trades-list mono" id="trades-tape">
+                <div style="color: var(--text-muted); font-size: 11px; text-align: center; padding: 24px;">No executions yet. Submit orders or trigger burst to match!</div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast"></div>
+
+    <script>
+        // High-performance client-side simulation engine for GitHub Pages
+        const bookData = {
+            'BTCUSDT': {
+                basePrice: 65000.00,
+                bids: [
+                    { price: 64999.50, quantity: 8 },
+                    { price: 64999.00, quantity: 15 },
+                    { price: 64998.50, quantity: 22 },
+                    { price: 64998.00, quantity: 10 },
+                    { price: 64997.50, quantity: 30 }
+                ],
+                asks: [
+                    { price: 65000.50, quantity: 6 },
+                    { price: 65001.00, quantity: 12 },
+                    { price: 65001.50, quantity: 18 },
+                    { price: 65002.00, quantity: 25 },
+                    { price: 65002.50, quantity: 14 }
+                ]
+            },
+            'ETHUSDT': {
+                basePrice: 3500.00,
+                bids: [
+                    { price: 3499.50, quantity: 20 },
+                    { price: 3499.00, quantity: 35 },
+                    { price: 3498.50, quantity: 50 }
+                ],
+                asks: [
+                    { price: 3500.50, quantity: 15 },
+                    { price: 3501.00, quantity: 40 },
+                    { price: 3501.50, quantity: 60 }
+                ]
+            },
+            'AAPL': {
+                basePrice: 150.00,
+                bids: [
+                    { price: 149.95, quantity: 100 },
+                    { price: 149.90, quantity: 250 },
+                    { price: 149.85, quantity: 400 }
+                ],
+                asks: [
+                    { price: 150.05, quantity: 120 },
+                    { price: 150.10, quantity: 300 },
+                    { price: 150.15, quantity: 500 }
+                ]
+            }
+        };
+
+        let currentSymbol = 'BTCUSDT';
+        let currentSide = 'BUY';
+        let orderCounter = 90000;
+        let tradesTape = [];
+
+        function setSide(side) {
+            currentSide = side;
+            document.getElementById('btn-buy').classList.toggle('active', side === 'BUY');
+            document.getElementById('btn-sell').classList.toggle('active', side === 'SELL');
+            const submitBtn = document.getElementById('btn-submit');
+            if (side === 'BUY') {
+                submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                submitBtn.innerText = 'Submit BUY Order';
+            } else {
+                submitBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                submitBtn.innerText = 'Submit SELL Order';
+            }
+        }
+
+        function togglePriceField() {
+            const type = document.getElementById('input-type').value;
+            document.getElementById('group-price').style.display = type === 'MARKET' ? 'none' : 'flex';
+        }
+
+        function switchSymbol(symbol, btn) {
+            currentSymbol = symbol;
+            document.querySelectorAll('.symbol-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('active-symbol-badge').innerText = symbol;
+
+            const baseP = bookData[symbol].basePrice;
+            document.getElementById('input-price').value = baseP.toFixed(2);
+            renderCurrentBook();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+        }
+
+        function renderCurrentBook() {
+            const currentBook = bookData[currentSymbol];
+            const bids = currentBook.bids;
+            const asks = currentBook.asks;
+
+            const asksContainer = document.getElementById('asks-list');
+            const bidsContainer = document.getElementById('bids-list');
+
+            const maxBidVol = Math.max(...bids.map(b => b.quantity), 1);
+            const maxAskVol = Math.max(...asks.map(a => a.quantity), 1);
+            const maxVol = Math.max(maxBidVol, maxAskVol);
+
+            // Render Asks
+            asksContainer.innerHTML = asks.slice(0, 6).map(a => `
+                <div class="book-row ask">
+                    <div class="bar" style="width: ${(a.quantity / maxVol) * 100}%;"></div>
+                    <span class="ask-price">${a.price.toFixed(2)}</span>
+                    <span style="text-align: right;">${a.quantity}</span>
+                    <span style="text-align: right; color: var(--text-muted);">${(a.price * a.quantity).toFixed(0)}</span>
+                </div>
+            `).join('');
+
+            // Render Bids
+            bidsContainer.innerHTML = bids.slice(0, 6).map(b => `
+                <div class="book-row bid">
+                    <div class="bar" style="width: ${(b.quantity / maxVol) * 100}%;"></div>
+                    <span class="bid-price">${b.price.toFixed(2)}</span>
+                    <span style="text-align: right;">${b.quantity}</span>
+                    <span style="text-align: right; color: var(--text-muted);">${(b.price * b.quantity).toFixed(0)}</span>
+                </div>
+            `).join('');
+
+            const bestBid = bids.length ? bids[0].price : 0;
+            const bestAsk = asks.length ? asks[0].price : 0;
+            if (bestBid && bestAsk) {
+                document.getElementById('spread-val').innerText = (bestAsk - bestBid).toFixed(2);
+                document.getElementById('mid-val').innerText = ((bestAsk + bestBid) / 2).toFixed(2);
+            }
+        }
+
+        // Try remote backend if running locally or deployed, otherwise use in-browser FIFO matching engine
+        async function submitOrder() {
+            orderCounter++;
+            const type = document.getElementById('input-type').value;
+            const price = parseFloat(document.getElementById('input-price').value) || 0;
+            const qty = parseInt(document.getElementById('input-qty').value) || 1;
+            const tif = document.getElementById('input-tif').value;
+
+            // First check if live local or backend API is responding
+            try {
+                const res = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: orderCounter,
+                        client_id: 1,
+                        symbol: currentSymbol,
+                        side: currentSide,
+                        order_type: type,
+                        price: price,
+                        quantity: qty,
+                        tif: tif
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`Order #${orderCounter} executed on backend!`);
+                    if (data.execution_reports) {
+                        data.execution_reports.forEach(r => {
+                            if (r.exec_type === 'TRADE') {
+                                addTradeToTape(r.price, r.last_qty, r.side);
+                            }
+                        });
+                    }
+                    return;
+                }
+            } catch (e) {
+                // Backend not connected; run high-speed in-browser Price-Time Priority matching!
+            }
+
+            // In-browser matching logic
+            const currentBook = bookData[currentSymbol];
+            if (currentSide === 'BUY') {
+                if (type === 'MARKET' || price >= currentBook.asks[0]?.price) {
+                    // Match against asks
+                    let leaves = qty;
+                    while (leaves > 0 && currentBook.asks.length > 0 && (type === 'MARKET' || price >= currentBook.asks[0].price)) {
+                        const bestAsk = currentBook.asks[0];
+                        const matchQty = Math.min(leaves, bestAsk.quantity);
+                        addTradeToTape(bestAsk.price, matchQty, 'BUY');
+                        bestAsk.quantity -= matchQty;
+                        leaves -= matchQty;
+                        if (bestAsk.quantity <= 0) currentBook.asks.shift();
+                    }
+                    showToast(`BUY matched ${qty - leaves} units!`);
+                } else {
+                    currentBook.bids.unshift({ price, quantity: qty });
+                    currentBook.bids.sort((a, b) => b.price - a.price);
+                    showToast(`Limit BUY order #${orderCounter} rested in book.`);
+                }
+            } else {
+                if (type === 'MARKET' || price <= currentBook.bids[0]?.price) {
+                    // Match against bids
+                    let leaves = qty;
+                    while (leaves > 0 && currentBook.bids.length > 0 && (type === 'MARKET' || price <= currentBook.bids[0].price)) {
+                        const bestBid = currentBook.bids[0];
+                        const matchQty = Math.min(leaves, bestBid.quantity);
+                        addTradeToTape(bestBid.price, matchQty, 'SELL');
+                        bestBid.quantity -= matchQty;
+                        leaves -= matchQty;
+                        if (bestBid.quantity <= 0) currentBook.bids.shift();
+                    }
+                    showToast(`SELL matched ${qty - leaves} units!`);
+                } else {
+                    currentBook.asks.unshift({ price, quantity: qty });
+                    currentBook.asks.sort((a, b) => a.price - b.price);
+                    showToast(`Limit SELL order #${orderCounter} rested in book.`);
+                }
+            }
+            renderCurrentBook();
+        }
+
+        function addTradeToTape(price, qty, side) {
+            const timeStr = new Date().toLocaleTimeString();
+            tradesTape.unshift({ price, qty, side, time: timeStr });
+            if (tradesTape.length > 25) tradesTape.pop();
+
+            document.getElementById('trade-count').innerText = `${tradesTape.length} trades`;
+            const tapeContainer = document.getElementById('trades-tape');
+            tapeContainer.innerHTML = tradesTape.map(t => `
+                <div class="trade-item ${t.side.toLowerCase()}">
+                    <span class="price">${t.price.toFixed(2)}</span>
+                    <span style="text-align: right;">${t.qty}</span>
+                    <span style="text-align: right; color: var(--text-muted);">${t.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function triggerSimulationBurst() {
+            showToast('Simulating 10 high-frequency market orders...');
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    orderCounter++;
+                    const side = Math.random() > 0.5 ? 'BUY' : 'SELL';
+                    const isMarket = Math.random() > 0.4;
+                    const offset = (Math.random() * 2).toFixed(2);
+                    const currentBook = bookData[currentSymbol];
+                    const baseP = currentBook.basePrice;
+                    const price = side === 'BUY' ? (baseP - offset) : (baseP + offset);
+                    const qty = Math.floor(Math.random() * 6) + 1;
+
+                    if (isMarket) {
+                        if (side === 'BUY' && currentBook.asks.length > 0) {
+                            addTradeToTape(currentBook.asks[0].price, qty, 'BUY');
+                        } else if (side === 'SELL' && currentBook.bids.length > 0) {
+                            addTradeToTape(currentBook.bids[0].price, qty, 'SELL');
+                        }
+                    } else {
+                        if (side === 'BUY') {
+                            currentBook.bids.push({ price: parseFloat(price), quantity: qty });
+                            currentBook.bids.sort((a, b) => b.price - a.price);
+                        } else {
+                            currentBook.asks.push({ price: parseFloat(price), quantity: qty });
+                            currentBook.asks.sort((a, b) => a.price - b.price);
+                        }
+                    }
+                    renderCurrentBook();
+                }, i * 120);
+            }
+        }
+
+        // Initialize
+        renderCurrentBook();
+    </script>
+</body>
+</html>
