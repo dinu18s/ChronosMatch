@@ -206,6 +206,30 @@ class BBOUpdateMsg(ctypes.BigEndianStructure):
         ("timestamp_ns", ctypes.c_uint64),    # Engine dissemination timestamp
     ]
 
+    @classmethod
+    def create(
+        cls,
+        symbol: Union[str, int],
+        best_bid_price: int = 0,
+        best_bid_qty: int = 0,
+        best_ask_price: int = 0,
+        best_ask_qty: int = 0,
+        timestamp_ns: int = 0,
+    ) -> "BBOUpdateMsg":
+        sym_id = symbol_to_int(symbol) if isinstance(symbol, str) else symbol
+        ts = timestamp_ns if timestamp_ns > 0 else time.time_ns()
+        pad = (ctypes.c_uint8 * 7)()
+        return cls(
+            msg_type=MsgType.BBO_UPDATE,
+            _pad=pad,
+            symbol_id=sym_id,
+            best_bid_price=best_bid_price,
+            best_bid_qty=best_bid_qty,
+            best_ask_price=best_ask_price,
+            best_ask_qty=best_ask_qty,
+            timestamp_ns=ts,
+        )
+
     def __repr__(self) -> str:
         sym = int_to_symbol(self.symbol_id)
         bb = fixed_to_price(self.best_bid_price) if self.best_bid_price > 0 else 0.0
@@ -231,6 +255,34 @@ class TradeTickMsg(ctypes.BigEndianStructure):
         ("quantity", ctypes.c_uint64),        # Executed volume
         ("timestamp_ns", ctypes.c_uint64),    # Execution timestamp
     ]
+
+    @classmethod
+    def create(
+        cls,
+        trade_id: int,
+        symbol: Union[str, int],
+        side: Union[Side, int],
+        maker_order_id: int,
+        taker_order_id: int,
+        price_fixed: int,
+        quantity: int,
+        timestamp_ns: int = 0,
+    ) -> "TradeTickMsg":
+        sym_id = symbol_to_int(symbol) if isinstance(symbol, str) else symbol
+        ts = timestamp_ns if timestamp_ns > 0 else time.time_ns()
+        pad = (ctypes.c_uint8 * 6)()
+        return cls(
+            msg_type=MsgType.TRADE_TICK,
+            side=int(side),
+            _pad=pad,
+            trade_id=trade_id,
+            maker_order_id=maker_order_id,
+            taker_order_id=taker_order_id,
+            symbol_id=sym_id,
+            price=price_fixed,
+            quantity=quantity,
+            timestamp_ns=ts,
+        )
 
     def __repr__(self) -> str:
         sym = int_to_symbol(self.symbol_id)

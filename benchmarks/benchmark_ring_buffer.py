@@ -1,10 +1,18 @@
 """Microbenchmark measuring throughput and latency for SharedRingBuffer."""
 
 import gc
+from pathlib import Path
 import statistics
+import sys
 import time
 import uuid
 from typing import List
+
+# Ensure src is in sys.path when running script directly from command line
+ROOT_DIR = Path(__file__).resolve().parent.parent
+SRC_DIR = ROOT_DIR / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 from chronosmatch.ipc import SharedRingBuffer
 from chronosmatch.protocol import NewOrderMsg, OrderType, Side, price_to_fixed
@@ -67,14 +75,18 @@ def run_ring_buffer_benchmark(iterations: int = 200_000):
 
     print(f"Throughput       : {throughput:,.0f} transfers/sec")
     print(f"Total Duration   : {total_time:.4f} s")
-    print(f"Mean Latency     : {statistics.mean(latencies_us):.2f} µs")
-    print(f"p50 (Median)     : {latencies_us[int(iterations * 0.50)]:.2f} µs")
-    print(f"p90 Latency      : {latencies_us[int(iterations * 0.90)]:.2f} µs")
-    print(f"p99 Latency      : {latencies_us[int(iterations * 0.99)]:.2f} µs")
-    print(f"p99.9 Latency    : {latencies_us[int(iterations * 0.999)]:.2f} µs")
-    print(f"Max Latency      : {latencies_us[-1]:.2f} µs")
+    print(f"Mean Latency     : {statistics.mean(latencies_us):.2f} us")
+    print(f"p50 (Median)     : {latencies_us[int(iterations * 0.50)]:.2f} us")
+    print(f"p90 Latency      : {latencies_us[int(iterations * 0.90)]:.2f} us")
+    print(f"p99 Latency      : {latencies_us[int(iterations * 0.99)]:.2f} us")
+    print(f"p99.9 Latency    : {latencies_us[int(iterations * 0.999)]:.2f} us")
+    print(f"Max Latency      : {latencies_us[-1]:.2f} us")
     print("=" * 70)
 
 
-if __name__ == "__main__":
+def main():
     run_ring_buffer_benchmark(200_000)
+
+
+if __name__ == "__main__":
+    main()

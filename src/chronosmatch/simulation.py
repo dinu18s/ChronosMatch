@@ -1,7 +1,17 @@
 """Interactive real-time market simulation demonstrating order book depth and live trades."""
 
+import os
+from pathlib import Path
 import random
+import sys
 import time
+
+# Ensure src is in sys.path when running script directly from command line
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+SRC_DIR = ROOT_DIR / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
 from chronosmatch.engine import MatchingEngine
 from chronosmatch.protocol import (
     CancelOrderMsg,
@@ -13,7 +23,7 @@ from chronosmatch.protocol import (
 )
 
 
-def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 5, orders_per_sec: int = 20):
+def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 4, orders_per_sec: int = 25):
     engine = MatchingEngine()
     book = engine.get_or_create_book(symbol)
 
@@ -31,10 +41,10 @@ def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 5, orders_per_se
     while time.time() - start_time < duration_sec:
         action = random.random()
 
-        if action < 0.65 or not active_orders:
+        if action < 0.60 or not active_orders:
             # Place Limit Order
             side = Side.BUY if random.random() < 0.5 else Side.SELL
-            offset = random.uniform(0.5, 15.0)
+            offset = random.uniform(0.5, 12.0)
             price = round(base_price - offset if side == Side.BUY else base_price + offset, 2)
             qty = random.randint(1, 10)
 
@@ -49,17 +59,19 @@ def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 5, orders_per_se
             )
             reports = book.process_order(order)
             active_orders.append((order_id, side, price))
-            order_id += 1
 
+            # Log fills for this active order
             for rep in reports:
-                if rep.exec_type == ExecType.TRADE:
-                    t_side = "BUY " if rep.side == 1 else "SELL"
+                if rep.exec_type == ExecType.TRADE and rep.order_id == order_id:
+                    s_label = "BUY " if rep.side == 1 else "SELL"
                     print(
-                        f"  [TRADE] Match! {t_side} {rep.last_qty} @ {fixed_to_price(rep.price):.2f} "
-                        f"(Taker #{rep.order_id} x Maker #{rep.matched_order_id})"
+                        f"  [TRADE] Match! {s_label} {rep.last_qty} @ {fixed_to_price(rep.price):.2f} "
+                        f"(Order #{rep.order_id} x Maker #{rep.matched_order_id})"
                     )
 
-        elif action < 0.85 and active_orders:
+            order_id += 1
+
+        elif action < 0.80 and active_orders:
             # Cancel Random Resting Order
             oid, _, _ = active_orders.pop(random.randrange(len(active_orders)))
             cancel = CancelOrderMsg.create(order_id=oid, client_id=1, symbol=symbol)
@@ -70,7 +82,7 @@ def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 5, orders_per_se
         else:
             # Aggressive Market Order
             side = Side.BUY if random.random() < 0.5 else Side.SELL
-            qty = random.randint(2, 8)
+            qty = random.randint(2, 6)
             mkt = NewOrderMsg.create(
                 order_id=order_id,
                 client_id=2,
@@ -81,18 +93,22 @@ def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 5, orders_per_se
                 quantity=qty,
             )
             reports = book.process_order(mkt)
-            order_id += 1
+
+            # Log fills for this aggressive market order
             for rep in reports:
-                if rep.exec_type == ExecType.TRADE:
-                    t_side = "BUY " if rep.side == 1 else "SELL"
+                if rep.exec_type == ExecType.TRADE and rep.order_id == order_id:
+                    s_label = "BUY " if rep.side == 1 else "SELL"
                     print(
-                        f"  [SWEEP] Market {t_side} filled {rep.last_qty} @ {fixed_to_price(rep.price):.2f}"
+                        f"  [SWEEP] Market {s_label} filled {rep.last_qty} @ {fixed_to_price(rep.price):.2f} "
+                        f"(vs Maker #{rep.matched_order_id})"
                     )
+
+            order_id += 1
 
         time.sleep(1.0 / orders_per_sec)
 
         # Print L2 Snapshot periodically
-        if time.time() - last_print > 1.5:
+        if time.time() - last_print > 1.2:
             last_print = time.time()
             bids, asks = book.get_l2_depth(depth=5)
             print("-" * 65)
@@ -107,5 +123,9 @@ def run_simulation(symbol: str = "BTCUSDT", duration_sec: int = 5, orders_per_se
     print("\nSimulation complete. Active resting orders in book:", book.order_count)
 
 
-if __name__ == "__main__":
+def main():
     run_simulation(duration_sec=3, orders_per_sec=30)
+
+
+if __name__ == "__main__":
+    main()

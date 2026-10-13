@@ -28,25 +28,27 @@ A high-throughput, ultra-low-latency electronic trading matching engine built in
 
 ---
 
-## Quickstart
+## Quickstart & Execution
 
-### Prerequisites
-- Python 3.11+
-- `uv` (recommended) or `pip`
+You can run any of the tools directly with Python or `uv`:
 
-### Setup Virtual Environment
+### 1. Run Live Market Simulation
+Watch real-time order book depth, sweeps, and executions:
 ```bash
-uv venv
-uv pip install -e ".[dev]"
+python run_simulation.py
 ```
+*(or `uv run python run_simulation.py`)*
 
-### Running Tests
+### 2. Run High-Frequency Benchmarks
+Measures orders/sec throughput and microsecond latency percentiles ($p_{50}$, $p_{90}$, $p_{99}$, $p_{99.9}$):
 ```bash
-pytest
+python run_benchmarks.py
 ```
+*(or individual benchmarks: `python benchmarks/benchmark_engine.py` / `python benchmarks/benchmark_ring_buffer.py`)*
 
-### Running Benchmarks
+### 3. Run Test Suite
+Runs all 19 unit tests across protocols, order books, ring buffers, and WAL:
 ```bash
-python benchmarks/benchmark_engine.py
-python benchmarks/benchmark_ring_buffer.py
+python run_tests.py
 ```
+*(or `uv run pytest`)*

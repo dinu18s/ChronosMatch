@@ -1,9 +1,16 @@
-"""Microbenchmark suite for ChronosMatch Engine measuring latency percentiles and throughput."""
-
 import gc
+import os
+from pathlib import Path
 import statistics
+import sys
 import time
 from typing import List
+
+# Ensure src is in sys.path when running script directly from command line
+ROOT_DIR = Path(__file__).resolve().parent.parent
+SRC_DIR = ROOT_DIR / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 from chronosmatch.engine import MatchingEngine
 from chronosmatch.protocol import (
@@ -63,12 +70,12 @@ def run_benchmark(num_orders: int = 100_000):
     print("\n>>> TEST 1: Resting Limit Orders (Book Building)")
     print(f"Throughput       : {throughput:,.0f} orders/sec")
     print(f"Total Duration   : {total_time:.4f} s")
-    print(f"Mean Latency     : {statistics.mean(latencies_us):.2f} µs")
-    print(f"p50 (Median)     : {latencies_us[int(num_orders * 0.50)]:.2f} µs")
-    print(f"p90 Latency      : {latencies_us[int(num_orders * 0.90)]:.2f} µs")
-    print(f"p99 Latency      : {latencies_us[int(num_orders * 0.99)]:.2f} µs")
-    print(f"p99.9 Latency    : {latencies_us[int(num_orders * 0.999)]:.2f} µs")
-    print(f"Max Latency      : {latencies_us[-1]:.2f} µs")
+    print(f"Mean Latency     : {statistics.mean(latencies_us):.2f} us")
+    print(f"p50 (Median)     : {latencies_us[int(num_orders * 0.50)]:.2f} us")
+    print(f"p90 Latency      : {latencies_us[int(num_orders * 0.90)]:.2f} us")
+    print(f"p99 Latency      : {latencies_us[int(num_orders * 0.99)]:.2f} us")
+    print(f"p99.9 Latency    : {latencies_us[int(num_orders * 0.999)]:.2f} us")
+    print(f"Max Latency      : {latencies_us[-1]:.2f} us")
 
     # -------------------------------------------------------------
     # 2. Benchmark Aggressive Crossing Orders (Execution Matching)
@@ -107,12 +114,12 @@ def run_benchmark(num_orders: int = 100_000):
     print("\n>>> TEST 2: Aggressive Crossing Orders (Trades & Execution Matching)")
     print(f"Throughput       : {throughput_m:,.0f} orders/sec")
     print(f"Total Duration   : {total_time_m:.4f} s")
-    print(f"Mean Latency     : {statistics.mean(m_latencies_us):.2f} µs")
-    print(f"p50 (Median)     : {m_latencies_us[int(num_orders * 0.50)]:.2f} µs")
-    print(f"p90 Latency      : {m_latencies_us[int(num_orders * 0.90)]:.2f} µs")
-    print(f"p99 Latency      : {m_latencies_us[int(num_orders * 0.99)]:.2f} µs")
-    print(f"p99.9 Latency    : {m_latencies_us[int(num_orders * 0.999)]:.2f} µs")
-    print(f"Max Latency      : {m_latencies_us[-1]:.2f} µs")
+    print(f"Mean Latency     : {statistics.mean(m_latencies_us):.2f} us")
+    print(f"p50 (Median)     : {m_latencies_us[int(num_orders * 0.50)]:.2f} us")
+    print(f"p90 Latency      : {m_latencies_us[int(num_orders * 0.90)]:.2f} us")
+    print(f"p99 Latency      : {m_latencies_us[int(num_orders * 0.99)]:.2f} us")
+    print(f"p99.9 Latency    : {m_latencies_us[int(num_orders * 0.999)]:.2f} us")
+    print(f"Max Latency      : {m_latencies_us[-1]:.2f} us")
 
     # -------------------------------------------------------------
     # 3. Benchmark Order Cancellations (O(1) Hash Map & DLL Unlink)
@@ -156,13 +163,18 @@ def run_benchmark(num_orders: int = 100_000):
     print("\n>>> TEST 3: Order Cancellations (O(1) Index Lookup & Doubly-Linked Unlink)")
     print(f"Throughput       : {throughput_c:,.0f} cancels/sec")
     print(f"Total Duration   : {total_time_c:.4f} s")
-    print(f"Mean Latency     : {statistics.mean(c_latencies_us):.2f} µs")
-    print(f"p50 (Median)     : {c_latencies_us[int(cancel_count * 0.50)]:.2f} µs")
-    print(f"p90 Latency      : {c_latencies_us[int(cancel_count * 0.90)]:.2f} µs")
-    print(f"p99 Latency      : {c_latencies_us[int(cancel_count * 0.99)]:.2f} µs")
-    print(f"Max Latency      : {c_latencies_us[-1]:.2f} µs")
+    print(f"Mean Latency     : {statistics.mean(c_latencies_us):.2f} us")
+    print(f"p50 (Median)     : {c_latencies_us[int(cancel_count * 0.50)]:.2f} us")
+    print(f"p90 Latency      : {c_latencies_us[int(cancel_count * 0.90)]:.2f} us")
+    print(f"p99 Latency      : {c_latencies_us[int(cancel_count * 0.99)]:.2f} us")
+    print(f"p99.9 Latency    : {c_latencies_us[int(cancel_count * 0.999)]:.2f} us")
+    print(f"Max Latency      : {c_latencies_us[-1]:.2f} us")
     print("=" * 70)
 
 
-if __name__ == "__main__":
+def main():
     run_benchmark(100_000)
+
+
+if __name__ == "__main__":
+    main()
