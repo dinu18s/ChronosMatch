@@ -111,9 +111,9 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 187, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 187, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 188, 129, 0); }
         }
 
         .github-link {
@@ -230,7 +230,7 @@
 
         .symbol-tab.active, .symbol-tab:hover {
             background: var(--blue-glow);
-            border-color: var(--blue);
+            border-color: var(--pink);
             color: #fff;
         }
 
@@ -461,7 +461,7 @@
                 <div class="pulse-dot"></div>
                 ENGINE LIVE
             </div>
-            <a href="https://github.com/dinu18s/ChronosMatch" target="_blank" class="github-link">
+            <a href="https://github.com/Sayali568/ChronosMatch" target="_blank" class="github-link">
                 GitHub Repository ↗
             </a>
         </div>
@@ -510,7 +510,7 @@
                 <!-- Spread Banner -->
                 <div class="spread-banner">
                     <span style="color: var(--text-muted);">Spread: <strong id="spread-val" style="color: var(--text-primary);">0.50</strong></span>
-                    <span style="color: var(--text-muted);">BBO Mid: <strong id="mid-val" style="color: var(--blue);">65000.00</strong></span>
+                    <span style="color: var(--text-muted);">BBO Mid: <strong id="mid-val" style="color: var(--pink);">65000.00</strong></span>
                 </div>
 
                 <!-- Bids (Green) -->
@@ -545,7 +545,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Order Quantity (Units)</label>
-                    <input type="number" min="1" step="1" class="form-input mono" id="input-qty" value="5">
+                    <input type="number" min="1" step="1" class="form-input mono" id="input-qty" value="10">
                 </div>
 
                 <div class="form-group">
@@ -796,7 +796,7 @@
         function addTradeToTape(price, qty, side) {
             const timeStr = new Date().toLocaleTimeString();
             tradesTape.unshift({ price, qty, side, time: timeStr });
-            if (tradesTape.length > 25) tradesTape.pop();
+            if (tradesTape.length > 30) tradesTape.pop();
 
             document.getElementById('trade-count').innerText = `${tradesTape.length} trades`;
             const tapeContainer = document.getElementById('trades-tape');
@@ -811,7 +811,7 @@
 
         function triggerSimulationBurst() {
             showToast('Simulating 10 high-frequency market orders...');
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i <=10; i++) {
                 setTimeout(() => {
                     orderCounter++;
                     const side = Math.random() > 0.5 ? 'BUY' : 'SELL';
