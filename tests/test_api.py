@@ -1,10 +1,10 @@
-"""Tests for core module wrappers and FastAPI endpoints."""
+"""Tests for ChronosMatch FastAPI endpoints and engine integration."""
 
 import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
-from core.order_book import OrderBook
+from chronosmatch.engine import OrderBook
 from chronosmatch.protocol import NewOrderMsg, Side, OrderType, price_to_fixed
 
 
@@ -13,7 +13,7 @@ def client():
     return TestClient(app)
 
 
-def test_core_order_book_wrapper():
+def test_order_book_integration():
     book = OrderBook("ETHUSDT")
     order = NewOrderMsg.create(
         order_id=5001,
