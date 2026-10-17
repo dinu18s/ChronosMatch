@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChronosMatch | Institutional L2 Electronic Trading Engine</title>
+    <title>ChronosMatch | Simple & Fast Trading Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #080b12;
-            --bg-surface: #0f1422;
-            --bg-elevated: #161d30;
-            --bg-card: #1c243c;
-            --border: #232d45;
-            --border-highlight: #334168;
-            --green: #00c087;
-            --green-glow: rgba(0, 192, 135, 0.16);
-            --red: #f6465d;
-            --red-glow: rgba(246, 70, 93, 0.16);
+            --bg-base: #0a0e17;
+            --bg-card: #131a29;
+            --bg-card-hover: #182236;
+            --bg-subtle: #1c273d;
+            --border: #243048;
+            --border-focus: #3b82f6;
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --red: #f43f5e;
+            --red-soft: rgba(244, 63, 94, 0.12);
             --blue: #3b82f6;
-            --blue-glow: rgba(59, 130, 246, 0.16);
+            --blue-soft: rgba(59, 130, 246, 0.12);
             --yellow: #f59e0b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
             --text-muted: #64748b;
         }
 
@@ -35,8 +35,8 @@
 
         body {
             background-color: var(--bg-base);
-            color: var(--text-primary);
-            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -47,11 +47,11 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Top Header */
+        /* Top Navigation Header */
         header {
-            background: var(--bg-surface);
+            background: var(--bg-card);
             border-bottom: 1px solid var(--border);
-            padding: 10px 20px;
+            padding: 12px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -59,139 +59,85 @@
             flex-wrap: wrap;
         }
 
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-badge {
-            background: linear-gradient(135deg, #2563eb, #00c087);
-            color: #fff;
-            font-weight: 700;
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            letter-spacing: 1px;
-        }
-
-        .logo-title {
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-            color: #fff;
-        }
-
-        .logo-tag {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        /* Live Market Ticker in Header */
-        .ticker-bar {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-
-        .ticker-item {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .ticker-label {
-            font-size: 9px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .ticker-val {
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .price-flash-green {
-            color: var(--green);
-            animation: flashGreen 0.4s ease;
-        }
-
-        .price-flash-red {
-            color: var(--red);
-            animation: flashRed 0.4s ease;
-        }
-
-        @keyframes flashGreen {
-            0% { background: rgba(0, 192, 135, 0.3); }
-            100% { background: transparent; }
-        }
-
-        @keyframes flashRed {
-            0% { background: rgba(246, 70, 93, 0.3); }
-            100% { background: transparent; }
-        }
-
-        .header-actions {
+        .logo-wrap {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .status-pill {
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            color: #fff;
+        }
+
+        .logo-subtitle {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .engine-status-badge {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(0, 192, 135, 0.08);
-            border: 1px solid rgba(0, 192, 135, 0.3);
+            background: var(--green-soft);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             color: var(--green);
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
         }
 
-        .pulse-dot {
+        .live-dot {
             width: 7px;
             height: 7px;
             background: var(--green);
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            animation: pulseDot 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 192, 135, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 192, 135, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 192, 135, 0); }
+        @keyframes pulseDot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        /* User Profile Pill in Header */
-        .user-profile-pill {
+        /* User Profile in Header */
+        .user-pill {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: var(--bg-elevated);
+            background: var(--bg-subtle);
             border: 1px solid var(--border);
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 12px;
-            transition: all 0.15s;
-        }
-
-        .user-profile-pill:hover {
-            border-color: var(--blue);
         }
 
         .user-avatar {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             color: white;
             font-weight: 700;
@@ -199,566 +145,598 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
         }
 
-        .user-info {
+        .user-details {
             display: flex;
             flex-direction: column;
-            line-height: 1.1;
+            line-height: 1.15;
         }
 
-        .user-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 11px;
+        .user-name-txt {
+            font-weight: 700;
+            color: #fff;
+            font-size: 12px;
         }
 
-        .user-email {
+        .user-email-txt {
             font-size: 10px;
-            color: var(--text-muted);
+            color: var(--text-sub);
         }
 
-        .switch-account-btn {
+        .btn-switch-account {
             background: rgba(59, 130, 246, 0.15);
             border: 1px solid rgba(59, 130, 246, 0.3);
             color: var(--blue);
-            cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-left: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
             transition: all 0.15s;
         }
 
-        .switch-account-btn:hover {
+        .btn-switch-account:hover {
             background: var(--blue);
             color: #fff;
         }
 
-        .signout-btn {
+        .btn-logout {
             background: transparent;
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 11px;
+            font-size: 13px;
             padding: 2px 4px;
             transition: color 0.15s;
         }
 
-        .signout-btn:hover {
+        .btn-logout:hover {
             color: var(--red);
         }
 
-        /* Metrics Bar */
-        .metrics-bar {
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
-            padding: 8px 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .metric-card {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .metric-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .metric-val {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .metric-highlight {
-            color: var(--green);
-        }
-
-        /* Main Workspace Grid */
-        main {
+        /* Container Layout */
+        .main-container {
             flex: 1;
-            padding: 14px 20px;
-            display: grid;
-            grid-template-columns: 310px minmax(420px, 1fr) 290px;
-            gap: 14px;
-        }
-
-        @media (max-width: 1200px) {
-            main {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            max-width: 1360px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            gap: 20px;
         }
 
-        .panel-header {
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-elevated);
+        /* Asset Selector Banner */
+        .asset-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .panel-title {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-        }
-
-        /* Symbols Switcher */
-        .symbol-tabs {
+        .asset-tabs {
             display: flex;
-            gap: 4px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .symbol-tab {
-            background: transparent;
+        .asset-btn {
+            background: var(--bg-subtle);
             border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
+            color: var(--text-sub);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s;
         }
 
-        .symbol-tab.active, .symbol-tab:hover {
-            background: var(--blue-glow);
+        .asset-btn.active, .asset-btn:hover {
+            background: var(--blue-soft);
             border-color: var(--blue);
             color: #fff;
         }
 
-        /* Order Book Table */
-        .book-container {
+        .asset-price-display {
             display: flex;
-            flex-direction: column;
-            flex: 1;
-            padding: 6px 10px;
-            font-size: 11px;
+            align-items: baseline;
+            gap: 12px;
         }
 
-        .book-table-hdr {
+        .price-big {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .price-change-badge {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--green);
+            background: var(--green-soft);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* Trading Grid: 2 Columns (Clean and Intuitive) */
+        .trade-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1.2fr;
-            padding: 5px 4px;
-            color: var(--text-muted);
-            font-size: 10px;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
         }
 
-        .book-row {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1.2fr;
-            padding: 4px 4px;
-            position: relative;
-            font-size: 11px;
-            cursor: pointer;
-            transition: background 0.1s;
+        @media (max-width: 992px) {
+            .trade-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .book-row:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .book-row .bar {
-            position: absolute;
-            top: 1px;
-            bottom: 1px;
-            right: 0;
-            z-index: 0;
-            opacity: 0.18;
-            border-radius: 2px;
-        }
-
-        .book-row.ask .bar { background: var(--red); }
-        .book-row.bid .bar { background: var(--green); }
-
-        .book-row span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .ask-price { color: var(--red); font-weight: 600; }
-        .bid-price { color: var(--green); font-weight: 600; }
-
-        .spread-banner {
-            margin: 6px 0;
-            padding: 6px 10px;
-            background: var(--bg-elevated);
-            border: 1px dashed var(--border);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 11px;
-        }
-
-        /* Center Column Layout: Chart + Order Entry */
-        .center-column {
+        /* Left Section: Chart & Live Orders */
+        .left-column {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 20px;
         }
 
-        /* Candlestick Chart Panel */
-        .chart-panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            height: 280px;
-        }
-
-        .chart-toolbar {
-            padding: 6px 12px;
-            background: var(--bg-elevated);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .timeframe-group {
-            display: flex;
-            gap: 4px;
-        }
-
-        .tf-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .tf-btn.active, .tf-btn:hover {
-            color: var(--text-primary);
+        .card {
             background: var(--bg-card);
-        }
-
-        .chart-stats-pill {
-            font-size: 11px;
-            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
         }
 
-        #candlestick-canvas {
+        .card-header {
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Simple Price Trend Chart */
+        .chart-box {
+            padding: 16px 20px;
+            height: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #simple-chart-canvas {
             width: 100%;
             height: 100%;
             display: block;
         }
 
-        /* Order Form Gateway */
-        .order-form-panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* Simple Live Market Orders (Simplified Order Book) */
+        .market-orders-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding: 16px 20px;
         }
 
-        .side-toggle {
+        @media (max-width: 600px) {
+            .market-orders-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .order-col-header {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-sub);
+        }
+
+        .order-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .order-item-simple {
+            background: var(--bg-subtle);
+            border-radius: 6px;
+            padding: 7px 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .order-item-simple:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .order-item-simple.ask .price { color: var(--red); font-weight: 700; }
+        .order-item-simple.bid .price { color: var(--green); font-weight: 700; }
+
+        /* Right Section: Buy & Sell Card (Super Simple) */
+        .trade-box {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Big Buy/Sell Toggle */
+        .trade-type-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: var(--bg-subtle);
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .btn-side {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            color: var(--text-sub);
+            background: transparent;
+            transition: all 0.15s ease;
+        }
+
+        .btn-side.buy.active {
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-side.sell.active {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+        }
+
+        /* Balance Banner */
+        .balance-info-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .balance-val {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Order Mode Switch (Instant vs Custom Price) */
+        .mode-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mode-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mode-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
 
-        .side-btn {
-            padding: 9px;
+        .mode-btn {
+            background: var(--bg-subtle);
             border: 1px solid var(--border);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            font-weight: 700;
+            color: var(--text-sub);
+            padding: 10px 12px;
+            border-radius: 8px;
             font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        .mode-btn.active {
+            background: var(--blue-soft);
+            border-color: var(--blue);
+            color: #fff;
+        }
+
+        /* Simple Form Inputs */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .simple-input {
+            width: 100%;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .simple-input:focus {
+            border-color: var(--blue);
+        }
+
+        /* Quick Percentage Chips */
+        .pct-chips {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .chip-btn {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 6px;
             border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .chip-btn:hover {
+            border-color: var(--blue);
+            color: #fff;
+        }
+
+        /* Order Summary Card */
+        .summary-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-sub);
+        }
+
+        .summary-row.total {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            padding-top: 6px;
+            border-top: 1px dashed var(--border);
+        }
+
+        /* Big Submit Button */
+        .btn-action-main {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 800;
             cursor: pointer;
             transition: all 0.15s ease;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
         }
 
-        .side-btn.buy.active {
-            background: var(--green);
-            border-color: var(--green);
-            color: #fff;
-            box-shadow: 0 0 14px var(--green-glow);
+        .btn-action-main:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
         }
 
-        .side-btn.sell.active {
-            background: var(--red);
-            border-color: var(--red);
-            color: #fff;
-            box-shadow: 0 0 14px var(--red-glow);
+        /* Bottom Section: My Portfolio & Recent Orders (Zero Random History) */
+        .bottom-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
-        .form-row {
+        .portfolio-cards-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
         }
 
-        .form-group {
+        .asset-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
 
-        .form-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .form-input, .form-select {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 8px 10px;
-            border-radius: 5px;
+        .asset-card-label {
             font-size: 12px;
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        .form-input:focus, .form-select:focus {
-            border-color: var(--blue);
-        }
-
-        .pct-group {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-top: 2px;
-        }
-
-        .pct-btn {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 10px;
-            padding: 4px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-
-        .pct-btn:hover {
-            border-color: var(--blue);
-            color: #fff;
-        }
-
-        .order-summary-box {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 8px 12px;
-            font-size: 11px;
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-muted);
-        }
-
-        .submit-btn {
-            background: linear-gradient(135deg, #00c087, #059669);
-            color: #fff;
-            border: none;
-            padding: 11px;
-            font-weight: 700;
-            font-size: 13px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .submit-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        /* Trades Tape */
-        .trades-list {
-            flex: 1;
-            padding: 6px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            max-height: 520px;
-            overflow-y: auto;
-        }
-
-        .trade-item {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr;
-            padding: 3px 4px;
-            font-size: 11px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        }
-
-        .trade-item.buy .price { color: var(--green); }
-        .trade-item.sell .price { color: var(--red); }
-
-        /* Full Width Account Console at Bottom */
-        .account-console {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 20px 20px 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 200px;
-        }
-
-        .console-tabs {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-elevated);
-            padding: 0 12px;
-            gap: 6px;
-        }
-
-        .console-tab {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px 14px;
-            font-size: 12px;
+            color: var(--text-sub);
             font-weight: 600;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.15s;
         }
 
-        .console-tab.active {
+        .asset-card-amount {
+            font-size: 20px;
+            font-weight: 800;
             color: #fff;
-            border-bottom-color: var(--blue);
         }
 
-        .tab-content {
-            padding: 12px 16px;
-            display: none;
-            flex: 1;
+        .asset-card-usd {
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 600;
         }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        .console-table {
+        /* Simple Orders & Activity Table */
+        .history-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 13px;
         }
 
-        .console-table th {
+        .history-table th {
             text-align: left;
-            padding: 8px;
-            color: var(--text-muted);
-            font-weight: 500;
+            padding: 12px 16px;
+            color: var(--text-sub);
+            font-weight: 600;
             font-size: 11px;
             text-transform: uppercase;
             border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.01);
         }
 
-        .console-table td {
-            padding: 8px;
+        .history-table td {
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            color: var(--text-primary);
+            color: var(--text-main);
         }
 
-        .empty-history-state {
+        .empty-history-box {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sub);
+            font-size: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 40px 16px;
-            color: var(--text-muted);
-            font-size: 12px;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .empty-icon {
-            font-size: 24px;
-            opacity: 0.6;
+        .empty-history-icon {
+            font-size: 28px;
+            opacity: 0.7;
         }
 
-        .cancel-btn {
-            background: rgba(246, 70, 93, 0.15);
+        .tag-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .tag-status.filled {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .tag-status.open {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--yellow);
+        }
+
+        .tag-status.cancelled {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .btn-cancel-simple {
+            background: var(--red-soft);
             border: 1px solid var(--red);
             color: var(--red);
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.1s;
         }
 
-        .cancel-btn:hover {
+        .btn-cancel-simple:hover {
             background: var(--red);
             color: #fff;
         }
 
-        /* Notification Toast */
-        #toast {
+        /* Toast Popup */
+        #toast-simple {
             position: fixed;
             bottom: 24px;
             right: 24px;
             background: var(--bg-card);
             border: 1px solid var(--green);
-            color: var(--text-primary);
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 12px;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
             display: none;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             z-index: 9999;
-            animation: slideUp 0.2s ease;
+            animation: toastIn 0.2s ease-out;
         }
 
-        @keyframes slideUp {
+        @keyframes toastIn {
             from { transform: translateY(15px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* ==========================================================================
-           AUTHENTIC GOOGLE SIGN-IN & ACCOUNT CHOOSER MODAL
-           ========================================================================== */
+        /* Google Modal Backdrop */
         #google-auth-overlay {
             position: fixed;
             inset: 0;
             background: rgba(4, 7, 14, 0.88);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -766,26 +744,26 @@
             padding: 16px;
         }
 
-        .auth-card {
-            background: #1e2433;
-            border: 1px solid #2f3b54;
-            border-radius: 20px;
+        .google-card {
+            background: #171f30;
+            border: 1px solid #2b3952;
+            border-radius: 18px;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(66, 133, 244, 0.15);
+            max-width: 440px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            animation: modalFade 0.25s ease-out;
+            animation: cardPop 0.2s ease-out;
         }
 
-        @keyframes modalFade {
+        @keyframes cardPop {
             from { transform: scale(0.96); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
-        .auth-card-header {
-            padding: 24px 28px 16px;
+        .google-card-header {
+            padding: 24px 28px 14px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -793,38 +771,31 @@
             gap: 12px;
         }
 
-        .google-logo-svg {
-            width: 42px;
-            height: 42px;
-        }
-
-        .auth-title {
-            font-size: 22px;
+        .google-title {
+            font-size: 21px;
             font-weight: 700;
             color: #fff;
-            letter-spacing: -0.3px;
         }
 
-        .auth-subtitle {
+        .google-subtitle {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--text-sub);
             line-height: 1.4;
         }
 
-        .auth-card-body {
+        .google-card-body {
             padding: 12px 28px 24px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
-        /* Prominent Google 'Continue with Google' Button */
-        .google-btn-main {
+        .btn-continue-google {
             background: #ffffff;
             color: #1f1f1f;
             border: none;
-            padding: 14px 20px;
-            border-radius: 10px;
+            padding: 13px 20px;
+            border-radius: 8px;
             font-size: 15px;
             font-weight: 600;
             display: flex;
@@ -832,58 +803,56 @@
             justify-content: center;
             gap: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
             width: 100%;
         }
 
-        .google-btn-main:hover {
-            background: #f8f9fa;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        .btn-continue-google:hover {
+            background: #f1f3f4;
             transform: translateY(-1px);
         }
 
-        /* Google Account Chooser List */
-        .google-accounts-container {
-            border: 1px solid #2f3b54;
-            border-radius: 12px;
+        /* Google Accounts List */
+        .device-accounts-box {
+            border: 1px solid #2b3952;
+            border-radius: 10px;
             overflow: hidden;
-            background: #141926;
+            background: #111724;
         }
 
-        .google-account-row {
+        .account-row {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            border-bottom: 1px solid #232c40;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #1f2a3f;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: background 0.15s;
         }
 
-        .google-account-row:hover {
-            background: #1e2638;
+        .account-row:hover {
+            background: #1c2638;
         }
 
-        .google-account-row:last-child {
+        .account-row:last-child {
             border-bottom: none;
         }
 
-        .google-account-avatar {
-            width: 40px;
-            height: 40px;
+        .account-avatar-circ {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             color: #fff;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .google-account-text {
+        .account-meta {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -891,158 +860,89 @@
             text-align: left;
         }
 
-        .google-account-name {
+        .account-name-txt {
             font-size: 14px;
             font-weight: 600;
             color: #fff;
         }
 
-        .google-account-email {
+        .account-email-txt {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--text-sub);
         }
 
-        .google-account-tag {
-            font-size: 10px;
-            background: rgba(0, 192, 135, 0.12);
-            color: var(--green);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            align-self: center;
-        }
-
-        /* 'Use another account' row */
-        .use-another-row {
+        .use-another-btn-row {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
+            gap: 12px;
+            padding: 12px 14px;
             cursor: pointer;
-            background: #171d2b;
-            transition: background 0.15s ease;
+            background: #141c2c;
+            transition: background 0.15s;
         }
 
-        .use-another-row:hover {
-            background: #20283c;
+        .use-another-btn-row:hover {
+            background: #1c273d;
         }
 
-        .use-another-icon {
-            width: 40px;
-            height: 40px;
+        .use-another-circle {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            border: 1.5px dashed #4b5876;
+            border: 1.5px dashed #475569;
             color: #94a3b8;
-            font-size: 20px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
         }
 
-        .use-another-text {
-            font-size: 14px;
+        .use-another-txt {
+            font-size: 13px;
             font-weight: 600;
-            color: #3b82f6;
-            text-align: left;
+            color: var(--blue);
         }
 
-        /* Add Another Account Input View */
-        .add-account-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .google-input-box {
-            background: #141926;
-            border: 1px solid #2f3b54;
-            color: #fff;
-            padding: 12px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        .google-input-box:focus {
-            border-color: #4285f4;
-            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-        }
-
-        .auth-actions-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 4px;
-        }
-
-        .back-link {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: color 0.15s;
-        }
-
-        .back-link:hover {
-            color: #fff;
-        }
-
-        .google-next-btn {
+        .btn-google-next {
             background: #1a73e8;
             color: #fff;
             border: none;
-            padding: 10px 24px;
+            padding: 10px 22px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s;
         }
 
-        .google-next-btn:hover {
+        .btn-google-next:hover {
             background: #1557b0;
-        }
-
-        .auth-disclaimer {
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.4;
-            text-align: center;
-            padding: 0 10px;
         }
     </style>
 </head>
 <body>
 
     <!-- ==========================================================================
-         AUTHENTIC GOOGLE SIGN-IN & ACCOUNT CHOOSER GATE
+         AUTHENTIC GOOGLE SIGN-IN MODAL (SIMPLE & CLEAR)
          ========================================================================== -->
     <div id="google-auth-overlay">
-        <div class="auth-card">
+        <div class="google-card">
             
-            <!-- STEP 1: INITIAL WELCOME GATE WITH "CONTINUE WITH GOOGLE" -->
-            <div id="auth-step-initial" style="display: flex; flex-direction: column;">
-                <div class="auth-card-header">
-                    <!-- Google Official 4-Color Logo -->
-                    <svg class="google-logo-svg" viewBox="0 0 24 24">
+            <!-- STEP 1: WELCOME SCREEN WITH "CONTINUE WITH GOOGLE" -->
+            <div id="auth-view-initial" style="display: flex; flex-direction: column;">
+                <div class="google-card-header">
+                    <svg width="40" height="40" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
-                    <div class="auth-title">Sign in with Google</div>
-                    <div class="auth-subtitle">Sign in to access <strong>ChronosMatch Trading Terminal</strong></div>
+                    <div class="google-title">Sign in to ChronosMatch</div>
+                    <div class="google-subtitle">Sign in with your Google Account to trade with $100,000 in virtual cash.</div>
                 </div>
 
-                <div class="auth-card-body">
-                    <!-- The requested button: "Continue with Google" -->
-                    <button class="google-btn-main" onclick="openGoogleAccountChooser()">
+                <div class="google-card-body">
+                    <button class="btn-continue-google" onclick="openAccountChooser()">
                         <svg width="20" height="20" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -1051,579 +951,439 @@
                         </svg>
                         Continue with Google
                     </button>
-
-                    <p class="auth-disclaimer">
-                        Clicking Continue with Google will display all Google accounts present on this device to select from.
+                    <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 4px;">
+                        Clicking Continue displays Google accounts present on this device to select from.
                     </p>
                 </div>
             </div>
 
-            <!-- STEP 2: CHOOSE AN ACCOUNT (SHOWS ALL GOOGLE ACCOUNTS PRESENT ON THIS DEVICE) -->
-            <div id="auth-step-chooser" style="display: none; flex-direction: column;">
-                <div class="auth-card-header">
-                    <svg class="google-logo-svg" viewBox="0 0 24 24">
+            <!-- STEP 2: CHOOSE ACCOUNT FROM DEVICE -->
+            <div id="auth-view-chooser" style="display: none; flex-direction: column;">
+                <div class="google-card-header">
+                    <svg width="40" height="40" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
-                    <div class="auth-title">Choose an account</div>
-                    <div class="auth-subtitle">to continue to <strong>ChronosMatch Trading Terminal</strong></div>
+                    <div class="google-title">Choose an account</div>
+                    <div class="google-subtitle">Select an account on this device to continue</div>
                 </div>
 
-                <div class="auth-card-body">
-                    <!-- Dynamic Google Accounts on Device -->
-                    <div class="google-accounts-container" id="device-accounts-container">
-                        <!-- Populated by JavaScript with all device accounts -->
+                <div class="google-card-body">
+                    <div class="device-accounts-box" id="device-accounts-list">
+                        <!-- Populated dynamically -->
                     </div>
 
-                    <!-- Use Another Account Option -->
-                    <div class="google-accounts-container" style="margin-top: -6px;">
-                        <div class="use-another-row" onclick="showAddAccountView()">
-                            <div class="use-another-icon">+</div>
-                            <div class="use-another-text">Use another account</div>
+                    <div class="device-accounts-box" style="margin-top: -6px;">
+                        <div class="use-another-btn-row" onclick="showAddAccountScreen()">
+                            <div class="use-another-circle">+</div>
+                            <div class="use-another-txt">Use another Google account</div>
                         </div>
                     </div>
-
-                    <p class="auth-disclaimer">
-                        To continue, Google will share your name, email address, language preference, and profile picture with ChronosMatch.
-                    </p>
                 </div>
             </div>
 
-            <!-- STEP 3: USE ANOTHER ACCOUNT FORM -->
-            <div id="auth-step-add" style="display: none; flex-direction: column;">
-                <div class="auth-card-header">
-                    <svg class="google-logo-svg" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <div class="auth-title">Sign in</div>
-                    <div class="auth-subtitle">with your Google Account to continue to ChronosMatch</div>
+            <!-- STEP 3: USE ANOTHER ACCOUNT INPUT -->
+            <div id="auth-view-add" style="display: none; flex-direction: column;">
+                <div class="google-card-header">
+                    <div class="google-title">Add Google Account</div>
+                    <div class="google-subtitle">Enter your Google email to sign in</div>
                 </div>
 
-                <div class="auth-card-body">
-                    <div class="add-account-form">
-                        <input type="email" class="google-input-box mono" id="new-google-email" placeholder="Email or phone" autofocus>
-                        <input type="text" class="google-input-box" id="new-google-name" placeholder="Full Name (e.g. John Doe)">
+                <div class="google-card-body">
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="email" class="simple-input mono" id="new-user-email" placeholder="Google Email (e.g. yourname@gmail.com)" autofocus>
+                        <input type="text" class="simple-input" id="new-user-name" placeholder="Your Name (e.g. Alex)">
                     </div>
 
-                    <div class="auth-actions-row">
-                        <button class="back-link" onclick="openGoogleAccountChooser()">← Back to accounts</button>
-                        <button class="google-next-btn" onclick="handleAddNewGoogleAccount()">Next</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                        <button type="button" style="background: transparent; border: none; color: var(--text-sub); cursor: pointer;" onclick="openAccountChooser()">← Back to list</button>
+                        <button type="button" class="btn-google-next" onclick="submitNewGoogleAccount()">Sign In</button>
                     </div>
-
-                    <p class="auth-disclaimer" style="margin-top: 8px;">
-                        This account will be added to this device and used to access your isolated ChronosMatch trading terminal.
-                    </p>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- Main Header -->
+    <!-- Navigation Header -->
     <header>
-        <div class="logo-group">
-            <div class="logo-badge">HFT L2</div>
+        <div class="logo-wrap">
+            <div class="logo-icon">⚡</div>
             <div>
                 <div class="logo-title">ChronosMatch</div>
-                <div class="logo-tag">Zero-Copy Electronic Trading Engine</div>
+                <div class="logo-subtitle">Simple & Fast Trading Platform</div>
             </div>
         </div>
 
-        <!-- Live Real-Time Market Ticker -->
-        <div class="ticker-bar mono">
-            <div class="ticker-item">
-                <span class="ticker-label">Symbol</span>
-                <span class="ticker-val" id="ticker-sym" style="color: var(--blue);">BTC/USDT</span>
-            </div>
-            <div class="ticker-item">
-                <span class="ticker-label">Last Price</span>
-                <span class="ticker-val price-flash-green" id="ticker-price">$65,000.00</span>
-            </div>
-            <div class="ticker-item">
-                <span class="ticker-label">24h Change</span>
-                <span class="ticker-val" id="ticker-change" style="color: var(--green);">+2.45%</span>
-            </div>
-            <div class="ticker-item">
-                <span class="ticker-label">24h High</span>
-                <span class="ticker-val" id="ticker-high">$66,150.00</span>
-            </div>
-            <div class="ticker-item">
-                <span class="ticker-label">24h Low</span>
-                <span class="ticker-val" id="ticker-low">$64,280.00</span>
-            </div>
-            <div class="ticker-item">
-                <span class="ticker-label">24h Volume</span>
-                <span class="ticker-val" id="ticker-vol">18,492.4 BTC</span>
-            </div>
-        </div>
-
-        <div class="header-actions">
-            <div class="status-pill">
-                <div class="pulse-dot"></div>
-                ENGINE LIVE
+        <div class="header-right">
+            <div class="engine-status-badge">
+                <div class="live-dot"></div>
+                Engine Online
             </div>
 
-            <!-- Authenticated User Profile Pill -->
-            <div class="user-profile-pill" id="user-pill" style="display: none;">
-                <div class="user-avatar" id="user-avatar-initial">D</div>
-                <div class="user-info">
-                    <span class="user-name" id="user-display-name">Dinu S</span>
-                    <span class="user-email mono" id="user-display-email">dinu18s@gmail.com</span>
+            <!-- User Profile Pill in Header -->
+            <div class="user-pill" id="user-header-pill" style="display: none;">
+                <div class="user-avatar" id="user-avatar-badge">D</div>
+                <div class="user-details">
+                    <span class="user-name-txt" id="user-header-name">Dinu S</span>
+                    <span class="user-email-txt mono" id="user-header-email">dinu18s@gmail.com</span>
                 </div>
-                <button class="switch-account-btn" onclick="openGoogleAccountChooser()" title="Switch Google Account">⇄ Switch</button>
-                <button class="signout-btn" onclick="signOutUser()" title="Sign Out">✕</button>
+                <button class="btn-switch-account" onclick="openAccountChooser()" title="Switch Account">⇄ Switch</button>
+                <button class="btn-logout" onclick="logoutGoogleUser()" title="Log Out">✕</button>
             </div>
         </div>
     </header>
 
-    <!-- Metrics Bar -->
-    <div class="metrics-bar mono">
-        <div class="metric-card">
-            <span class="metric-label">Median Latency (p50)</span>
-            <span class="metric-val metric-highlight">3.20 µs</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-label">Engine Throughput</span>
-            <span class="metric-val metric-highlight">235,303 orders/s</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-label">IPC Ring Buffer</span>
-            <span class="metric-val">Lockless SPSC SharedMem</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-label">Memory Architecture</span>
-            <span class="metric-val">Zero-Copy Buffer Protocol</span>
-        </div>
-    </div>
-
-    <!-- Main Workspace -->
-    <main>
-        <!-- Left: L2 Order Book Ladder -->
-        <section class="panel">
-            <div class="panel-header">
-                <span class="panel-title">L2 Order Book</span>
-                <div class="symbol-tabs">
-                    <button class="symbol-tab active" onclick="switchSymbol('BTCUSDT', this)">BTCUSDT</button>
-                    <button class="symbol-tab" onclick="switchSymbol('ETHUSDT', this)">ETHUSDT</button>
-                    <button class="symbol-tab" onclick="switchSymbol('AAPL', this)">AAPL</button>
-                </div>
+    <div class="main-container">
+        <!-- Asset Selector & Price Banner -->
+        <div class="asset-bar">
+            <div class="asset-tabs">
+                <button class="asset-btn active" onclick="selectAsset('BTCUSDT', this)">
+                    <span>🟡</span> Bitcoin (BTC)
+                </button>
+                <button class="asset-btn" onclick="selectAsset('ETHUSDT', this)">
+                    <span>🔷</span> Ethereum (ETH)
+                </button>
+                <button class="asset-btn" onclick="selectAsset('AAPL', this)">
+                    <span>🍏</span> Apple (AAPL)
+                </button>
             </div>
-            <div class="book-container mono">
-                <div class="book-table-hdr">
-                    <span>Price</span>
-                    <span style="text-align: right;">Size</span>
-                    <span style="text-align: right;">Total</span>
-                </div>
-                
-                <!-- Asks (Red) -->
-                <div id="asks-list" style="display: flex; flex-direction: column-reverse; min-height: 125px;"></div>
 
-                <!-- Spread Banner -->
-                <div class="spread-banner">
-                    <span style="color: var(--text-muted);">Spread: <strong id="spread-val" style="color: var(--text-primary);">0.50</strong></span>
-                    <span style="color: var(--text-muted);">Mid: <strong id="mid-val" style="color: var(--yellow);">65000.00</strong></span>
-                </div>
-
-                <!-- Bids (Green) -->
-                <div id="bids-list" style="display: flex; flex-direction: column; min-height: 125px;"></div>
+            <div class="asset-price-display">
+                <span class="price-big mono" id="asset-big-price">$65,000.00</span>
+                <span class="price-change-badge mono" id="asset-change-badge">▲ +2.45%</span>
             </div>
-        </section>
+        </div>
 
-        <!-- Center: Interactive Chart & Order Placement Gateway -->
-        <div class="center-column">
-            <!-- Institutional Candlestick & Volume Chart -->
-            <section class="chart-panel">
-                <div class="chart-toolbar mono">
-                    <div class="timeframe-group">
-                        <button class="tf-btn" onclick="setTimeframe('1m', this)">1m</button>
-                        <button class="tf-btn active" onclick="setTimeframe('5m', this)">5m</button>
-                        <button class="tf-btn" onclick="setTimeframe('15m', this)">15m</button>
-                        <button class="tf-btn" onclick="setTimeframe('1H', this)">1H</button>
+        <!-- Main 2-Column Trading Grid -->
+        <div class="trade-grid">
+            <!-- Left: Chart & Live Market Orders -->
+            <div class="left-column">
+                <!-- Price Chart Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📈 Price Trend</span>
+                        <span class="card-subtitle" id="chart-sub-label">Real-time market trend</span>
                     </div>
-                    <div class="chart-stats-pill">
-                        <span>O: <span id="ch-open" style="color: #fff;">64980</span></span>
-                        <span>H: <span id="ch-high" style="color: var(--green);">65050</span></span>
-                        <span>L: <span id="ch-low" style="color: var(--red);">64920</span></span>
-                        <span>C: <span id="ch-close" style="color: var(--green);">65000</span></span>
-                    </div>
-                </div>
-                <div style="flex: 1; position: relative;">
-                    <canvas id="candlestick-canvas"></canvas>
-                </div>
-            </section>
-
-            <!-- Order Placement Gateway -->
-            <section class="order-form-panel">
-                <div class="side-toggle">
-                    <button type="button" class="side-btn buy active" id="btn-buy" onclick="setSide('BUY')">BUY / LONG</button>
-                    <button type="button" class="side-btn sell" id="btn-sell" onclick="setSide('SELL')">SELL / SHORT</button>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Order Type</label>
-                        <select class="form-select" id="input-type" onchange="togglePriceField()">
-                            <option value="LIMIT">LIMIT ORDER</option>
-                            <option value="MARKET">MARKET ORDER (AGGRESSIVE)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="group-price">
-                        <label class="form-label">
-                            <span>Limit Price ($)</span>
-                            <span id="best-price-hint" style="color: var(--blue); cursor: pointer;" onclick="fillBestPrice()">Best Price</span>
-                        </label>
-                        <input type="number" step="0.01" class="form-input mono" id="input-price" value="65000.00" oninput="updateOrderSummary()">
+                    <div class="chart-box">
+                        <canvas id="simple-chart-canvas"></canvas>
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <span>Quantity (Units)</span>
-                            <span id="avail-balance-label" style="color: var(--text-muted);">Avail: 100,000.00 USDT</span>
-                        </label>
-                        <input type="number" min="0.01" step="0.01" class="form-input mono" id="input-qty" value="1.0" oninput="updateOrderSummary()">
-                        <div class="pct-group mono">
-                            <button class="pct-btn" onclick="setQtyPct(0.25)">25%</button>
-                            <button class="pct-btn" onclick="setQtyPct(0.50)">50%</button>
-                            <button class="pct-btn" onclick="setQtyPct(0.75)">75%</button>
-                            <button class="pct-btn" onclick="setQtyPct(1.00)">100%</button>
+                <!-- Live Market Orders Card (Simplified Order Book) -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">👥 Live Market Orders</span>
+                        <span class="card-subtitle">Click any price to quickly copy it</span>
+                    </div>
+                    <div class="market-orders-grid mono">
+                        <!-- Sellers (Asks) -->
+                        <div>
+                            <div class="order-col-header" style="color: var(--red);">
+                                <span>Waiting Sellers (Red)</span>
+                                <span>Units</span>
+                            </div>
+                            <div class="order-list" id="asks-list-simple"></div>
+                        </div>
+
+                        <!-- Buyers (Bids) -->
+                        <div>
+                            <div class="order-col-header" style="color: var(--green);">
+                                <span>Waiting Buyers (Green)</span>
+                                <span>Units</span>
+                            </div>
+                            <div class="order-list" id="bids-list-simple"></div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Time In Force</label>
-                        <select class="form-select" id="input-tif">
-                            <option value="GTC">Good 'Til Cancelled (GTC)</option>
-                            <option value="IOC">Immediate Or Cancel (IOC)</option>
-                            <option value="FOK">Fill Or Kill (FOK)</option>
-                        </select>
+                </div>
+            </div>
+
+            <!-- Right: Simple Buy & Sell Gateway -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">⚡ Trade Gateway</span>
+                    <span class="card-subtitle">Instant execution</span>
+                </div>
+                <div class="trade-box">
+                    <!-- Buy/Sell Switch -->
+                    <div class="trade-type-toggle">
+                        <button type="button" class="btn-side buy active" id="btn-buy" onclick="setSide('BUY')">BUY</button>
+                        <button type="button" class="btn-side sell" id="btn-sell" onclick="setSide('SELL')">SELL</button>
                     </div>
+
+                    <!-- Available Wallet Balance -->
+                    <div class="balance-info-card">
+                        <span style="color: var(--text-sub);">Your Balance:</span>
+                        <span class="balance-val mono" id="wallet-avail-text">$100,000.00 USDT</span>
+                    </div>
+
+                    <!-- Order Price Mode (Instant Market vs Custom Price) -->
+                    <div class="mode-row">
+                        <span class="mode-label">Order Type</span>
+                        <div class="mode-options">
+                            <button type="button" class="mode-btn active" id="mode-market" onclick="setMode('MARKET')">⚡ Instant (Market)</button>
+                            <button type="button" class="mode-btn" id="mode-limit" onclick="setMode('LIMIT')">🎯 Custom Price</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Price Input (Hidden when Instant) -->
+                    <div class="input-group" id="custom-price-group" style="display: none;">
+                        <label class="input-label">Price per Unit ($)</label>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.5" class="simple-input mono" id="input-trade-price" value="65000.00" oninput="calculateTotal()">
+                        </div>
+                    </div>
+
+                    <!-- Quantity Input -->
+                    <div class="input-group">
+                        <label class="input-label">
+                            <span id="qty-label-text">How many units to buy:</span>
+                            <span id="asset-unit-name" style="color: var(--blue);">BTC</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" min="0.01" step="0.1" class="simple-input mono" id="input-trade-qty" value="1.0" oninput="calculateTotal()">
+                        </div>
+                        <!-- Quick percentage chips -->
+                        <div class="pct-chips mono">
+                            <button type="button" class="chip-btn" onclick="applyPct(0.25)">25%</button>
+                            <button type="button" class="chip-btn" onclick="applyPct(0.50)">50%</button>
+                            <button type="button" class="chip-btn" onclick="applyPct(0.75)">75%</button>
+                            <button type="button" class="chip-btn" onclick="applyPct(1.00)">100%</button>
+                        </div>
+                    </div>
+
+                    <!-- Total Cost Summary -->
+                    <div class="summary-card mono">
+                        <div class="summary-row">
+                            <span>Estimated Price</span>
+                            <span id="sum-unit-price">$65,000.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Trading Fee</span>
+                            <span style="color: var(--green);">FREE ($0.00)</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total Amount</span>
+                            <span id="sum-total-price" style="color: #fff;">$65,000.00 USDT</span>
+                        </div>
+                    </div>
+
+                    <!-- Big Buy/Sell Action Button -->
+                    <button type="button" class="btn-action-main" id="btn-submit-action" onclick="executeTrade()">
+                        Buy 1.0 Bitcoin (BTC)
+                    </button>
                 </div>
+            </div>
+        </div>
 
-                <div class="order-summary-box mono">
-                    <span>Est. Total: <strong id="order-value-display" style="color: var(--text-primary);">$65,000.00</strong></span>
-                    <span>Taker Fee (0.02%): <strong id="order-fee-display" style="color: var(--text-secondary);">$13.00</strong></span>
+        <!-- Bottom Section: My Portfolio & History (Strictly Zero Random History) -->
+        <div class="bottom-section">
+            <!-- Portfolio Cards -->
+            <div class="portfolio-cards-row">
+                <div class="asset-card">
+                    <span class="asset-card-label">💵 Cash Balance (USDT)</span>
+                    <span class="asset-card-amount mono" id="card-bal-usdt">$100,000.00</span>
+                    <span class="asset-card-usd">Available to trade</span>
                 </div>
-
-                <button class="submit-btn" id="btn-submit" onclick="submitOrder()">Place BUY Order</button>
-            </section>
-        </div>
-
-        <!-- Right: Execution Tape -->
-        <section class="panel">
-            <div class="panel-header">
-                <span class="panel-title">Market Trades</span>
-                <span class="mono" style="font-size: 11px; color: var(--text-muted);" id="trade-count">Real-time Feed</span>
+                <div class="asset-card">
+                    <span class="asset-card-label">🟡 Bitcoin (BTC)</span>
+                    <span class="asset-card-amount mono" id="card-bal-btc">0.00 BTC</span>
+                    <span class="asset-card-usd" id="card-val-btc">$0.00</span>
+                </div>
+                <div class="asset-card">
+                    <span class="asset-card-label">🔷 Ethereum (ETH)</span>
+                    <span class="asset-card-amount mono" id="card-bal-eth">0.00 ETH</span>
+                    <span class="asset-card-usd" id="card-val-eth">$0.00</span>
+                </div>
+                <div class="asset-card">
+                    <span class="asset-card-label">🍏 Apple Shares (AAPL)</span>
+                    <span class="asset-card-amount mono" id="card-bal-aapl">0 AAPL</span>
+                    <span class="asset-card-usd" id="card-val-aapl">$0.00</span>
+                </div>
             </div>
-            <div class="book-table-hdr mono" style="padding: 6px 12px;">
-                <span>Price ($)</span>
-                <span style="text-align: right;">Size</span>
-                <span style="text-align: right;">Time</span>
+
+            <!-- My Orders Table (Clean & Empty initially) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📜 My Recent Orders</span>
+                    <span class="card-subtitle">Zero random history • Only your actual trades</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="history-table mono">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Asset</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                                <th>Total ($)</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-orders-table-body">
+                            <!-- Populated with user's orders only -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="trades-list mono" id="trades-tape">
-                <!-- Market trades stream rendered here -->
-            </div>
-        </section>
-    </main>
-
-    <!-- Bottom: Institutional Account & Order Management Console -->
-    <div class="account-console">
-        <div class="console-tabs">
-            <button class="console-tab active" onclick="switchConsoleTab('open-orders', this)">Open Orders (<span id="open-count">0</span>)</button>
-            <button class="console-tab" onclick="switchConsoleTab('order-history', this)">Order History (<span id="history-count">0</span>)</button>
-            <button class="console-tab" onclick="switchConsoleTab('trade-history', this)">Trade History (<span id="user-trade-count">0</span>)</button>
-            <button class="console-tab" onclick="switchConsoleTab('balances', this)">Assets & Balances</button>
-        </div>
-
-        <!-- Tab 1: Open Orders (Clean - no random history) -->
-        <div id="tab-open-orders" class="tab-content active">
-            <table class="console-table mono" id="table-open-orders">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Order ID</th>
-                        <th>Symbol</th>
-                        <th>Type</th>
-                        <th>Side</th>
-                        <th>Price</th>
-                        <th>Amount</th>
-                        <th>Filled</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="open-orders-body">
-                    <tr>
-                        <td colspan="10">
-                            <div class="empty-history-state">
-                                <div class="empty-icon">📭</div>
-                                <div>No open orders in this account. Place a limit order to see it live.</div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Tab 2: Order History (Clean - no random history) -->
-        <div id="tab-order-history" class="tab-content">
-            <table class="console-table mono" id="table-order-history">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Order ID</th>
-                        <th>Symbol</th>
-                        <th>Type</th>
-                        <th>Side</th>
-                        <th>Price</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="order-history-body">
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-history-state">
-                                <div class="empty-icon">📜</div>
-                                <div>No order history. Orders you submit will be recorded cleanly here.</div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Tab 3: Trade History (Clean - no random history) -->
-        <div id="tab-trade-history" class="tab-content">
-            <table class="console-table mono" id="table-trade-history">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Trade ID</th>
-                        <th>Symbol</th>
-                        <th>Side</th>
-                        <th>Executed Price</th>
-                        <th>Filled Amount</th>
-                        <th>Total Value</th>
-                        <th>Fee</th>
-                    </tr>
-                </thead>
-                <tbody id="trade-history-body">
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-history-state">
-                                <div class="empty-icon">⚡</div>
-                                <div>No trade history. Matched executions for this account will appear here.</div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Tab 4: Assets & Balances -->
-        <div id="tab-balances" class="tab-content">
-            <table class="console-table mono">
-                <thead>
-                    <tr>
-                        <th>Asset</th>
-                        <th>Total Balance</th>
-                        <th>In Orders (Locked)</th>
-                        <th>Available Balance</th>
-                        <th>Valuation (USD)</th>
-                    </tr>
-                </thead>
-                <tbody id="balances-body">
-                    <!-- Populated dynamically -->
-                </tbody>
-            </table>
         </div>
     </div>
 
-    <div id="toast"></div>
+    <!-- Notification Toast -->
+    <div id="toast-simple"></div>
 
     <script>
-        // High-Frequency Trading Terminal State & Zero-Copy Engine Emulation
-        const symbolsConfig = {
+        // ==========================================================================
+        // DATA & ENGINE STATE (SIMPLE & INTUITIVE)
+        // ==========================================================================
+        const assets = {
             'BTCUSDT': {
-                name: 'BTC/USDT',
+                name: 'Bitcoin',
+                ticker: 'BTC',
                 basePrice: 65000.00,
-                tickSize: 0.50,
-                high: 66150.00,
-                low: 64280.00,
-                vol: '18,492.4 BTC',
-                change: '+2.45%',
+                change: '▲ +2.45%',
+                tick: 0.50,
                 bids: [
-                    { price: 64999.50, quantity: 8.5 },
-                    { price: 64999.00, quantity: 15.2 },
-                    { price: 64998.50, quantity: 22.8 },
-                    { price: 64998.00, quantity: 11.4 },
-                    { price: 64997.50, quantity: 30.0 }
+                    { price: 64999.50, qty: 1.5 },
+                    { price: 64999.00, qty: 3.2 },
+                    { price: 64998.50, qty: 5.0 },
+                    { price: 64998.00, qty: 2.1 }
                 ],
                 asks: [
-                    { price: 65000.50, quantity: 6.8 },
-                    { price: 65001.00, quantity: 14.1 },
-                    { price: 65001.50, quantity: 19.3 },
-                    { price: 65002.00, quantity: 24.5 },
-                    { price: 65002.50, quantity: 12.0 }
+                    { price: 65000.50, qty: 1.2 },
+                    { price: 65001.00, qty: 2.8 },
+                    { price: 65001.50, qty: 4.5 },
+                    { price: 65002.00, qty: 6.0 }
                 ]
             },
             'ETHUSDT': {
-                name: 'ETH/USDT',
+                name: 'Ethereum',
+                ticker: 'ETH',
                 basePrice: 3500.00,
-                tickSize: 0.10,
-                high: 3560.00,
-                low: 3440.00,
-                vol: '94,210.8 ETH',
-                change: '+1.82%',
+                change: '▲ +1.82%',
+                tick: 0.10,
                 bids: [
-                    { price: 3499.50, quantity: 25.0 },
-                    { price: 3499.00, quantity: 48.5 },
-                    { price: 3498.50, quantity: 62.0 }
+                    { price: 3499.50, qty: 8.0 },
+                    { price: 3499.00, qty: 15.0 },
+                    { price: 3498.50, qty: 22.0 }
                 ],
                 asks: [
-                    { price: 3500.50, quantity: 18.2 },
-                    { price: 3501.00, quantity: 39.4 },
-                    { price: 3501.50, quantity: 55.0 }
+                    { price: 3500.50, qty: 6.5 },
+                    { price: 3501.00, qty: 14.0 },
+                    { price: 3501.50, qty: 20.0 }
                 ]
             },
             'AAPL': {
-                name: 'AAPL/USD',
+                name: 'Apple',
+                ticker: 'AAPL',
                 basePrice: 150.00,
-                tickSize: 0.05,
-                high: 152.20,
-                low: 148.90,
-                vol: '3,842,100 shares',
-                change: '+0.95%',
+                change: '▲ +0.95%',
+                tick: 0.05,
                 bids: [
-                    { price: 149.95, quantity: 120 },
-                    { price: 149.90, quantity: 280 },
-                    { price: 149.85, quantity: 450 }
+                    { price: 149.95, qty: 50 },
+                    { price: 149.90, qty: 120 },
+                    { price: 149.85, qty: 200 }
                 ],
                 asks: [
-                    { price: 150.05, quantity: 140 },
-                    { price: 150.10, quantity: 320 },
-                    { price: 150.15, quantity: 510 }
+                    { price: 150.05, qty: 60 },
+                    { price: 150.10, qty: 140 },
+                    { price: 150.15, qty: 250 }
                 ]
             }
         };
 
-        let currentSymbol = 'BTCUSDT';
+        let currentAsset = 'BTCUSDT';
         let currentSide = 'BUY';
-        let orderCounter = 1000;
-        let tradeCounter = 5000;
-        let marketTrades = [];
-        let candleData = [];
+        let currentMode = 'MARKET'; // 'MARKET' or 'LIMIT'
+        let orderIdSeq = 100;
+        let chartPoints = [];
 
-        // Active authenticated user state (Zero random history)
+        // Active Logged-in Google User
         let currentUser = null;
-        let accountState = {
-            balances: {
-                USDT: 100000.00,
-                BTC: 0.0000,
-                ETH: 0.0000,
-                AAPL: 0.00
-            },
-            inOrders: {
-                USDT: 0.00,
-                BTC: 0.0000,
-                ETH: 0.0000,
-                AAPL: 0.00
-            },
-            openOrders: [],
-            orderHistory: [],
-            tradeHistory: []
+        let userState = {
+            balances: { USDT: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+            inOrders: { USDT: 0.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+            orders: [] // Zero random history: strictly user-placed orders
         };
 
         // ==========================================================================
-        // DEVICE GOOGLE ACCOUNTS (PERSISTENT MULTI-ACCOUNT MANAGER)
+        // GOOGLE ACCOUNTS ON DEVICE (PRESERVED & SIMPLE)
         // ==========================================================================
-        const INITIAL_DEFAULT_ACCOUNTS = [
+        const SEED_ACCOUNTS = [
             { name: 'Dinu S', email: 'dinu18s@gmail.com', avatar: 'D', color: '#ea4335' },
             { name: 'Sayali Kumari', email: 'sayali568@gmail.com', avatar: 'S', color: '#4285f4' }
         ];
 
-        function getDeviceGoogleAccounts() {
-            const saved = localStorage.getItem('chronos_device_google_accounts');
-            if (saved) {
+        function getStoredDeviceAccounts() {
+            const raw = localStorage.getItem('chronos_simple_device_accounts');
+            if (raw) {
                 try {
-                    const parsed = JSON.parse(saved);
+                    const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
                 } catch (e) {}
             }
-            localStorage.setItem('chronos_device_google_accounts', JSON.stringify(INITIAL_DEFAULT_ACCOUNTS));
-            return INITIAL_DEFAULT_ACCOUNTS;
+            localStorage.setItem('chronos_simple_device_accounts', JSON.stringify(SEED_ACCOUNTS));
+            return SEED_ACCOUNTS;
         }
 
-        function saveDeviceGoogleAccounts(accounts) {
-            localStorage.setItem('chronos_device_google_accounts', JSON.stringify(accounts));
+        function saveStoredDeviceAccounts(list) {
+            localStorage.setItem('chronos_simple_device_accounts', JSON.stringify(list));
         }
 
-        // ==========================================================================
-        // AUTHENTICATION MODAL FLOW & GOOGLE ACCOUNT CHOOSER
-        // ==========================================================================
-        function checkAuthStatus() {
-            const savedUser = localStorage.getItem('chronos_user');
-            if (savedUser) {
+        function checkUserAuth() {
+            const saved = localStorage.getItem('chronos_simple_user');
+            if (saved) {
                 try {
-                    currentUser = JSON.parse(savedUser);
-                    loadAccountForUser(currentUser.email);
-                    showAuthenticatedUI();
+                    currentUser = JSON.parse(saved);
+                    loadUserData(currentUser.email);
+                    showAppScreen();
                     return;
                 } catch (e) {
-                    localStorage.removeItem('chronos_user');
+                    localStorage.removeItem('chronos_simple_user');
                 }
             }
-            // Not authenticated: Show Initial Gate with 'Continue with Google'
-            showInitialAuthGate();
-        }
-
-        function showInitialAuthGate() {
+            // Not signed in: show Google sign-in gate
             document.getElementById('google-auth-overlay').style.display = 'flex';
-            document.getElementById('auth-step-initial').style.display = 'flex';
-            document.getElementById('auth-step-chooser').style.display = 'none';
-            document.getElementById('auth-step-add').style.display = 'none';
-            document.getElementById('user-pill').style.display = 'none';
+            document.getElementById('auth-view-initial').style.display = 'flex';
+            document.getElementById('auth-view-chooser').style.display = 'none';
+            document.getElementById('auth-view-add').style.display = 'none';
         }
 
-        // Triggered when user clicks 'Continue with Google' button
-        function openGoogleAccountChooser() {
-            const accounts = getDeviceGoogleAccounts();
-            const container = document.getElementById('device-accounts-container');
-            
+        function openAccountChooser() {
+            const accounts = getStoredDeviceAccounts();
+            const container = document.getElementById('device-accounts-list');
+
             container.innerHTML = accounts.map(acc => `
-                <div class="google-account-row" onclick="selectGoogleAccount('${encodeURIComponent(acc.email)}')">
-                    <div class="google-account-avatar" style="background: ${acc.color || '#4285f4'};">${acc.avatar || acc.name.charAt(0).toUpperCase()}</div>
-                    <div class="google-account-text">
-                        <span class="google-account-name">${acc.name}</span>
-                        <span class="google-account-email mono">${acc.email}</span>
+                <div class="account-row" onclick="chooseAccount('${encodeURIComponent(acc.email)}')">
+                    <div class="account-avatar-circ" style="background: ${acc.color || '#4285f4'};">${acc.avatar || acc.name.charAt(0).toUpperCase()}</div>
+                    <div class="account-meta">
+                        <span class="account-name-txt">${acc.name}</span>
+                        <span class="account-email-txt mono">${acc.email}</span>
                     </div>
-                    <span class="google-account-tag">Signed in</span>
+                    <span style="font-size: 11px; color: var(--green); font-weight: 700;">Signed in</span>
                 </div>
             `).join('');
 
             document.getElementById('google-auth-overlay').style.display = 'flex';
-            document.getElementById('auth-step-initial').style.display = 'none';
-            document.getElementById('auth-step-chooser').style.display = 'flex';
-            document.getElementById('auth-step-add').style.display = 'none';
+            document.getElementById('auth-view-initial').style.display = 'none';
+            document.getElementById('auth-view-chooser').style.display = 'flex';
+            document.getElementById('auth-view-add').style.display = 'none';
         }
 
-        function showAddAccountView() {
-            document.getElementById('auth-step-initial').style.display = 'none';
-            document.getElementById('auth-step-chooser').style.display = 'none';
-            document.getElementById('auth-step-add').style.display = 'flex';
-            document.getElementById('new-google-email').focus();
+        function showAddAccountScreen() {
+            document.getElementById('auth-view-initial').style.display = 'none';
+            document.getElementById('auth-view-chooser').style.display = 'none';
+            document.getElementById('auth-view-add').style.display = 'flex';
+            document.getElementById('new-user-email').focus();
         }
 
-        // Called when selecting an account from the device list
-        function selectGoogleAccount(encodedEmail) {
+        function chooseAccount(encodedEmail) {
             const email = decodeURIComponent(encodedEmail);
-            const accounts = getDeviceGoogleAccounts();
+            const accounts = getStoredDeviceAccounts();
             const acc = accounts.find(a => a.email.toLowerCase() === email.toLowerCase()) || {
                 name: email.split('@')[0],
                 email: email,
@@ -1635,22 +1395,19 @@
                 name: acc.name,
                 email: acc.email,
                 avatar: acc.avatar || acc.name.charAt(0).toUpperCase(),
-                color: acc.color || '#4285f4',
-                traderId: 'CM-' + Math.floor(10000 + Math.random() * 90000),
-                signedInAt: new Date().toISOString()
+                color: acc.color || '#4285f4'
             };
 
-            localStorage.setItem('chronos_user', JSON.stringify(currentUser));
-            loadAccountForUser(acc.email);
-            showAuthenticatedUI();
+            localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
+            loadUserData(acc.email);
+            showAppScreen();
             document.getElementById('google-auth-overlay').style.display = 'none';
-            showToast(`✓ Signed in with Google as ${acc.email}`);
+            showToast(`✓ Welcome, ${acc.name}! Signed in as ${acc.email}`);
         }
 
-        // Called when user adds a new Google Account via 'Use another account'
-        function handleAddNewGoogleAccount() {
-            const emailInput = document.getElementById('new-google-email');
-            const nameInput = document.getElementById('new-google-name');
+        function submitNewGoogleAccount() {
+            const emailInput = document.getElementById('new-user-email');
+            const nameInput = document.getElementById('new-user-name');
             const email = emailInput.value.trim();
             let name = nameInput.value.trim();
 
@@ -1665,669 +1422,438 @@
                 name = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             }
 
-            const accounts = getDeviceGoogleAccounts();
+            const accounts = getStoredDeviceAccounts();
             let acc = accounts.find(a => a.email.toLowerCase() === email.toLowerCase());
 
             if (!acc) {
-                const palette = ['#ea4335', '#4285f4', '#34a853', '#fbbc05', '#8e24aa'];
                 acc = {
                     name: name,
                     email: email,
                     avatar: name.charAt(0).toUpperCase(),
-                    color: palette[accounts.length % palette.length]
+                    color: ['#ea4335', '#4285f4', '#34a853', '#fbbc05', '#8e24aa'][accounts.length % 5]
                 };
                 accounts.push(acc);
-                saveDeviceGoogleAccounts(accounts);
+                saveStoredDeviceAccounts(accounts);
             }
 
-            // Clear inputs
             emailInput.value = '';
             nameInput.value = '';
-
-            selectGoogleAccount(encodeURIComponent(acc.email));
+            chooseAccount(encodeURIComponent(acc.email));
         }
 
-        function showAuthenticatedUI() {
+        function showAppScreen() {
             if (!currentUser) return;
-            document.getElementById('user-display-name').innerText = currentUser.name;
-            document.getElementById('user-display-email').innerText = currentUser.email;
-            const avatarEl = document.getElementById('user-avatar-initial');
-            avatarEl.innerText = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-            avatarEl.style.background = currentUser.color || '#4285f4';
+            document.getElementById('user-header-name').innerText = currentUser.name;
+            document.getElementById('user-header-email').innerText = currentUser.email;
+            const badge = document.getElementById('user-avatar-badge');
+            badge.innerText = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+            badge.style.background = currentUser.color || '#4285f4';
 
-            document.getElementById('user-pill').style.display = 'flex';
+            document.getElementById('user-header-pill').style.display = 'flex';
             document.getElementById('google-auth-overlay').style.display = 'none';
-            renderAccountTables();
-            updateAvailBalanceLabel();
+            renderPortfolio();
+            renderOrdersTable();
+            updateBalanceDisplay();
         }
 
-        function signOutUser() {
-            if (confirm('Sign out of your active Google session in ChronosMatch?')) {
-                localStorage.removeItem('chronos_user');
+        function logoutGoogleUser() {
+            if (confirm('Log out from this Google Account?')) {
+                localStorage.removeItem('chronos_simple_user');
                 currentUser = null;
-                showInitialAuthGate();
-                showToast('Signed out of Google account.');
+                document.getElementById('user-header-pill').style.display = 'none';
+                document.getElementById('google-auth-overlay').style.display = 'flex';
+                document.getElementById('auth-view-initial').style.display = 'flex';
+                document.getElementById('auth-view-chooser').style.display = 'none';
+                document.getElementById('auth-view-add').style.display = 'none';
+                showToast('Logged out successfully.');
             }
         }
 
         // ==========================================================================
-        // ISOLATED USER ACCOUNT STORAGE (STRICTLY NO RANDOM HISTORY)
+        // ISOLATED USER DATA (STRICTLY NO RANDOM HISTORY)
         // ==========================================================================
-        function loadAccountForUser(email) {
-            const storageKey = 'chronos_account_v2_' + encodeURIComponent(email);
-            const saved = localStorage.getItem(storageKey);
+        function loadUserData(email) {
+            const key = 'chronos_data_' + encodeURIComponent(email);
+            const saved = localStorage.getItem(key);
             if (saved) {
                 try {
-                    accountState = JSON.parse(saved);
+                    userState = JSON.parse(saved);
                 } catch (e) {
-                    initFreshAccount();
+                    resetFreshData();
                 }
             } else {
-                initFreshAccount();
+                resetFreshData();
             }
         }
 
-        function initFreshAccount() {
-            accountState = {
-                balances: {
-                    USDT: 100000.00,
-                    BTC: 0.0000,
-                    ETH: 0.0000,
-                    AAPL: 0.00
-                },
-                inOrders: {
-                    USDT: 0.00,
-                    BTC: 0.0000,
-                    ETH: 0.0000,
-                    AAPL: 0.00
-                },
-                openOrders: [],
-                orderHistory: [],
-                tradeHistory: []
+        function resetFreshData() {
+            userState = {
+                balances: { USDT: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+                inOrders: { USDT: 0.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+                orders: [] // Fresh and empty: Zero fake history
             };
-            saveAccountState();
+            saveUserData();
         }
 
-        function saveAccountState() {
+        function saveUserData() {
             if (!currentUser) return;
-            const storageKey = 'chronos_account_v2_' + encodeURIComponent(currentUser.email);
-            localStorage.setItem(storageKey, JSON.stringify(accountState));
+            const key = 'chronos_data_' + encodeURIComponent(currentUser.email);
+            localStorage.setItem(key, JSON.stringify(userState));
         }
 
         // ==========================================================================
-        // UI SWITCHES & ORDER FORM HELPERS
+        // TRADING CONTROLS (SUPER SIMPLE)
         // ==========================================================================
+        function selectAsset(sym, btn) {
+            currentAsset = sym;
+            document.querySelectorAll('.asset-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const a = assets[sym];
+            document.getElementById('asset-big-price').innerText = '$' + a.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('asset-change-badge').innerText = a.change;
+            document.getElementById('input-trade-price').value = a.basePrice.toFixed(2);
+            document.getElementById('asset-unit-name').innerText = a.ticker;
+            document.getElementById('chart-sub-label').innerText = `Live ${a.name} (${a.ticker}) Price Trend`;
+
+            setSide(currentSide);
+            renderMarketOrders();
+            initChartData(a.basePrice);
+            drawSimpleChart();
+            updateBalanceDisplay();
+            calculateTotal();
+        }
+
         function setSide(side) {
             currentSide = side;
             document.getElementById('btn-buy').classList.toggle('active', side === 'BUY');
             document.getElementById('btn-sell').classList.toggle('active', side === 'SELL');
-            const submitBtn = document.getElementById('btn-submit');
-            const baseAsset = currentSymbol.replace('USDT', '').replace('USD', '');
+
+            const a = assets[currentAsset];
+            const submitBtn = document.getElementById('btn-submit-action');
+            const qtyLabel = document.getElementById('qty-label-text');
+
             if (side === 'BUY') {
-                submitBtn.style.background = 'linear-gradient(135deg, #00c087, #059669)';
-                submitBtn.innerText = `Place BUY ${baseAsset} Order`;
+                submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                submitBtn.innerText = `Buy ${document.getElementById('input-trade-qty').value || 1} ${a.name} (${a.ticker})`;
+                qtyLabel.innerText = `How many units to buy:`;
             } else {
-                submitBtn.style.background = 'linear-gradient(135deg, #f6465d, #dc2626)';
-                submitBtn.innerText = `Place SELL ${baseAsset} Order`;
+                submitBtn.style.background = 'linear-gradient(135deg, #f43f5e, #dc2626)';
+                submitBtn.innerText = `Sell ${document.getElementById('input-trade-qty').value || 1} ${a.name} (${a.ticker})`;
+                qtyLabel.innerText = `How many units to sell:`;
             }
-            updateAvailBalanceLabel();
-            updateOrderSummary();
+
+            updateBalanceDisplay();
+            calculateTotal();
         }
 
-        function togglePriceField() {
-            const type = document.getElementById('input-type').value;
-            document.getElementById('group-price').style.display = type === 'MARKET' ? 'none' : 'flex';
-            updateOrderSummary();
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-market').classList.toggle('active', mode === 'MARKET');
+            document.getElementById('mode-limit').classList.toggle('active', mode === 'LIMIT');
+            document.getElementById('custom-price-group').style.display = mode === 'LIMIT' ? 'flex' : 'none';
+            calculateTotal();
         }
 
-        function switchSymbol(symbol, btn) {
-            currentSymbol = symbol;
-            document.querySelectorAll('.symbol-tab').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-
-            const conf = symbolsConfig[symbol];
-            document.getElementById('ticker-sym').innerText = conf.name;
-            document.getElementById('ticker-price').innerText = '$' + conf.basePrice.toFixed(2);
-            document.getElementById('ticker-change').innerText = conf.change;
-            document.getElementById('ticker-high').innerText = '$' + conf.high.toFixed(2);
-            document.getElementById('ticker-low').innerText = '$' + conf.low.toFixed(2);
-            document.getElementById('ticker-vol').innerText = conf.vol;
-
-            document.getElementById('input-price').value = conf.basePrice.toFixed(2);
-            setSide(currentSide);
-            renderCurrentBook();
-            generateCandles(conf.basePrice);
-            drawChart();
-            updateAvailBalanceLabel();
-            updateOrderSummary();
-        }
-
-        function fillBestPrice() {
-            const book = symbolsConfig[currentSymbol];
-            const p = currentSide === 'BUY' ? book.asks[0]?.price : book.bids[0]?.price;
-            if (p) {
-                document.getElementById('input-price').value = p.toFixed(2);
-                updateOrderSummary();
-            }
-        }
-
-        function setQtyPct(pct) {
-            const type = document.getElementById('input-type').value;
-            const price = parseFloat(document.getElementById('input-price').value) || symbolsConfig[currentSymbol].basePrice;
-            const baseAsset = currentSymbol.replace('USDT', '').replace('USD', '');
+        function applyPct(pct) {
+            const a = assets[currentAsset];
+            const p = currentMode === 'MARKET' ? a.basePrice : (parseFloat(document.getElementById('input-trade-price').value) || a.basePrice);
 
             if (currentSide === 'BUY') {
-                const availUSDT = accountState.balances.USDT;
-                const spend = availUSDT * pct;
-                const qty = spend / price;
-                document.getElementById('input-qty').value = Math.max(0.01, qty).toFixed(currentSymbol === 'AAPL' ? 0 : 2);
+                const availCash = userState.balances.USDT;
+                const spend = availCash * pct;
+                const units = spend / p;
+                document.getElementById('input-trade-qty').value = Math.max(0.01, units).toFixed(currentAsset === 'AAPL' ? 0 : 2);
             } else {
-                const availBase = accountState.balances[baseAsset] || 0;
-                const qty = availBase * pct;
-                document.getElementById('input-qty').value = Math.max(0.01, qty).toFixed(currentSymbol === 'AAPL' ? 0 : 2);
+                const availCoins = userState.balances[a.ticker] || 0;
+                const units = availCoins * pct;
+                document.getElementById('input-trade-qty').value = Math.max(0.01, units).toFixed(currentAsset === 'AAPL' ? 0 : 2);
             }
-            updateOrderSummary();
+            calculateTotal();
         }
 
-        function updateAvailBalanceLabel() {
-            const baseAsset = currentSymbol.replace('USDT', '').replace('USD', '');
-            const lbl = document.getElementById('avail-balance-label');
+        function updateBalanceDisplay() {
+            const a = assets[currentAsset];
+            const balLabel = document.getElementById('wallet-avail-text');
             if (currentSide === 'BUY') {
-                lbl.innerText = `Avail: ${accountState.balances.USDT.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT`;
+                balLabel.innerText = `$${userState.balances.USDT.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT`;
             } else {
-                const b = accountState.balances[baseAsset] || 0;
-                lbl.innerText = `Avail: ${b.toFixed(4)} ${baseAsset}`;
+                const b = userState.balances[a.ticker] || 0;
+                balLabel.innerText = `${b.toFixed(currentAsset === 'AAPL' ? 0 : 4)} ${a.ticker}`;
             }
         }
 
-        function updateOrderSummary() {
-            const type = document.getElementById('input-type').value;
-            const price = type === 'MARKET' ? symbolsConfig[currentSymbol].basePrice : (parseFloat(document.getElementById('input-price').value) || 0);
-            const qty = parseFloat(document.getElementById('input-qty').value) || 0;
+        function calculateTotal() {
+            const a = assets[currentAsset];
+            const price = currentMode === 'MARKET' ? a.basePrice : (parseFloat(document.getElementById('input-trade-price').value) || 0);
+            const qty = parseFloat(document.getElementById('input-trade-qty').value) || 0;
             const total = price * qty;
-            const fee = total * 0.0002; // 0.02%
 
-            document.getElementById('order-value-display').innerText = '$' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('order-fee-display').innerText = '$' + fee.toFixed(2);
-        }
+            document.getElementById('sum-unit-price').innerText = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('sum-total-price').innerText = '$' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USDT';
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 3500);
-        }
-
-        // ==========================================================================
-        // L2 ORDER BOOK
-        // ==========================================================================
-        function renderCurrentBook() {
-            const conf = symbolsConfig[currentSymbol];
-            const bids = conf.bids;
-            const asks = conf.asks;
-
-            const asksContainer = document.getElementById('asks-list');
-            const bidsContainer = document.getElementById('bids-list');
-
-            const maxBidVol = Math.max(...bids.map(b => b.quantity), 1);
-            const maxAskVol = Math.max(...asks.map(a => a.quantity), 1);
-            const maxVol = Math.max(maxBidVol, maxAskVol);
-
-            // Render Asks
-            asksContainer.innerHTML = asks.slice(0, 5).map(a => `
-                <div class="book-row ask" onclick="fillPrice(${a.price})">
-                    <div class="bar" style="width: ${(a.quantity / maxVol) * 100}%;"></div>
-                    <span class="ask-price">${a.price.toFixed(2)}</span>
-                    <span style="text-align: right;">${a.quantity.toFixed(1)}</span>
-                    <span style="text-align: right; color: var(--text-muted);">${(a.price * a.quantity).toFixed(0)}</span>
-                </div>
-            `).join('');
-
-            // Render Bids
-            bidsContainer.innerHTML = bids.slice(0, 5).map(b => `
-                <div class="book-row bid" onclick="fillPrice(${b.price})">
-                    <div class="bar" style="width: ${(b.quantity / maxVol) * 100}%;"></div>
-                    <span class="bid-price">${b.price.toFixed(2)}</span>
-                    <span style="text-align: right;">${b.quantity.toFixed(1)}</span>
-                    <span style="text-align: right; color: var(--text-muted);">${(b.price * b.quantity).toFixed(0)}</span>
-                </div>
-            `).join('');
-
-            const bestBid = bids.length ? bids[0].price : 0;
-            const bestAsk = asks.length ? asks[0].price : 0;
-            if (bestBid && bestAsk) {
-                document.getElementById('spread-val').innerText = (bestAsk - bestBid).toFixed(2);
-                document.getElementById('mid-val').innerText = ((bestAsk + bestBid) / 2).toFixed(2);
+            const submitBtn = document.getElementById('btn-submit-action');
+            if (currentSide === 'BUY') {
+                submitBtn.innerText = `Buy ${qty} ${a.name} for $${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            } else {
+                submitBtn.innerText = `Sell ${qty} ${a.name} for $${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
             }
         }
 
-        function fillPrice(price) {
-            document.getElementById('input-price').value = price.toFixed(2);
-            updateOrderSummary();
-        }
-
         // ==========================================================================
-        // MATCHING ENGINE INTEGRATION & ORDER SUBMISSION
+        // SUBMIT TRADE (EASY TO UNDERSTAND MATCHING)
         // ==========================================================================
-        async function submitOrder() {
+        function executeTrade() {
             if (!currentUser) {
-                showInitialAuthGate();
+                checkUserAuth();
                 return;
             }
 
-            orderCounter++;
-            const type = document.getElementById('input-type').value;
-            const price = parseFloat(document.getElementById('input-price').value) || 0;
-            const qty = parseFloat(document.getElementById('input-qty').value) || 0;
-            const tif = document.getElementById('input-tif').value;
-            const baseAsset = currentSymbol.replace('USDT', '').replace('USD', '');
+            const a = assets[currentAsset];
+            const price = currentMode === 'MARKET' ? a.basePrice : (parseFloat(document.getElementById('input-trade-price').value) || 0);
+            const qty = parseFloat(document.getElementById('input-trade-qty').value) || 0;
 
             if (qty <= 0) {
-                alert('Please enter a valid order quantity.');
+                alert('Please enter a valid amount.');
                 return;
             }
 
-            const totalValue = (type === 'MARKET' ? symbolsConfig[currentSymbol].basePrice : price) * qty;
+            const totalCost = price * qty;
+            const ticker = a.ticker;
 
-            if (currentSide === 'BUY' && accountState.balances.USDT < totalValue) {
-                alert(`Insufficient USDT balance. Required: $${totalValue.toFixed(2)} USDT.`);
+            // Validate wallet balance
+            if (currentSide === 'BUY' && userState.balances.USDT < totalCost) {
+                alert(`Insufficient cash! You need $${totalCost.toFixed(2)} USDT, but have $${userState.balances.USDT.toFixed(2)} USDT.`);
                 return;
             }
-            if (currentSide === 'SELL' && (accountState.balances[baseAsset] || 0) < qty) {
-                alert(`Insufficient ${baseAsset} balance. Required: ${qty} ${baseAsset}.`);
+            if (currentSide === 'SELL' && (userState.balances[ticker] || 0) < qty) {
+                alert(`Insufficient ${ticker}! You want to sell ${qty} ${ticker}, but only own ${(userState.balances[ticker] || 0)} ${ticker}.`);
                 return;
             }
 
-            const orderId = `ORD-${orderCounter}`;
+            orderIdSeq++;
+            const orderId = `#ORD-${orderIdSeq}`;
             const timeStr = new Date().toLocaleTimeString();
 
-            // Try backend API first if running locally
-            try {
-                const res = await fetch('/api/order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        order_id: orderCounter,
-                        client_id: 1,
-                        symbol: currentSymbol,
-                        side: currentSide,
-                        order_type: type,
-                        price: price,
-                        quantity: qty,
-                        tif: tif
-                    })
-                });
-                if (res.ok) {
-                    showToast(`Order #${orderId} executed via backend matching engine!`);
-                }
-            } catch (e) {}
-
-            const currentBook = symbolsConfig[currentSymbol];
-
             if (currentSide === 'BUY') {
-                if (type === 'MARKET' || price >= currentBook.asks[0]?.price) {
-                    let leaves = qty;
-                    let executedTotal = 0;
-                    while (leaves > 0 && currentBook.asks.length > 0 && (type === 'MARKET' || price >= currentBook.asks[0].price)) {
-                        const bestAsk = currentBook.asks[0];
-                        const matchQty = Math.min(leaves, bestAsk.quantity);
-                        const matchPrice = bestAsk.price;
+                if (currentMode === 'MARKET' || price >= a.asks[0]?.price) {
+                    // Immediate fill
+                    userState.balances.USDT -= totalCost;
+                    userState.balances[ticker] = (userState.balances[ticker] || 0) + qty;
 
-                        recordUserTrade(orderId, currentSymbol, 'BUY', matchPrice, matchQty);
-                        addMarketTradeToTape(matchPrice, matchQty, 'BUY');
-
-                        bestAsk.quantity -= matchQty;
-                        leaves -= matchQty;
-                        executedTotal += matchPrice * matchQty;
-                        if (bestAsk.quantity <= 0) currentBook.asks.shift();
-                    }
-
-                    accountState.balances.USDT -= executedTotal;
-                    accountState.balances[baseAsset] = (accountState.balances[baseAsset] || 0) + (qty - leaves);
-
-                    recordUserOrderHistory(orderId, currentSymbol, type, 'BUY', price || currentBook.basePrice, qty, 'FILLED');
-                    showToast(`✓ Order ${orderId} FILLED: Bought ${(qty - leaves).toFixed(2)} ${baseAsset}`);
-                } else {
-                    accountState.balances.USDT -= totalValue;
-                    accountState.inOrders.USDT += totalValue;
-
-                    currentBook.bids.unshift({ price, quantity: qty });
-                    currentBook.bids.sort((a, b) => b.price - a.price);
-
-                    const openOrderObj = {
+                    userState.orders.unshift({
                         id: orderId,
                         time: timeStr,
-                        symbol: currentSymbol,
-                        type: type,
-                        side: 'BUY',
+                        action: 'BUY',
+                        asset: a.name + ' (' + ticker + ')',
                         price: price,
                         amount: qty,
-                        filled: 0,
-                        status: 'OPEN',
-                        locked: totalValue
-                    };
-                    accountState.openOrders.unshift(openOrderObj);
-                    recordUserOrderHistory(orderId, currentSymbol, type, 'BUY', price, qty, 'OPEN');
-                    showToast(`✓ Limit BUY ${orderId} resting in L2 book`);
+                        total: totalCost,
+                        status: 'Completed'
+                    });
+
+                    showToast(`🎉 Success! Bought ${qty} ${ticker} at $${price.toFixed(2)}`);
+                } else {
+                    // Resting in book
+                    userState.balances.USDT -= totalCost;
+                    userState.inOrders.USDT += totalCost;
+
+                    a.bids.unshift({ price: price, qty: qty });
+                    a.bids.sort((x, y) => y.price - x.price);
+
+                    userState.orders.unshift({
+                        id: orderId,
+                        time: timeStr,
+                        action: 'BUY',
+                        asset: a.name + ' (' + ticker + ')',
+                        price: price,
+                        amount: qty,
+                        total: totalCost,
+                        status: 'Waiting in Book'
+                    });
+
+                    showToast(`⏳ Order placed! Waiting for a seller at $${price.toFixed(2)}`);
                 }
             } else {
-                if (type === 'MARKET' || price <= currentBook.bids[0]?.price) {
-                    let leaves = qty;
-                    let executedTotal = 0;
-                    while (leaves > 0 && currentBook.bids.length > 0 && (type === 'MARKET' || price <= currentBook.bids[0].price)) {
-                        const bestBid = currentBook.bids[0];
-                        const matchQty = Math.min(leaves, bestBid.quantity);
-                        const matchPrice = bestBid.price;
+                // SELL
+                if (currentMode === 'MARKET' || price <= a.bids[0]?.price) {
+                    // Immediate fill
+                    userState.balances[ticker] -= qty;
+                    userState.balances.USDT += totalCost;
 
-                        recordUserTrade(orderId, currentSymbol, 'SELL', matchPrice, matchQty);
-                        addMarketTradeToTape(matchPrice, matchQty, 'SELL');
-
-                        bestBid.quantity -= matchQty;
-                        leaves -= matchQty;
-                        executedTotal += matchPrice * matchQty;
-                        if (bestBid.quantity <= 0) currentBook.bids.shift();
-                    }
-
-                    accountState.balances[baseAsset] -= (qty - leaves);
-                    accountState.balances.USDT += executedTotal;
-
-                    recordUserOrderHistory(orderId, currentSymbol, type, 'SELL', price || currentBook.basePrice, qty, 'FILLED');
-                    showToast(`✓ Order ${orderId} FILLED: Sold ${(qty - leaves).toFixed(2)} ${baseAsset}`);
-                } else {
-                    accountState.balances[baseAsset] -= qty;
-                    accountState.inOrders[baseAsset] = (accountState.inOrders[baseAsset] || 0) + qty;
-
-                    currentBook.asks.unshift({ price, quantity: qty });
-                    currentBook.asks.sort((a, b) => a.price - b.price);
-
-                    const openOrderObj = {
+                    userState.orders.unshift({
                         id: orderId,
                         time: timeStr,
-                        symbol: currentSymbol,
-                        type: type,
-                        side: 'SELL',
+                        action: 'SELL',
+                        asset: a.name + ' (' + ticker + ')',
                         price: price,
                         amount: qty,
-                        filled: 0,
-                        status: 'OPEN',
-                        locked: qty
-                    };
-                    accountState.openOrders.unshift(openOrderObj);
-                    recordUserOrderHistory(orderId, currentSymbol, type, 'SELL', price, qty, 'OPEN');
-                    showToast(`✓ Limit SELL ${orderId} resting in L2 book`);
+                        total: totalCost,
+                        status: 'Completed'
+                    });
+
+                    showToast(`🎉 Success! Sold ${qty} ${ticker} for $${totalCost.toFixed(2)}`);
+                } else {
+                    // Resting
+                    userState.balances[ticker] -= qty;
+                    userState.inOrders[ticker] = (userState.inOrders[ticker] || 0) + qty;
+
+                    a.asks.unshift({ price: price, qty: qty });
+                    a.asks.sort((x, y) => x.price - y.price);
+
+                    userState.orders.unshift({
+                        id: orderId,
+                        time: timeStr,
+                        action: 'SELL',
+                        asset: a.name + ' (' + ticker + ')',
+                        price: price,
+                        amount: qty,
+                        total: totalCost,
+                        status: 'Waiting in Book'
+                    });
+
+                    showToast(`⏳ Order placed! Waiting for a buyer at $${price.toFixed(2)}`);
                 }
             }
 
-            saveAccountState();
-            renderCurrentBook();
-            renderAccountTables();
-            updateAvailBalanceLabel();
-            updateOrderSummary();
+            saveUserData();
+            renderMarketOrders();
+            renderPortfolio();
+            renderOrdersTable();
+            updateBalanceDisplay();
         }
 
-        function cancelOpenOrder(orderId) {
-            const idx = accountState.openOrders.findIndex(o => o.id === orderId);
+        function cancelOrder(orderId) {
+            const idx = userState.orders.findIndex(o => o.id === orderId);
             if (idx === -1) return;
 
-            const order = accountState.openOrders[idx];
-            const baseAsset = order.symbol.replace('USDT', '').replace('USD', '');
+            const order = userState.orders[idx];
+            const a = assets[currentAsset];
+            const ticker = a.ticker;
 
-            if (order.side === 'BUY') {
-                accountState.balances.USDT += order.locked;
-                accountState.inOrders.USDT -= order.locked;
+            // Refund
+            if (order.action === 'BUY') {
+                userState.balances.USDT += order.total;
+                userState.inOrders.USDT -= order.total;
             } else {
-                accountState.balances[baseAsset] += order.locked;
-                accountState.inOrders[baseAsset] -= order.locked;
+                userState.balances[ticker] += order.amount;
+                userState.inOrders[ticker] -= order.amount;
             }
 
-            const book = symbolsConfig[order.symbol];
-            if (order.side === 'BUY') {
-                book.bids = book.bids.filter(b => b.price !== order.price);
-            } else {
-                book.asks = book.asks.filter(a => a.price !== order.price);
-            }
-
-            accountState.openOrders.splice(idx, 1);
-            recordUserOrderHistory(order.id, order.symbol, order.type, order.side, order.price, order.amount, 'CANCELLED');
-
-            saveAccountState();
-            renderCurrentBook();
-            renderAccountTables();
-            updateAvailBalanceLabel();
+            order.status = 'Cancelled';
+            saveUserData();
+            renderPortfolio();
+            renderOrdersTable();
+            updateBalanceDisplay();
             showToast(`Cancelled order ${orderId}`);
         }
 
         // ==========================================================================
-        // USER PRIVATE ACCOUNT LOGGING (NO RANDOM ENTRIES)
+        // RENDERING (CLEAN & SIMPLE)
         // ==========================================================================
-        function recordUserTrade(orderId, symbol, side, price, qty) {
-            tradeCounter++;
-            const total = price * qty;
-            const fee = total * 0.0002;
-            const t = {
-                tradeId: `TRD-${tradeCounter}`,
-                orderId: orderId,
-                time: new Date().toLocaleTimeString(),
-                symbol: symbol,
-                side: side,
-                price: price,
-                qty: qty,
-                total: total,
-                fee: fee
-            };
-            accountState.tradeHistory.unshift(t);
+        function renderMarketOrders() {
+            const a = assets[currentAsset];
+            const asksList = document.getElementById('asks-list-simple');
+            const bidsList = document.getElementById('bids-list-simple');
+
+            asksList.innerHTML = a.asks.slice(0, 4).map(o => `
+                <div class="order-item-simple ask" onclick="fillPriceFromOrder(${o.price})">
+                    <span class="price">$${o.price.toFixed(2)}</span>
+                    <span style="color: var(--text-sub);">${o.qty.toFixed(1)}</span>
+                </div>
+            `).join('');
+
+            bidsList.innerHTML = a.bids.slice(0, 4).map(o => `
+                <div class="order-item-simple bid" onclick="fillPriceFromOrder(${o.price})">
+                    <span class="price">$${o.price.toFixed(2)}</span>
+                    <span style="color: var(--text-sub);">${o.qty.toFixed(1)}</span>
+                </div>
+            `).join('');
         }
 
-        function recordUserOrderHistory(orderId, symbol, type, side, price, qty, status) {
-            const histItem = {
-                id: orderId,
-                time: new Date().toLocaleTimeString(),
-                symbol: symbol,
-                type: type,
-                side: side,
-                price: price,
-                amount: qty,
-                status: status
-            };
-            const existingIdx = accountState.orderHistory.findIndex(h => h.id === orderId);
-            if (existingIdx !== -1) {
-                accountState.orderHistory[existingIdx].status = status;
-            } else {
-                accountState.orderHistory.unshift(histItem);
-            }
+        function fillPriceFromOrder(price) {
+            setMode('LIMIT');
+            document.getElementById('input-trade-price').value = price.toFixed(2);
+            calculateTotal();
+            showToast(`Price set to $${price.toFixed(2)}`);
         }
 
-        // ==========================================================================
-        // ACCOUNT MANAGEMENT CONSOLE RENDERING
-        // ==========================================================================
-        function switchConsoleTab(tabKey, btn) {
-            document.querySelectorAll('.console-tab').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(`tab-${tabKey}`).classList.add('active');
+        function renderPortfolio() {
+            document.getElementById('card-bal-usdt').innerText = '$' + userState.balances.USDT.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const btc = userState.balances.BTC || 0;
+            const eth = userState.balances.ETH || 0;
+            const aapl = userState.balances.AAPL || 0;
+
+            document.getElementById('card-bal-btc').innerText = `${btc.toFixed(4)} BTC`;
+            document.getElementById('card-val-btc').innerText = `$${(btc * assets['BTCUSDT'].basePrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+            document.getElementById('card-bal-eth').innerText = `${eth.toFixed(4)} ETH`;
+            document.getElementById('card-val-eth').innerText = `$${(eth * assets['ETHUSDT'].basePrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+            document.getElementById('card-bal-aapl').innerText = `${aapl} AAPL`;
+            document.getElementById('card-val-aapl').innerText = `$${(aapl * assets['AAPL'].basePrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
         }
 
-        function renderAccountTables() {
-            document.getElementById('open-count').innerText = accountState.openOrders.length;
-            document.getElementById('history-count').innerText = accountState.orderHistory.length;
-            document.getElementById('user-trade-count').innerText = accountState.tradeHistory.length;
-
-            const openBody = document.getElementById('open-orders-body');
-            if (accountState.openOrders.length === 0) {
-                openBody.innerHTML = `
-                    <tr>
-                        <td colspan="10">
-                            <div class="empty-history-state">
-                                <div class="empty-icon">📭</div>
-                                <div>No open orders in this account. Place a limit order to see it live.</div>
-                            </div>
-                        </td>
-                    </tr>`;
-            } else {
-                openBody.innerHTML = accountState.openOrders.map(o => `
-                    <tr>
-                        <td style="color: var(--text-muted);">${o.time}</td>
-                        <td>${o.id}</td>
-                        <td style="color: var(--blue); font-weight: 600;">${o.symbol}</td>
-                        <td>${o.type}</td>
-                        <td style="color: ${o.side === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight: 700;">${o.side}</td>
-                        <td>$${o.price.toFixed(2)}</td>
-                        <td>${o.amount}</td>
-                        <td>${o.filled}%</td>
-                        <td><span style="color: var(--yellow);">${o.status}</span></td>
-                        <td><button class="cancel-btn" onclick="cancelOpenOrder('${o.id}')">Cancel</button></td>
-                    </tr>
-                `).join('');
-            }
-
-            const histBody = document.getElementById('order-history-body');
-            if (accountState.orderHistory.length === 0) {
-                histBody.innerHTML = `
+        function renderOrdersTable() {
+            const tbody = document.getElementById('user-orders-table-body');
+            if (userState.orders.length === 0) {
+                tbody.innerHTML = `
                     <tr>
                         <td colspan="8">
-                            <div class="empty-history-state">
-                                <div class="empty-icon">📜</div>
-                                <div>No order history. Orders you submit will be recorded cleanly here.</div>
+                            <div class="empty-history-box">
+                                <div class="empty-history-icon">🌱</div>
+                                <div style="font-weight: 700; color: #fff;">No orders placed yet</div>
+                                <div>Your account is fresh with zero random history. Use the trade box above to buy or sell!</div>
                             </div>
                         </td>
-                    </tr>`;
-            } else {
-                histBody.innerHTML = accountState.orderHistory.map(h => `
-                    <tr>
-                        <td style="color: var(--text-muted);">${h.time}</td>
-                        <td>${h.id}</td>
-                        <td style="color: var(--blue);">${h.symbol}</td>
-                        <td>${h.type}</td>
-                        <td style="color: ${h.side === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight: 700;">${h.side}</td>
-                        <td>$${h.price.toFixed(2)}</td>
-                        <td>${h.amount}</td>
-                        <td><span style="color: ${h.status === 'FILLED' ? 'var(--green)' : h.status === 'CANCELLED' ? 'var(--red)' : 'var(--yellow)'}; font-weight: 600;">${h.status}</span></td>
                     </tr>
-                `).join('');
+                `;
+                return;
             }
 
-            const tradeBody = document.getElementById('trade-history-body');
-            if (accountState.tradeHistory.length === 0) {
-                tradeBody.innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-history-state">
-                                <div class="empty-icon">⚡</div>
-                                <div>No trade history. Matched executions for this account will appear here.</div>
-                            </div>
-                        </td>
-                    </tr>`;
-            } else {
-                tradeBody.innerHTML = accountState.tradeHistory.map(t => `
-                    <tr>
-                        <td style="color: var(--text-muted);">${t.time}</td>
-                        <td>${t.tradeId}</td>
-                        <td style="color: var(--blue);">${t.symbol}</td>
-                        <td style="color: ${t.side === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight: 700;">${t.side}</td>
-                        <td>$${t.price.toFixed(2)}</td>
-                        <td>${t.qty.toFixed(2)}</td>
-                        <td>$${t.total.toFixed(2)}</td>
-                        <td style="color: var(--text-muted);">$${t.fee.toFixed(2)}</td>
-                    </tr>
-                `).join('');
-            }
+            tbody.innerHTML = userState.orders.map(o => {
+                const isBuy = o.action === 'BUY';
+                const statusClass = o.status === 'Completed' ? 'filled' : (o.status === 'Cancelled' ? 'cancelled' : 'open');
+                const cancelBtn = o.status === 'Waiting in Book' ? `<button class="btn-cancel-simple" onclick="cancelOrder('${o.id}')">Cancel</button>` : '-';
 
-            const bBody = document.getElementById('balances-body');
-            const assets = [
-                { sym: 'USDT', val: 1.0 },
-                { sym: 'BTC', val: symbolsConfig['BTCUSDT'].basePrice },
-                { sym: 'ETH', val: symbolsConfig['ETHUSDT'].basePrice },
-                { sym: 'AAPL', val: symbolsConfig['AAPL'].basePrice }
-            ];
-
-            bBody.innerHTML = assets.map(a => {
-                const total = (accountState.balances[a.sym] || 0) + (accountState.inOrders[a.sym] || 0);
-                const locked = accountState.inOrders[a.sym] || 0;
-                const avail = accountState.balances[a.sym] || 0;
-                const usdVal = total * a.val;
                 return `
                     <tr>
-                        <td style="font-weight: 700; color: #fff;">${a.sym}</td>
-                        <td>${total.toLocaleString('en-US', { minimumFractionDigits: a.sym === 'USDT' ? 2 : 4 })}</td>
-                        <td style="color: var(--text-muted);">${locked.toLocaleString('en-US', { minimumFractionDigits: a.sym === 'USDT' ? 2 : 4 })}</td>
-                        <td style="color: var(--green); font-weight: 600;">${avail.toLocaleString('en-US', { minimumFractionDigits: a.sym === 'USDT' ? 2 : 4 })}</td>
-                        <td>$${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                    </tr>`;
+                        <td style="color: var(--text-sub);">${o.time}</td>
+                        <td style="color: ${isBuy ? 'var(--green)' : 'var(--red)'}; font-weight: 800;">${o.action}</td>
+                        <td>${o.asset}</td>
+                        <td>$${o.price.toFixed(2)}</td>
+                        <td>${o.amount}</td>
+                        <td>$${o.total.toFixed(2)}</td>
+                        <td><span class="tag-status ${statusClass}">${o.status}</span></td>
+                        <td>${cancelBtn}</td>
+                    </tr>
+                `;
             }).join('');
         }
 
-        // ==========================================================================
-        // PUBLIC MARKET TRADES TAPE
-        // ==========================================================================
-        function addMarketTradeToTape(price, qty, side) {
-            const timeStr = new Date().toLocaleTimeString();
-            marketTrades.unshift({ price, qty, side, time: timeStr });
-            if (marketTrades.length > 25) marketTrades.pop();
-
-            const tapeContainer = document.getElementById('trades-tape');
-            tapeContainer.innerHTML = marketTrades.map(t => `
-                <div class="trade-item ${t.side.toLowerCase()}">
-                    <span class="price">${t.price.toFixed(2)}</span>
-                    <span style="text-align: right;">${t.qty.toFixed(2)}</span>
-                    <span style="text-align: right; color: var(--text-muted);">${t.time}</span>
-                </div>
-            `).join('');
-
-            const tickEl = document.getElementById('ticker-price');
-            tickEl.innerText = '$' + price.toFixed(2);
-            tickEl.className = 'ticker-val ' + (side === 'BUY' ? 'price-flash-green' : 'price-flash-red');
-            setTimeout(() => { tickEl.className = 'ticker-val'; }, 400);
+        function showToast(msg) {
+            const t = document.getElementById('toast-simple');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
         }
 
-        function seedInitialMarketTrades() {
-            const baseP = symbolsConfig['BTCUSDT'].basePrice;
-            const now = new Date();
-            for (let i = 8; i >= 0; i--) {
-                const pastTime = new Date(now.getTime() - i * 4000).toLocaleTimeString();
-                const side = i % 2 === 0 ? 'BUY' : 'SELL';
-                const p = side === 'BUY' ? (baseP + (i * 0.5)) : (baseP - (i * 0.5));
-                const q = (Math.random() * 2 + 0.5).toFixed(2);
-                marketTrades.unshift({ price: p, qty: parseFloat(q), side: side, time: pastTime });
+        // ==========================================================================
+        // SMOOTH & BEAUTIFUL LINE CHART (ANYONE CAN UNDERSTAND)
+        // ==========================================================================
+        function initChartData(base) {
+            chartPoints = [];
+            let val = base - 30;
+            for (let i = 30; i >= 0; i--) {
+                val += (Math.random() - 0.48) * (base * 0.003);
+                chartPoints.push(val);
             }
-            const tapeContainer = document.getElementById('trades-tape');
-            tapeContainer.innerHTML = marketTrades.map(t => `
-                <div class="trade-item ${t.side.toLowerCase()}">
-                    <span class="price">${t.price.toFixed(2)}</span>
-                    <span style="text-align: right;">${t.qty.toFixed(2)}</span>
-                    <span style="text-align: right; color: var(--text-muted);">${t.time}</span>
-                </div>
-            `).join('');
+            chartPoints[chartPoints.length - 1] = base;
         }
 
-        // ==========================================================================
-        // CANDLESTICK CHART (HTML5 CANVAS)
-        // ==========================================================================
-        function generateCandles(base) {
-            candleData = [];
-            let current = base - 60;
-            const now = Date.now();
-            for (let i = 40; i >= 0; i--) {
-                const open = current;
-                const change = (Math.random() - 0.49) * 25;
-                const close = open + change;
-                const high = Math.max(open, close) + Math.random() * 15;
-                const low = Math.min(open, close) - Math.random() * 15;
-                const volume = Math.floor(Math.random() * 80) + 10;
-                candleData.push({
-                    time: now - i * 300000,
-                    open, high, low, close, volume
-                });
-                current = close;
-            }
-            const last = candleData[candleData.length - 1];
-            document.getElementById('ch-open').innerText = last.open.toFixed(1);
-            document.getElementById('ch-high').innerText = last.high.toFixed(1);
-            document.getElementById('ch-low').innerText = last.low.toFixed(1);
-            document.getElementById('ch-close').innerText = last.close.toFixed(1);
-        }
-
-        function drawChart() {
-            const canvas = document.getElementById('candlestick-canvas');
+        function drawSimpleChart() {
+            const canvas = document.getElementById('simple-chart-canvas');
             if (!canvas) return;
 
             const rect = canvas.parentElement.getBoundingClientRect();
@@ -2342,118 +1868,86 @@
 
             ctx.clearRect(0, 0, w, h);
 
-            if (candleData.length === 0) return;
+            if (chartPoints.length === 0) return;
 
-            const minPrice = Math.min(...candleData.map(c => c.low)) * 0.999;
-            const maxPrice = Math.max(...candleData.map(c => c.high)) * 1.001;
-            const maxVol = Math.max(...candleData.map(c => c.volume), 1);
+            const min = Math.min(...chartPoints) * 0.998;
+            const max = Math.max(...chartPoints) * 1.002;
 
-            const chartHeight = h - 35;
-            const volHeight = 45;
-
-            ctx.strokeStyle = '#1b2238';
+            // Subtle grid line
+            ctx.strokeStyle = '#1f2a40';
             ctx.lineWidth = 1;
-            ctx.fillStyle = '#64748b';
-            ctx.font = '10px JetBrains Mono';
-
-            for (let i = 1; i <= 4; i++) {
-                const y = (chartHeight / 5) * i;
-                const p = maxPrice - ((maxPrice - minPrice) / 5) * i;
+            ctx.setLineDash([4, 4]);
+            for (let i = 1; i <= 3; i++) {
+                const y = (h / 4) * i;
                 ctx.beginPath();
                 ctx.moveTo(0, y);
-                ctx.lineTo(w - 60, y);
+                ctx.lineTo(w, y);
                 ctx.stroke();
-                ctx.fillText(p.toFixed(1), w - 55, y + 3);
             }
-
-            const candleWidth = Math.max(4, (w - 70) / candleData.length);
-            const gap = candleWidth * 0.25;
-            const bodyWidth = candleWidth - gap;
-
-            candleData.forEach((c, idx) => {
-                const x = idx * candleWidth + 10;
-                const isGreen = c.close >= c.open;
-                const color = isGreen ? '#00c087' : '#f6465d';
-
-                const yHigh = chartHeight - ((c.high - minPrice) / (maxPrice - minPrice)) * chartHeight;
-                const yLow = chartHeight - ((c.low - minPrice) / (maxPrice - minPrice)) * chartHeight;
-                const yOpen = chartHeight - ((c.open - minPrice) / (maxPrice - minPrice)) * chartHeight;
-                const yClose = chartHeight - ((c.close - minPrice) / (maxPrice - minPrice)) * chartHeight;
-
-                // Wick
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                ctx.moveTo(x + bodyWidth / 2, yHigh);
-                ctx.lineTo(x + bodyWidth / 2, yLow);
-                ctx.stroke();
-
-                // Candle Body
-                ctx.fillStyle = color;
-                const bodyTop = Math.min(yOpen, yClose);
-                const bodyH = Math.max(2, Math.abs(yClose - yOpen));
-                ctx.fillRect(x, bodyTop, bodyWidth, bodyH);
-
-                // Volume Bar
-                const vBarH = (c.volume / maxVol) * volHeight;
-                ctx.fillStyle = isGreen ? 'rgba(0, 192, 135, 0.25)' : 'rgba(246, 70, 93, 0.25)';
-                ctx.fillRect(x, h - vBarH, bodyWidth, vBarH);
-            });
-
-            // Current Price Line
-            const lastCandle = candleData[candleData.length - 1];
-            const curY = chartHeight - ((lastCandle.close - minPrice) / (maxPrice - minPrice)) * chartHeight;
-            ctx.setLineDash([4, 4]);
-            ctx.strokeStyle = '#3b82f6';
-            ctx.beginPath();
-            ctx.moveTo(0, curY);
-            ctx.lineTo(w, curY);
-            ctx.stroke();
             ctx.setLineDash([]);
 
-            // Badge
-            ctx.fillStyle = '#3b82f6';
-            ctx.fillRect(w - 60, curY - 9, 58, 18);
-            ctx.fillStyle = '#fff';
-            ctx.fillText(lastCandle.close.toFixed(1), w - 55, curY + 4);
+            // Gradient Area
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
+            grad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+            ctx.beginPath();
+            const step = w / (chartPoints.length - 1);
+
+            chartPoints.forEach((p, idx) => {
+                const x = idx * step;
+                const y = h - ((p - min) / (max - min)) * (h - 20) - 10;
+                if (idx === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.closePath();
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Smooth Line
+            ctx.beginPath();
+            chartPoints.forEach((p, idx) => {
+                const x = idx * step;
+                const y = h - ((p - min) / (max - min)) * (h - 20) - 10;
+                if (idx === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Last point glowing circle
+            const lastY = h - ((chartPoints[chartPoints.length - 1] - min) / (max - min)) * (h - 20) - 10;
+            ctx.beginPath();
+            ctx.arc(w - 2, lastY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#10b981';
+            ctx.fill();
         }
 
-        function setTimeframe(tf, btn) {
-            document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            generateCandles(symbolsConfig[currentSymbol].basePrice);
-            drawChart();
-        }
+        window.addEventListener('resize', drawSimpleChart);
 
-        window.addEventListener('resize', () => {
-            drawChart();
-        });
-
-        // Market tick jitter simulation
+        // Live gentle price jitter
         setInterval(() => {
-            const conf = symbolsConfig[currentSymbol];
-            const jitter = (Math.random() - 0.49) * (conf.tickSize * 2);
-            conf.basePrice = parseFloat((conf.basePrice + jitter).toFixed(2));
-            conf.asks[0].price = parseFloat((conf.basePrice + conf.tickSize).toFixed(2));
-            conf.bids[0].price = parseFloat((conf.basePrice - conf.tickSize).toFixed(2));
+            const a = assets[currentAsset];
+            const jitter = (Math.random() - 0.49) * a.tick;
+            a.basePrice = parseFloat((a.basePrice + jitter).toFixed(2));
+            document.getElementById('asset-big-price').innerText = '$' + a.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-            if (candleData.length > 0) {
-                const last = candleData[candleData.length - 1];
-                last.close = conf.basePrice;
-                last.high = Math.max(last.high, conf.basePrice);
-                last.low = Math.min(last.low, conf.basePrice);
-                drawChart();
-            }
-            renderCurrentBook();
+            chartPoints.push(a.basePrice);
+            if (chartPoints.length > 35) chartPoints.shift();
+            drawSimpleChart();
+            calculateTotal();
         }, 3000);
 
-        // --- Initialization ---
+        // ==========================================================================
+        // INITIALIZATION
+        // ==========================================================================
         window.addEventListener('DOMContentLoaded', () => {
-            renderCurrentBook();
-            seedInitialMarketTrades();
-            generateCandles(symbolsConfig[currentSymbol].basePrice);
-            drawChart();
-            checkAuthStatus();
+            selectAsset('BTCUSDT');
+            checkUserAuth();
         });
     </script>
 </body>
