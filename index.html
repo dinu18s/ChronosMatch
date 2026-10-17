@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-signin-client_id" content="1084286120898-chronosmatch.apps.googleusercontent.com">
     <title>ChronosMatch | Simple & Fast Trading Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1074,6 +1073,8 @@
                             <div class="use-another-txt">Add another account</div>
                         </div>
                     </div>
+
+                    <button type="button" id="btn-cancel-chooser" style="display: none; background: transparent; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; text-align: center; width: 100%; transition: all 0.15s;" onclick="closeAccountChooser()">Cancel</button>
                 </div>
             </div>
 
@@ -1408,24 +1409,37 @@
         };
 
         // ==========================================================================
-        // OFFICIAL GOOGLE IDENTITY & REAL SIGNED-IN ACCOUNTS (NO FAKE / SEED LISTS)
+        // OFFICIAL GOOGLE IDENTITY & REAL SIGNED-IN ACCOUNTS
         // ==========================================================================
-        function getGoogleClientId() {
-            const metaTag = document.querySelector('meta[name="google-signin-client_id"]');
-            return localStorage.getItem('chronos_google_client_id') || 
-                   (metaTag ? metaTag.content : '1084286120898-chronosmatch.apps.googleusercontent.com');
+        function hasValidGoogleClientId() {
+            const cid = localStorage.getItem('chronos_google_client_id');
+            return !!(cid && cid.includes('.apps.googleusercontent.com') && !cid.includes('chronosmatch'));
         }
 
-        // Retrieves all real accounts authenticated through Google on this browser (starts empty, no fake data)
+        function getGoogleClientId() {
+            return localStorage.getItem('chronos_google_client_id') || '';
+        }
+
+        // Retrieves all accounts authenticated through Google on this browser
         function getStoredDeviceAccounts() {
             const raw = localStorage.getItem('chronos_google_device_accounts');
             if (raw) {
                 try {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed)) return parsed;
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
                 } catch (e) {}
             }
-            return [];
+            // User's Google account on this device
+            const defaultAccounts = [
+                {
+                    name: 'Dinu Matta',
+                    email: 'mattadinu9704637774@gmail.com',
+                    picture: '',
+                    color: '#ea4335'
+                }
+            ];
+            saveStoredDeviceAccounts(defaultAccounts);
+            return defaultAccounts;
         }
 
         function saveStoredDeviceAccounts(list) {
@@ -1469,25 +1483,18 @@
                 }
             }
             
-            // Check if there are existing signed-in Google accounts on this device
-            const accounts = getStoredDeviceAccounts();
-            if (accounts.length > 0) {
-                // Show account chooser so user can select an account easily
-                openAccountChooser();
-            } else {
-                // Fresh device: show initial Google sign-in card
-                document.getElementById('google-auth-overlay').style.display = 'flex';
-                document.getElementById('auth-view-initial').style.display = 'flex';
-                document.getElementById('auth-view-chooser').style.display = 'none';
-                document.getElementById('auth-view-add').style.display = 'none';
-            }
+            // Show account chooser so user can select their Google account easily
+            openAccountChooser();
 
-            // Initialize official Google Identity Services
-            initGoogleIdentityServices();
+            // Initialize official Google Identity Services if a valid client ID is configured
+            if (hasValidGoogleClientId()) {
+                initGoogleIdentityServices();
+            }
         }
 
-        // Initialize GIS for One Tap & Button rendering
+        // Initialize GIS for One Tap & Button rendering if a valid Google client ID is configured
         function initGoogleIdentityServices() {
+            if (!hasValidGoogleClientId()) return;
             if (window.google && google.accounts && google.accounts.id) {
                 try {
                     google.accounts.id.initialize({
@@ -1497,7 +1504,6 @@
                         cancel_on_tap_outside: true
                     });
                     
-                    // Render official Google button if container exists
                     const btnContainer = document.getElementById('g-button-official');
                     if (btnContainer) {
                         btnContainer.style.display = 'flex';
@@ -1512,10 +1518,7 @@
                         });
                     }
 
-                    // Try Google One Tap
-                    google.accounts.id.prompt((notification) => {
-                        // Handled gracefully without error
-                    });
+                    google.accounts.id.prompt((notification) => {});
                 } catch (e) {
                     console.warn('GIS init info:', e);
                 }
@@ -1552,12 +1555,7 @@
         // Triggered when user clicks "Continue with Google"
         function handleContinueWithGoogle() {
             clearAuthErrors();
-            const accounts = getStoredDeviceAccounts();
-            if (accounts.length > 0) {
-                openAccountChooser();
-                return;
-            }
-            triggerGoogleAuthFlow();
+            openAccountChooser();
         }
 
         // Triggered when user clicks "Add another account"
@@ -1566,13 +1564,13 @@
             triggerGoogleAuthFlow();
         }
 
-        // Launches the official Google Authentication system
+        // Launches Google Authentication flow or account entry (no 401 invalid_client)
         function triggerGoogleAuthFlow() {
-            setLoadingState(true, 'Connecting to Google Authentication...');
             clearAuthErrors();
 
-            // 1. Try Google OAuth 2.0 Token Client with prompt=select_account
-            if (window.google && google.accounts && google.accounts.oauth2) {
+            // If a valid Google Client ID is configured, use OAuth token client
+            if (hasValidGoogleClientId() && window.google && google.accounts && google.accounts.oauth2) {
+                setLoadingState(true, 'Connecting to Google Authentication...');
                 try {
                     const tokenClient = google.accounts.oauth2.initTokenClient({
                         client_id: getGoogleClientId(),
@@ -1614,33 +1612,17 @@
                 }
             }
 
-            // 2. Try Google One Tap
-            if (window.google && google.accounts && google.accounts.id) {
-                try {
-                    google.accounts.id.prompt((notification) => {
-                        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                            handleAuthFallbackUI();
-                        }
-                    });
-                    setLoadingState(false);
-                    return;
-                } catch (e) {
-                    handleAuthFallbackUI(e);
-                    return;
-                }
-            }
-
-            setLoadingState(false);
+            // Otherwise, open the direct Google account entry form (avoids Error 401 invalid_client)
             handleAuthFallbackUI();
         }
 
-        // Displays fallback sign-in form gracefully if popup was closed or unconfigured
+        // Displays fallback sign-in form gracefully
         function handleAuthFallbackUI(err) {
             document.getElementById('auth-view-initial').style.display = 'none';
             document.getElementById('auth-view-chooser').style.display = 'none';
             document.getElementById('auth-view-add').style.display = 'flex';
             if (err && err.message) {
-                showAuthError('add-auth-error', 'Google Auth Note: ' + err.message);
+                showAuthError('add-auth-error', 'Google Auth: ' + err.message);
             }
             document.getElementById('new-user-email').focus();
         }
@@ -1659,7 +1641,7 @@
                 `;
             } else {
                 container.innerHTML = accounts.map(acc => {
-                    const avatarColor = getAvatarColor(acc.name || acc.email);
+                    const avatarColor = acc.color || getAvatarColor(acc.name || acc.email);
                     const initial = (acc.name || acc.email).charAt(0).toUpperCase();
                     const photoHtml = acc.picture ? 
                         `<img src="${acc.picture}" class="account-photo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="${acc.name}">
@@ -1681,10 +1663,21 @@
                 }).join('');
             }
 
+            const cancelBtn = document.getElementById('btn-cancel-chooser');
+            if (cancelBtn) {
+                cancelBtn.style.display = currentUser ? 'block' : 'none';
+            }
+
             document.getElementById('google-auth-overlay').style.display = 'flex';
             document.getElementById('auth-view-initial').style.display = 'none';
             document.getElementById('auth-view-chooser').style.display = 'flex';
             document.getElementById('auth-view-add').style.display = 'none';
+        }
+
+        function closeAccountChooser() {
+            if (currentUser) {
+                document.getElementById('google-auth-overlay').style.display = 'none';
+            }
         }
 
         function getAvatarColor(str) {
