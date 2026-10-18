@@ -629,7 +629,7 @@
             color: #fff;
         }
 
-        .asset-card-usd {
+        .asset-card-inr {
             font-size: 12px;
             color: var(--green);
             font-weight: 600;
@@ -1019,7 +1019,7 @@
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
                     <div class="google-title">Sign in to ChronosMatch</div>
-                    <div class="google-subtitle">Sign in with your Google Account to trade with $100,000 in demo virtual cash.</div>
+                    <div class="google-subtitle">Sign in with your Google Account to trade with ₹1,00,000 in demo virtual cash.</div>
                 </div>
 
                 <div class="google-card-body">
@@ -1151,7 +1151,7 @@
             </div>
 
             <div class="asset-price-display">
-                <span class="price-big mono" id="asset-big-price">$65,000.00</span>
+                <span class="price-big mono" id="asset-big-price">₹65,000.00</span>
                 <span class="price-change-badge mono" id="asset-change-badge">▲ +2.45%</span>
             </div>
         </div>
@@ -1215,7 +1215,7 @@
                     <!-- Available Wallet Balance -->
                     <div class="balance-info-card">
                         <span style="color: var(--text-sub);">Your Balance:</span>
-                        <span class="balance-val mono" id="wallet-avail-text">$100,000.00 USDT</span>
+                        <span class="balance-val mono" id="wallet-avail-text">₹1,00,000.00 INR</span>
                     </div>
 
                     <!-- Order Price Mode (Instant Market vs Custom Price) -->
@@ -1229,7 +1229,7 @@
 
                     <!-- Custom Price Input -->
                     <div class="input-group" id="custom-price-group" style="display: none;">
-                        <label class="input-label">Price per Unit ($)</label>
+                        <label class="input-label">Price per Unit (₹)</label>
                         <div class="input-wrapper">
                             <input type="number" step="0.5" class="simple-input mono" id="input-trade-price" value="65000.00" oninput="calculateTotal()">
                         </div>
@@ -1256,15 +1256,15 @@
                     <div class="summary-card mono">
                         <div class="summary-row">
                             <span>Estimated Price</span>
-                            <span id="sum-unit-price">$65,000.00</span>
+                            <span id="sum-unit-price">₹65,000.00</span>
                         </div>
                         <div class="summary-row">
                             <span>Trading Fee</span>
-                            <span style="color: var(--green);">FREE ($0.00)</span>
+                            <span style="color: var(--green);">FREE (₹0.00)</span>
                         </div>
                         <div class="summary-row total">
                             <span>Total Amount</span>
-                            <span id="sum-total-price" style="color: #fff;">$65,000.00 USDT</span>
+                            <span id="sum-total-price" style="color: #fff;">₹65,000.00 INR</span>
                         </div>
                     </div>
 
@@ -1281,24 +1281,24 @@
             <!-- Portfolio Cards -->
             <div class="portfolio-cards-row">
                 <div class="asset-card">
-                    <span class="asset-card-label">💵 Cash Balance (USDT)</span>
-                    <span class="asset-card-amount mono" id="card-bal-usdt">$100,000.00</span>
-                    <span class="asset-card-usd">Available to trade</span>
+                    <span class="asset-card-label">💵 Cash Balance (INR)</span>
+                    <span class="asset-card-amount mono" id="card-bal-inr">₹1,00,000.00</span>
+                    <span class="asset-card-inr">Available to trade</span>
                 </div>
                 <div class="asset-card">
                     <span class="asset-card-label">🟡 Bitcoin (BTC)</span>
                     <span class="asset-card-amount mono" id="card-bal-btc">0.00 BTC</span>
-                    <span class="asset-card-usd" id="card-val-btc">$0.00</span>
+                    <span class="asset-card-inr" id="card-val-btc">₹0.00</span>
                 </div>
                 <div class="asset-card">
                     <span class="asset-card-label">🔷 Ethereum (ETH)</span>
                     <span class="asset-card-amount mono" id="card-bal-eth">0.00 ETH</span>
-                    <span class="asset-card-usd" id="card-val-eth">$0.00</span>
+                    <span class="asset-card-inr" id="card-val-eth">₹0.00</span>
                 </div>
                 <div class="asset-card">
                     <span class="asset-card-label">🍏 Apple Shares (AAPL)</span>
                     <span class="asset-card-amount mono" id="card-bal-aapl">0 AAPL</span>
-                    <span class="asset-card-usd" id="card-val-aapl">$0.00</span>
+                    <span class="asset-card-inr" id="card-val-aapl">₹0.00</span>
                 </div>
             </div>
 
@@ -1315,9 +1315,9 @@
                                 <th>Time</th>
                                 <th>Action</th>
                                 <th>Asset</th>
-                                <th>Price</th>
+                                <th>Price (₹)</th>
                                 <th>Amount</th>
-                                <th>Total ($)</th>
+                                <th>Total (₹)</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -1403,10 +1403,19 @@
         // Active Logged-in Google User
         let currentUser = null;
         let userState = {
-            balances: { USDT: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
-            inOrders: { USDT: 0.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+            balances: { INR: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+            inOrders: { INR: 0.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
             orders: []
         };
+
+        // Indian Rupee Currency Formatter
+        function formatINR(amount) {
+            const num = Number(amount) || 0;
+            return '₹' + num.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
         // ==========================================================================
         // OFFICIAL GOOGLE IDENTITY & REAL SIGNED-IN ACCOUNTS
@@ -1803,6 +1812,15 @@
             if (saved) {
                 try {
                     userState = JSON.parse(saved);
+                    // Migrate legacy USDT to INR if present
+                    if (userState.balances && userState.balances.INR === undefined) {
+                        userState.balances.INR = userState.balances.USDT !== undefined ? userState.balances.USDT : 100000.00;
+                        delete userState.balances.USDT;
+                    }
+                    if (userState.inOrders && userState.inOrders.INR === undefined) {
+                        userState.inOrders.INR = userState.inOrders.USDT !== undefined ? userState.inOrders.USDT : 0.00;
+                        delete userState.inOrders.USDT;
+                    }
                 } catch (e) {
                     resetFreshData();
                 }
@@ -1813,8 +1831,8 @@
 
         function resetFreshData() {
             userState = {
-                balances: { USDT: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
-                inOrders: { USDT: 0.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+                balances: { INR: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
+                inOrders: { INR: 0.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
                 orders: []
             };
             saveUserData();
@@ -1835,7 +1853,7 @@
             if (btn) btn.classList.add('active');
 
             const a = assets[sym];
-            document.getElementById('asset-big-price').innerText = '$' + a.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('asset-big-price').innerText = formatINR(a.basePrice);
             document.getElementById('asset-change-badge').innerText = a.change;
             document.getElementById('input-trade-price').value = a.basePrice.toFixed(2);
             document.getElementById('asset-unit-name').innerText = a.ticker;
@@ -1885,7 +1903,7 @@
             const p = currentMode === 'MARKET' ? a.basePrice : (parseFloat(document.getElementById('input-trade-price').value) || a.basePrice);
 
             if (currentSide === 'BUY') {
-                const availCash = userState.balances.USDT;
+                const availCash = userState.balances.INR;
                 const spend = availCash * pct;
                 const units = spend / p;
                 document.getElementById('input-trade-qty').value = Math.max(0.01, units).toFixed(currentAsset === 'AAPL' ? 0 : 2);
@@ -1901,7 +1919,7 @@
             const a = assets[currentAsset];
             const balLabel = document.getElementById('wallet-avail-text');
             if (currentSide === 'BUY') {
-                balLabel.innerText = `$${userState.balances.USDT.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT`;
+                balLabel.innerText = `${formatINR(userState.balances.INR)} INR`;
             } else {
                 const b = userState.balances[a.ticker] || 0;
                 balLabel.innerText = `${b.toFixed(currentAsset === 'AAPL' ? 0 : 4)} ${a.ticker}`;
@@ -1914,14 +1932,14 @@
             const qty = parseFloat(document.getElementById('input-trade-qty').value) || 0;
             const total = price * qty;
 
-            document.getElementById('sum-unit-price').innerText = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('sum-total-price').innerText = '$' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USDT';
+            document.getElementById('sum-unit-price').innerText = formatINR(price);
+            document.getElementById('sum-total-price').innerText = `${formatINR(total)} INR`;
 
             const submitBtn = document.getElementById('btn-submit-action');
             if (currentSide === 'BUY') {
-                submitBtn.innerText = `Buy ${qty} ${a.name} for $${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                submitBtn.innerText = `Buy ${qty} ${a.name} for ${formatINR(total)}`;
             } else {
-                submitBtn.innerText = `Sell ${qty} ${a.name} for $${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                submitBtn.innerText = `Sell ${qty} ${a.name} for ${formatINR(total)}`;
             }
         }
 
@@ -1946,8 +1964,8 @@
             const totalCost = price * qty;
             const ticker = a.ticker;
 
-            if (currentSide === 'BUY' && userState.balances.USDT < totalCost) {
-                alert(`Insufficient cash! You need $${totalCost.toFixed(2)} USDT, but have $${userState.balances.USDT.toFixed(2)} USDT.`);
+            if (currentSide === 'BUY' && userState.balances.INR < totalCost) {
+                alert(`Insufficient cash! You need ${formatINR(totalCost)} INR, but have ${formatINR(userState.balances.INR)} INR.`);
                 return;
             }
             if (currentSide === 'SELL' && (userState.balances[ticker] || 0) < qty) {
@@ -1961,7 +1979,7 @@
 
             if (currentSide === 'BUY') {
                 if (currentMode === 'MARKET' || price >= a.asks[0]?.price) {
-                    userState.balances.USDT -= totalCost;
+                    userState.balances.INR -= totalCost;
                     userState.balances[ticker] = (userState.balances[ticker] || 0) + qty;
 
                     userState.orders.unshift({
@@ -1975,10 +1993,10 @@
                         status: 'Completed'
                     });
 
-                    showToast(`🎉 Success! Bought ${qty} ${ticker} at $${price.toFixed(2)}`);
+                    showToast(`🎉 Success! Bought ${qty} ${ticker} at ${formatINR(price)}`);
                 } else {
-                    userState.balances.USDT -= totalCost;
-                    userState.inOrders.USDT += totalCost;
+                    userState.balances.INR -= totalCost;
+                    userState.inOrders.INR += totalCost;
 
                     a.bids.unshift({ price: price, qty: qty });
                     a.bids.sort((x, y) => y.price - x.price);
@@ -1994,12 +2012,12 @@
                         status: 'Waiting in Book'
                     });
 
-                    showToast(`⏳ Order placed! Waiting for a seller at $${price.toFixed(2)}`);
+                    showToast(`⏳ Order placed! Waiting for a seller at ${formatINR(price)}`);
                 }
             } else {
                 if (currentMode === 'MARKET' || price <= a.bids[0]?.price) {
                     userState.balances[ticker] -= qty;
-                    userState.balances.USDT += totalCost;
+                    userState.balances.INR += totalCost;
 
                     userState.orders.unshift({
                         id: orderId,
@@ -2012,7 +2030,7 @@
                         status: 'Completed'
                     });
 
-                    showToast(`🎉 Success! Sold ${qty} ${ticker} for $${totalCost.toFixed(2)}`);
+                    showToast(`🎉 Success! Sold ${qty} ${ticker} for ${formatINR(totalCost)}`);
                 } else {
                     userState.balances[ticker] -= qty;
                     userState.inOrders[ticker] = (userState.inOrders[ticker] || 0) + qty;
@@ -2031,7 +2049,7 @@
                         status: 'Waiting in Book'
                     });
 
-                    showToast(`⏳ Order placed! Waiting for a buyer at $${price.toFixed(2)}`);
+                    showToast(`⏳ Order placed! Waiting for a buyer at ${formatINR(price)}`);
                 }
             }
 
@@ -2051,8 +2069,8 @@
             const ticker = a.ticker;
 
             if (order.action === 'BUY') {
-                userState.balances.USDT += order.total;
-                userState.inOrders.USDT -= order.total;
+                userState.balances.INR += order.total;
+                userState.inOrders.INR -= order.total;
             } else {
                 userState.balances[ticker] += order.amount;
                 userState.inOrders[ticker] -= order.amount;
@@ -2076,14 +2094,14 @@
 
             asksList.innerHTML = a.asks.slice(0, 4).map(o => `
                 <div class="order-item-simple ask" onclick="fillPriceFromOrder(${o.price})">
-                    <span class="price">$${o.price.toFixed(2)}</span>
+                    <span class="price">${formatINR(o.price)}</span>
                     <span style="color: var(--text-sub);">${o.qty.toFixed(1)}</span>
                 </div>
             `).join('');
 
             bidsList.innerHTML = a.bids.slice(0, 4).map(o => `
                 <div class="order-item-simple bid" onclick="fillPriceFromOrder(${o.price})">
-                    <span class="price">$${o.price.toFixed(2)}</span>
+                    <span class="price">${formatINR(o.price)}</span>
                     <span style="color: var(--text-sub);">${o.qty.toFixed(1)}</span>
                 </div>
             `).join('');
@@ -2093,24 +2111,25 @@
             setMode('LIMIT');
             document.getElementById('input-trade-price').value = price.toFixed(2);
             calculateTotal();
-            showToast(`Price set to $${price.toFixed(2)}`);
+            showToast(`Price set to ${formatINR(price)}`);
         }
 
         function renderPortfolio() {
-            document.getElementById('card-bal-usdt').innerText = '$' + userState.balances.USDT.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const balEl = document.getElementById('card-bal-inr') || document.getElementById('card-bal-usdt');
+            if (balEl) balEl.innerText = formatINR(userState.balances.INR);
 
             const btc = userState.balances.BTC || 0;
             const eth = userState.balances.ETH || 0;
             const aapl = userState.balances.AAPL || 0;
 
             document.getElementById('card-bal-btc').innerText = `${btc.toFixed(4)} BTC`;
-            document.getElementById('card-val-btc').innerText = `$${(btc * assets['BTCUSDT'].basePrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            document.getElementById('card-val-btc').innerText = formatINR(btc * assets['BTCUSDT'].basePrice);
 
             document.getElementById('card-bal-eth').innerText = `${eth.toFixed(4)} ETH`;
-            document.getElementById('card-val-eth').innerText = `$${(eth * assets['ETHUSDT'].basePrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            document.getElementById('card-val-eth').innerText = formatINR(eth * assets['ETHUSDT'].basePrice);
 
             document.getElementById('card-bal-aapl').innerText = `${aapl} AAPL`;
-            document.getElementById('card-val-aapl').innerText = `$${(aapl * assets['AAPL'].basePrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            document.getElementById('card-val-aapl').innerText = formatINR(aapl * assets['AAPL'].basePrice);
         }
 
         function renderOrdersTable() {
@@ -2140,9 +2159,9 @@
                         <td style="color: var(--text-sub);">${o.time}</td>
                         <td style="color: ${isBuy ? 'var(--green)' : 'var(--red)'}; font-weight: 800;">${o.action}</td>
                         <td>${o.asset}</td>
-                        <td>$${o.price.toFixed(2)}</td>
+                        <td>${formatINR(o.price)}</td>
                         <td>${o.amount}</td>
-                        <td>$${o.total.toFixed(2)}</td>
+                        <td>${formatINR(o.total)}</td>
                         <td><span class="tag-status ${statusClass}">${o.status}</span></td>
                         <td>${cancelBtn}</td>
                     </tr>
@@ -2247,7 +2266,7 @@
             const a = assets[currentAsset];
             const jitter = (Math.random() - 0.49) * a.tick;
             a.basePrice = parseFloat((a.basePrice + jitter).toFixed(2));
-            document.getElementById('asset-big-price').innerText = '$' + a.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('asset-big-price').innerText = formatINR(a.basePrice);
 
             chartPoints.push(a.basePrice);
             if (chartPoints.length > 35) chartPoints.shift();

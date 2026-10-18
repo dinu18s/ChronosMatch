@@ -521,7 +521,7 @@ def get_dashboard_html() -> str:
                 </div>
 
                 <div class="form-group" id="group-price">
-                    <label class="form-label">Limit Price ($)</label>
+                    <label class="form-label">Limit Price (₹)</label>
                     <input type="number" step="0.01" class="form-input mono" id="input-price" value="65000.00">
                 </div>
 
