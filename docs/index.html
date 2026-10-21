@@ -7,8 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Official Google Identity Services SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
             --bg-base: #0a0e17;
@@ -738,9 +736,9 @@
         }
 
         /* ==========================================================================
-           OFFICIAL GOOGLE IDENTITY SERVICES MODAL & ACCOUNT CHOOSER
+           AUTHENTICATION MODAL (EMAIL & PASSWORD)
            ========================================================================== */
-        #google-auth-overlay {
+        #auth-overlay {
             position: fixed;
             inset: 0;
             background: rgba(4, 7, 14, 0.88);
@@ -752,12 +750,12 @@
             padding: 16px;
         }
 
-        .google-card {
-            background: #171f30;
-            border: 1px solid #2b3952;
+        .auth-card {
+            background: #131a29;
+            border: 1px solid var(--border);
             border-radius: 18px;
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             display: flex;
@@ -771,216 +769,82 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        .google-card-header {
-            padding: 24px 28px 14px;
+        .auth-card-header {
+            padding: 26px 28px 14px;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .google-title {
-            font-size: 21px;
-            font-weight: 700;
+        .auth-icon-badge {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
             color: #fff;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
         }
 
-        .google-subtitle {
+        .auth-title {
+            font-size: 21px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .auth-subtitle {
             font-size: 13px;
             color: var(--text-sub);
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
-        .google-card-body {
-            padding: 12px 28px 24px;
+        .auth-nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            padding: 0 28px;
+            gap: 16px;
+        }
+
+        .auth-nav-tab {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .auth-nav-tab.active {
+            color: #fff;
+            border-bottom-color: var(--blue);
+        }
+
+        .auth-card-body {
+            padding: 20px 28px 26px;
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
 
-        .btn-continue-google {
-            background: #ffffff;
-            color: #1f1f1f;
-            border: none;
-            padding: 13px 20px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-            width: 100%;
-        }
-
-        .btn-continue-google:hover {
-            background: #f1f3f4;
-            transform: translateY(-1px);
-        }
-
-        /* Real Google Accounts List */
-        .device-accounts-box {
-            border: 1px solid #2b3952;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #111724;
-            max-height: 320px;
-            overflow-y: auto;
-        }
-
-        .account-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border-bottom: 1px solid #1f2a3f;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .account-row:hover {
-            background: #1c2638;
-        }
-
-        .account-row:last-child {
-            border-bottom: none;
-        }
-
-        .account-avatar-wrapper {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #23304a;
-        }
-
-        .account-photo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .account-avatar-circ {
-            width: 100%;
-            height: 100%;
-            color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .account-meta {
-            flex: 1;
+        .auth-field-group {
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            text-align: left;
+            gap: 6px;
         }
 
-        .account-name-txt {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .account-email-txt {
+        .auth-field-label {
             font-size: 12px;
+            font-weight: 600;
             color: var(--text-sub);
-        }
-
-        .account-badge-google {
-            font-size: 11px;
-            color: var(--green);
-            background: var(--green-soft);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        /* "Add another account" Row */
-        .use-another-btn-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            cursor: pointer;
-            background: #141c2c;
-            transition: background 0.15s;
-        }
-
-        .use-another-btn-row:hover {
-            background: #1c273d;
-        }
-
-        .use-another-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1.5px dashed #475569;
-            color: #94a3b8;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .use-another-txt {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--blue);
-        }
-
-        .btn-google-next {
-            background: #1a73e8;
-            color: #fff;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .btn-google-next:hover {
-            background: #1557b0;
-        }
-
-        /* Loading Spinner & Status Banners */
-        .auth-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(23, 31, 48, 0.92);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            z-index: 10;
-        }
-
-        .spinner-ring {
-            width: 36px;
-            height: 36px;
-            border: 3px solid rgba(59, 130, 246, 0.2);
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .auth-error-banner {
@@ -998,107 +862,56 @@
 <body>
 
     <!-- ==========================================================================
-         OFFICIAL GOOGLE AUTHENTICATION & ACCOUNT CHOOSER MODAL
+         AUTHENTICATION MODAL (EMAIL & PASSWORD)
          ========================================================================== -->
-    <div id="google-auth-overlay">
-        <div class="google-card">
+    <div id="auth-overlay">
+        <div class="auth-card">
             
-            <!-- Loading State Overlay -->
-            <div class="auth-loading-overlay" id="auth-loading-overlay" style="display: none;">
-                <div class="spinner-ring"></div>
-                <span style="font-size: 13px; font-weight: 600; color: #fff;" id="loading-overlay-msg">Connecting to Google...</span>
+            <div class="auth-card-header">
+                <div class="auth-icon-badge">⚡</div>
+                <div class="auth-title" id="auth-header-title">Sign In</div>
+                <div class="auth-subtitle" id="auth-header-subtitle">
+                    Enter your email and password to trade with ₹1,00,000 in demo virtual cash.
+                </div>
             </div>
 
-            <!-- STEP 1: INITIAL WELCOME SCREEN WITH "CONTINUE WITH GOOGLE" -->
-            <div id="auth-view-initial" style="display: flex; flex-direction: column;">
-                <div class="google-card-header">
-                    <svg width="40" height="40" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <div class="google-title">Sign in to ChronosMatch</div>
-                    <div class="google-subtitle">Sign in with your Google Account to trade with ₹1,00,000 in demo virtual cash.</div>
+            <!-- Tab switcher: Sign In vs Create Account -->
+            <div class="auth-nav-tabs">
+                <button type="button" class="auth-nav-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+                <button type="button" class="auth-nav-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</button>
+            </div>
+
+            <form class="auth-card-body" id="auth-form" onsubmit="handleAuthSubmit(event)">
+                <div class="auth-error-banner" id="auth-error-msg"></div>
+
+                <div class="auth-field-group" id="field-group-name" style="display: none;">
+                    <label class="auth-field-label">Full Name</label>
+                    <input type="text" class="simple-input" id="auth-input-name" placeholder="Dinu Matta">
                 </div>
 
-                <div class="google-card-body">
-                    <div class="auth-error-banner" id="initial-auth-error"></div>
+                <div class="auth-field-group">
+                    <label class="auth-field-label">Email Address</label>
+                    <input type="email" class="simple-input mono" id="auth-input-email" placeholder="name@example.com" required autocomplete="email">
+                </div>
 
-                    <!-- Native Google Sign-In Flow button -->
-                    <button class="btn-continue-google" onclick="handleContinueWithGoogle()">
-                        <svg width="20" height="20" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                        </svg>
-                        Continue with Google
+                <div class="auth-field-group">
+                    <label class="auth-field-label">Password</label>
+                    <input type="password" class="simple-input mono" id="auth-input-password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn-action-main" id="btn-auth-submit-action" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 4px;">
+                    Sign In
+                </button>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 4px;">
+                    <button type="button" id="link-toggle-mode" style="background: transparent; border: none; color: var(--blue); cursor: pointer; padding: 0; font-size: 12px;" onclick="toggleAuthTab()">
+                        Don't have an account? Create one
                     </button>
-
-                    <!-- Official GIS button placeholder -->
-                    <div id="g-button-official" style="display: none; justify-content: center;"></div>
-
-                    <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 4px;">
-                        Protected by Google Identity Services. Select your account or add another account.
-                    </p>
+                    <button type="button" id="btn-auth-cancel" style="display: none; background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 12px;" onclick="closeAuthModal()">
+                        Cancel
+                    </button>
                 </div>
-            </div>
-
-            <!-- STEP 2: CHOOSE ACCOUNT SCREEN (DISPLAYS ALL SIGNED-IN GOOGLE ACCOUNTS) -->
-            <div id="auth-view-chooser" style="display: none; flex-direction: column;">
-                <div class="google-card-header">
-                    <svg width="40" height="40" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <div class="google-title">Choose an account</div>
-                    <div class="google-subtitle">Select an account on this device or add a new one to continue</div>
-                </div>
-
-                <div class="google-card-body">
-                    <div class="auth-error-banner" id="chooser-auth-error"></div>
-
-                    <!-- Dynamic List of All Real Google Accounts on this Device -->
-                    <div class="device-accounts-box" id="device-accounts-list">
-                        <!-- Populated by JavaScript -->
-                    </div>
-
-                    <!-- Option to Add Another Account -->
-                    <div class="device-accounts-box" style="margin-top: -6px;">
-                        <div class="use-another-btn-row" onclick="handleAddAnotherAccountClick()">
-                            <div class="use-another-circle">+</div>
-                            <div class="use-another-txt">Add another account</div>
-                        </div>
-                    </div>
-
-                    <button type="button" id="btn-cancel-chooser" style="display: none; background: transparent; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; text-align: center; width: 100%; transition: all 0.15s;" onclick="closeAccountChooser()">Cancel</button>
-                </div>
-            </div>
-
-            <!-- STEP 3: ADD ANOTHER ACCOUNT FALLBACK FORM -->
-            <div id="auth-view-add" style="display: none; flex-direction: column;">
-                <div class="google-card-header">
-                    <div class="google-title">Add Google Account</div>
-                    <div class="google-subtitle">Enter your Google Account email to continue to ChronosMatch</div>
-                </div>
-
-                <div class="google-card-body">
-                    <div class="auth-error-banner" id="add-auth-error"></div>
-
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <input type="email" class="simple-input mono" id="new-user-email" placeholder="Google Email (e.g. yourname@gmail.com)" autofocus>
-                        <input type="text" class="simple-input" id="new-user-name" placeholder="Full Name (optional)">
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-                        <button type="button" style="background: transparent; border: none; color: var(--text-sub); cursor: pointer;" onclick="openAccountChooser()">← Back to accounts</button>
-                        <button type="button" class="btn-google-next" onclick="submitManualGoogleAccount()">Continue</button>
-                    </div>
-                </div>
-            </div>
+            </form>
 
         </div>
     </div>
@@ -1122,15 +935,14 @@
             <!-- User Profile in Header -->
             <div class="user-pill" id="user-header-pill" style="display: none;">
                 <div class="user-avatar-wrap">
-                    <img id="header-user-img" src="" class="user-avatar-photo" style="display: none;" onerror="this.style.display='none'; document.getElementById('user-avatar-badge').style.display='flex';">
-                    <div class="user-avatar-initial" id="user-avatar-badge">G</div>
+                    <div class="user-avatar-initial" id="user-avatar-badge">U</div>
                 </div>
                 <div class="user-details">
-                    <span class="user-name-txt" id="user-header-name">Google User</span>
-                    <span class="user-email-txt mono" id="user-header-email">user@gmail.com</span>
+                    <span class="user-name-txt" id="user-header-name">Trader</span>
+                    <span class="user-email-txt mono" id="user-header-email">user@example.com</span>
                 </div>
-                <button class="btn-switch-account" onclick="openAccountChooser()" title="Use another Google Account">⇄ Use another Google Account</button>
-                <button class="btn-logout" onclick="logoutGoogleUser()" title="Log Out">✕</button>
+                <button class="btn-switch-account" onclick="openAuthModal()" title="Switch Account">⇄ Switch Account</button>
+                <button class="btn-logout" onclick="logoutUser()" title="Log Out">✕</button>
             </div>
         </div>
     </header>
@@ -1400,7 +1212,7 @@
         let orderIdSeq = 100;
         let chartPoints = [];
 
-        // Active Logged-in Google User
+        // Active Logged-in User
         let currentUser = null;
         let userState = {
             balances: { INR: 100000.00, BTC: 0.00, ETH: 0.00, AAPL: 0 },
@@ -1418,64 +1230,33 @@
         }
 
         // ==========================================================================
-        // OFFICIAL GOOGLE IDENTITY & REAL SIGNED-IN ACCOUNTS
+        // EMAIL & PASSWORD AUTHENTICATION (NO GOOGLE SIGN-IN)
         // ==========================================================================
-        function hasValidGoogleClientId() {
-            const cid = localStorage.getItem('chronos_google_client_id');
-            return !!(cid && cid.includes('.apps.googleusercontent.com') && !cid.includes('chronosmatch'));
-        }
+        let authMode = 'login'; // 'login' or 'register'
 
-        function getGoogleClientId() {
-            return localStorage.getItem('chronos_google_client_id') || '';
-        }
-
-        // Retrieves all accounts authenticated through Google on this browser
-        function getStoredDeviceAccounts() {
-            const raw = localStorage.getItem('chronos_google_device_accounts');
+        function getStoredUsers() {
+            const raw = localStorage.getItem('chronos_registered_users');
             if (raw) {
                 try {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    if (parsed && typeof parsed === 'object') return parsed;
                 } catch (e) {}
             }
-            // User's Google account on this device
-            const defaultAccounts = [
-                {
+            // Default user account
+            const defaultUsers = {
+                'mattadinu9704637774@gmail.com': {
                     name: 'Dinu Matta',
                     email: 'mattadinu9704637774@gmail.com',
-                    picture: '',
-                    color: '#ea4335'
+                    password: 'password123',
+                    color: '#3b82f6'
                 }
-            ];
-            saveStoredDeviceAccounts(defaultAccounts);
-            return defaultAccounts;
+            };
+            localStorage.setItem('chronos_registered_users', JSON.stringify(defaultUsers));
+            return defaultUsers;
         }
 
-        function saveStoredDeviceAccounts(list) {
-            localStorage.setItem('chronos_google_device_accounts', JSON.stringify(list));
-        }
-
-        function setLoadingState(loading, msg) {
-            const el = document.getElementById('auth-loading-overlay');
-            if (el) {
-                el.style.display = loading ? 'flex' : 'none';
-                if (msg) document.getElementById('loading-overlay-msg').innerText = msg;
-            }
-        }
-
-        function showAuthError(bannerId, msg) {
-            const banner = document.getElementById(bannerId);
-            if (banner) {
-                banner.innerText = msg;
-                banner.style.display = 'block';
-            }
-        }
-
-        function clearAuthErrors() {
-            ['initial-auth-error', 'chooser-auth-error', 'add-auth-error'].forEach(id => {
-                const b = document.getElementById(id);
-                if (b) b.style.display = 'none';
-            });
+        function saveStoredUsers(users) {
+            localStorage.setItem('chronos_registered_users', JSON.stringify(users));
         }
 
         // Checks active user session on page load
@@ -1491,279 +1272,165 @@
                     localStorage.removeItem('chronos_simple_user');
                 }
             }
-            
-            // Show account chooser so user can select their Google account easily
-            openAccountChooser();
-
-            // Initialize official Google Identity Services if a valid client ID is configured
-            if (hasValidGoogleClientId()) {
-                initGoogleIdentityServices();
-            }
+            openAuthModal();
         }
 
-        // Initialize GIS for One Tap & Button rendering if a valid Google client ID is configured
-        function initGoogleIdentityServices() {
-            if (!hasValidGoogleClientId()) return;
-            if (window.google && google.accounts && google.accounts.id) {
-                try {
-                    google.accounts.id.initialize({
-                        client_id: getGoogleClientId(),
-                        callback: handleGoogleCredentialResponse,
-                        auto_select: false,
-                        cancel_on_tap_outside: true
-                    });
-                    
-                    const btnContainer = document.getElementById('g-button-official');
-                    if (btnContainer) {
-                        btnContainer.style.display = 'flex';
-                        google.accounts.id.renderButton(btnContainer, {
-                            theme: 'outline',
-                            size: 'large',
-                            type: 'standard',
-                            shape: 'rectangular',
-                            text: 'continue_with',
-                            logo_alignment: 'left',
-                            width: 340
-                        });
-                    }
+        function openAuthModal() {
+            clearAuthError();
+            const emailInput = document.getElementById('auth-input-email');
+            const passInput = document.getElementById('auth-input-password');
 
-                    google.accounts.id.prompt((notification) => {});
-                } catch (e) {
-                    console.warn('GIS init info:', e);
-                }
-            }
-        }
-
-        // Decodes JWT credential returned by Google Identity Services
-        function handleGoogleCredentialResponse(response) {
-            try {
-                if (response && response.credential) {
-                    const token = response.credential;
-                    const base64Url = token.split('.')[1];
-                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                    const jsonPayload = decodeURIComponent(
-                        atob(base64)
-                            .split('')
-                            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                            .join('')
-                    );
-                    const profile = JSON.parse(jsonPayload);
-                    if (profile && profile.email) {
-                        saveAndSelectGoogleAccount({
-                            name: profile.name || profile.email.split('@')[0],
-                            email: profile.email,
-                            picture: profile.picture || ''
-                        });
-                    }
-                }
-            } catch (err) {
-                console.warn('Google credential decode error:', err);
-            }
-        }
-
-        // Triggered when user clicks "Continue with Google"
-        function handleContinueWithGoogle() {
-            clearAuthErrors();
-            openAccountChooser();
-        }
-
-        // Triggered when user clicks "Add another account"
-        function handleAddAnotherAccountClick() {
-            clearAuthErrors();
-            triggerGoogleAuthFlow();
-        }
-
-        // Launches Google Authentication flow or account entry (no 401 invalid_client)
-        function triggerGoogleAuthFlow() {
-            clearAuthErrors();
-
-            // If a valid Google Client ID is configured, use OAuth token client
-            if (hasValidGoogleClientId() && window.google && google.accounts && google.accounts.oauth2) {
-                setLoadingState(true, 'Connecting to Google Authentication...');
-                try {
-                    const tokenClient = google.accounts.oauth2.initTokenClient({
-                        client_id: getGoogleClientId(),
-                        scope: 'openid profile email',
-                        prompt: 'select_account',
-                        callback: async (tokenResponse) => {
-                            if (tokenResponse && tokenResponse.access_token) {
-                                try {
-                                    const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-                                    });
-                                    if (userInfoRes.ok) {
-                                        const profile = await userInfoRes.json();
-                                        saveAndSelectGoogleAccount({
-                                            name: profile.name || profile.email.split('@')[0],
-                                            email: profile.email,
-                                            picture: profile.picture || ''
-                                        });
-                                        setLoadingState(false);
-                                        return;
-                                    }
-                                } catch (e) {
-                                    console.warn('UserInfo fetch error:', e);
-                                }
-                            }
-                            setLoadingState(false);
-                        },
-                        error_callback: (err) => {
-                            setLoadingState(false);
-                            handleAuthFallbackUI(err);
-                        }
-                    });
-                    tokenClient.requestAccessToken({ prompt: 'select_account' });
-                    return;
-                } catch (e) {
-                    setLoadingState(false);
-                    handleAuthFallbackUI(e);
-                    return;
-                }
-            }
-
-            // Otherwise, open the direct Google account entry form (avoids Error 401 invalid_client)
-            handleAuthFallbackUI();
-        }
-
-        // Displays fallback sign-in form gracefully
-        function handleAuthFallbackUI(err) {
-            document.getElementById('auth-view-initial').style.display = 'none';
-            document.getElementById('auth-view-chooser').style.display = 'none';
-            document.getElementById('auth-view-add').style.display = 'flex';
-            if (err && err.message) {
-                showAuthError('add-auth-error', 'Google Auth: ' + err.message);
-            }
-            document.getElementById('new-user-email').focus();
-        }
-
-        // Displays all signed-in Google accounts available on this device/browser
-        function openAccountChooser() {
-            clearAuthErrors();
-            const accounts = getStoredDeviceAccounts();
-            const container = document.getElementById('device-accounts-list');
-
-            if (accounts.length === 0) {
-                container.innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: var(--text-sub); font-size: 13px;">
-                        No Google accounts signed in on this device yet.<br>Click "Add another account" below to sign in.
-                    </div>
-                `;
+            if (!currentUser) {
+                emailInput.value = 'mattadinu9704637774@gmail.com';
+                passInput.value = '';
             } else {
-                container.innerHTML = accounts.map(acc => {
-                    const avatarColor = acc.color || getAvatarColor(acc.name || acc.email);
-                    const initial = (acc.name || acc.email).charAt(0).toUpperCase();
-                    const photoHtml = acc.picture ? 
-                        `<img src="${acc.picture}" class="account-photo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="${acc.name}">
-                         <div class="account-avatar-circ" style="display: none; background: ${avatarColor};">${initial}</div>` :
-                        `<div class="account-avatar-circ" style="background: ${avatarColor};">${initial}</div>`;
-
-                    return `
-                        <div class="account-row" onclick="chooseAccount('${encodeURIComponent(acc.email)}')">
-                            <div class="account-avatar-wrapper">
-                                ${photoHtml}
-                            </div>
-                            <div class="account-meta">
-                                <span class="account-name-txt">${acc.name}</span>
-                                <span class="account-email-txt mono">${acc.email}</span>
-                            </div>
-                            <span class="account-badge-google">Signed in</span>
-                        </div>
-                    `;
-                }).join('');
+                emailInput.value = currentUser.email;
+                passInput.value = '';
             }
 
-            const cancelBtn = document.getElementById('btn-cancel-chooser');
+            const cancelBtn = document.getElementById('btn-auth-cancel');
             if (cancelBtn) {
-                cancelBtn.style.display = currentUser ? 'block' : 'none';
+                cancelBtn.style.display = currentUser ? 'inline-block' : 'none';
             }
 
-            document.getElementById('google-auth-overlay').style.display = 'flex';
-            document.getElementById('auth-view-initial').style.display = 'none';
-            document.getElementById('auth-view-chooser').style.display = 'flex';
-            document.getElementById('auth-view-add').style.display = 'none';
+            switchAuthTab('login');
+            document.getElementById('auth-overlay').style.display = 'flex';
+            setTimeout(() => {
+                if (emailInput.value) {
+                    passInput.focus();
+                } else {
+                    emailInput.focus();
+                }
+            }, 100);
         }
 
-        function closeAccountChooser() {
+        function closeAuthModal() {
             if (currentUser) {
-                document.getElementById('google-auth-overlay').style.display = 'none';
+                document.getElementById('auth-overlay').style.display = 'none';
             }
         }
 
-        function getAvatarColor(str) {
-            const colors = ['#ea4335', '#4285f4', '#34a853', '#fbbc05', '#8e24aa', '#00acc1'];
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            return colors[Math.abs(hash) % colors.length];
-        }
+        function switchAuthTab(mode) {
+            authMode = mode;
+            clearAuthError();
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+            const nameGroup = document.getElementById('field-group-name');
+            const submitBtn = document.getElementById('btn-auth-submit-action');
+            const toggleLink = document.getElementById('link-toggle-mode');
+            const titleEl = document.getElementById('auth-header-title');
 
-        // When a user selects any account from the list
-        function chooseAccount(encodedEmail) {
-            const email = decodeURIComponent(encodedEmail);
-            const accounts = getStoredDeviceAccounts();
-            const acc = accounts.find(a => a.email.toLowerCase() === email.toLowerCase());
-
-            if (acc) {
-                saveAndSelectGoogleAccount(acc);
-            }
-        }
-
-        // Stores verified Google account and signs in with it
-        function saveAndSelectGoogleAccount(profile) {
-            const email = profile.email;
-            let name = profile.name;
-            if (!name) {
-                const prefix = email.split('@')[0];
-                name = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-            }
-
-            const accounts = getStoredDeviceAccounts();
-            let acc = accounts.find(a => a.email.toLowerCase() === email.toLowerCase());
-
-            if (!acc) {
-                acc = {
-                    name: name,
-                    email: email,
-                    picture: profile.picture || '',
-                    color: getAvatarColor(name)
-                };
-                accounts.unshift(acc);
+            if (mode === 'login') {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                nameGroup.style.display = 'none';
+                submitBtn.innerText = 'Sign In';
+                titleEl.innerText = 'Sign In';
+                toggleLink.innerText = "Don't have an account? Create one";
             } else {
-                acc.name = name;
-                if (profile.picture) acc.picture = profile.picture;
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                nameGroup.style.display = 'flex';
+                submitBtn.innerText = 'Create Account';
+                titleEl.innerText = 'Create Account';
+                toggleLink.innerText = 'Already have an account? Sign In';
             }
-
-            saveStoredDeviceAccounts(accounts);
-
-            currentUser = {
-                name: acc.name,
-                email: acc.email,
-                picture: acc.picture || '',
-                color: acc.color || getAvatarColor(acc.name)
-            };
-
-            localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
-            loadUserData(acc.email);
-            showAppScreen();
-            document.getElementById('google-auth-overlay').style.display = 'none';
-            showToast(`✓ Signed in as ${acc.name} (${acc.email})`);
         }
 
-        // Manual entry fallback
-        function submitManualGoogleAccount() {
-            const emailInput = document.getElementById('new-user-email');
-            const nameInput = document.getElementById('new-user-name');
-            const email = emailInput.value.trim();
-            const name = nameInput.value.trim();
+        function toggleAuthTab() {
+            switchAuthTab(authMode === 'login' ? 'register' : 'login');
+        }
+
+        function showAuthError(msg) {
+            const errEl = document.getElementById('auth-error-msg');
+            if (errEl) {
+                errEl.innerText = msg;
+                errEl.style.display = 'block';
+            }
+        }
+
+        function clearAuthError() {
+            const errEl = document.getElementById('auth-error-msg');
+            if (errEl) {
+                errEl.innerText = '';
+                errEl.style.display = 'none';
+            }
+        }
+
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            clearAuthError();
+
+            const email = document.getElementById('auth-input-email').value.trim().toLowerCase();
+            const password = document.getElementById('auth-input-password').value.trim();
+            const nameInput = document.getElementById('auth-input-name').value.trim();
 
             if (!email || !email.includes('@')) {
-                showAuthError('add-auth-error', 'Please enter a valid Google Account email address.');
-                emailInput.focus();
+                showAuthError('Please enter a valid email address.');
+                return;
+            }
+            if (!password || password.length < 4) {
+                showAuthError('Password must be at least 4 characters.');
                 return;
             }
 
-            emailInput.value = '';
-            nameInput.value = '';
-            saveAndSelectGoogleAccount({ email, name });
+            const users = getStoredUsers();
+
+            if (authMode === 'login') {
+                // If user exists, verify password
+                if (users[email]) {
+                    if (users[email].password && users[email].password !== password) {
+                        showAuthError('Incorrect password. Please try again.');
+                        return;
+                    }
+                    loginSuccess(users[email]);
+                } else {
+                    // Auto-register on first sign in
+                    const derivedName = nameInput || email.split('@')[0].split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    const newUser = {
+                        name: derivedName,
+                        email: email,
+                        password: password,
+                        color: getAvatarColor(derivedName)
+                    };
+                    users[email] = newUser;
+                    saveStoredUsers(users);
+                    loginSuccess(newUser);
+                }
+            } else {
+                // Register mode
+                const derivedName = nameInput || email.split('@')[0].split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const newUser = {
+                    name: derivedName,
+                    email: email,
+                    password: password,
+                    color: getAvatarColor(derivedName)
+                };
+                users[email] = newUser;
+                saveStoredUsers(users);
+                loginSuccess(newUser);
+            }
+        }
+
+        function loginSuccess(user) {
+            currentUser = {
+                name: user.name,
+                email: user.email,
+                color: user.color || getAvatarColor(user.name)
+            };
+
+            localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
+            loadUserData(user.email);
+            showAppScreen();
+            document.getElementById('auth-overlay').style.display = 'none';
+            showToast(`✓ Signed in as ${user.name}`);
+        }
+
+        function getAvatarColor(str) {
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            return colors[Math.abs(hash) % colors.length];
         }
 
         function showAppScreen() {
@@ -1771,34 +1438,25 @@
             document.getElementById('user-header-name').innerText = currentUser.name;
             document.getElementById('user-header-email').innerText = currentUser.email;
 
-            // Header profile picture / avatar
-            const imgEl = document.getElementById('header-user-img');
             const badgeEl = document.getElementById('user-avatar-badge');
-
-            if (currentUser.picture) {
-                imgEl.src = currentUser.picture;
-                imgEl.style.display = 'block';
-                badgeEl.style.display = 'none';
-            } else {
-                imgEl.style.display = 'none';
-                badgeEl.style.display = 'flex';
-                badgeEl.innerText = currentUser.name.charAt(0).toUpperCase();
+            if (badgeEl) {
+                badgeEl.innerText = (currentUser.name || currentUser.email).charAt(0).toUpperCase();
                 badgeEl.parentElement.style.background = currentUser.color || getAvatarColor(currentUser.name);
             }
 
             document.getElementById('user-header-pill').style.display = 'flex';
-            document.getElementById('google-auth-overlay').style.display = 'none';
+            document.getElementById('auth-overlay').style.display = 'none';
             renderPortfolio();
             renderOrdersTable();
             updateBalanceDisplay();
         }
 
-        function logoutGoogleUser() {
-            if (confirm('Log out from this Google Account?')) {
+        function logoutUser() {
+            if (confirm('Log out from this account?')) {
                 localStorage.removeItem('chronos_simple_user');
                 currentUser = null;
                 document.getElementById('user-header-pill').style.display = 'none';
-                openAccountChooser();
+                openAuthModal();
                 showToast('Logged out successfully.');
             }
         }
