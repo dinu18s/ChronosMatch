@@ -886,7 +886,7 @@
 
                 <div class="auth-field-group" id="field-group-name" style="display: none;">
                     <label class="auth-field-label">Full Name</label>
-                    <input type="text" class="simple-input" id="auth-input-name" placeholder="Dinu Matta">
+                    <input type="text" class="simple-input" id="auth-input-name" placeholder="Enter your name">
                 </div>
 
                 <div class="auth-field-group">
@@ -1234,6 +1234,27 @@
         // ==========================================================================
         let authMode = 'login'; // 'login' or 'register'
 
+        // Clean up legacy demo credentials if present
+        function cleanupLegacyDefaults() {
+            try {
+                const saved = localStorage.getItem('chronos_simple_user');
+                if (saved) {
+                    const u = JSON.parse(saved);
+                    if (u && (u.email === 'mattadinu9704637774@gmail.com' || u.name === 'Dinu Matta')) {
+                        localStorage.removeItem('chronos_simple_user');
+                    }
+                }
+                const regRaw = localStorage.getItem('chronos_registered_users');
+                if (regRaw) {
+                    const reg = JSON.parse(regRaw);
+                    if (reg && reg['mattadinu9704637774@gmail.com']) {
+                        delete reg['mattadinu9704637774@gmail.com'];
+                        localStorage.setItem('chronos_registered_users', JSON.stringify(reg));
+                    }
+                }
+            } catch (e) {}
+        }
+
         function getStoredUsers() {
             const raw = localStorage.getItem('chronos_registered_users');
             if (raw) {
@@ -1242,17 +1263,7 @@
                     if (parsed && typeof parsed === 'object') return parsed;
                 } catch (e) {}
             }
-            // Default user account
-            const defaultUsers = {
-                'mattadinu9704637774@gmail.com': {
-                    name: 'Dinu Matta',
-                    email: 'mattadinu9704637774@gmail.com',
-                    password: 'password123',
-                    color: '#3b82f6'
-                }
-            };
-            localStorage.setItem('chronos_registered_users', JSON.stringify(defaultUsers));
-            return defaultUsers;
+            return {};
         }
 
         function saveStoredUsers(users) {
@@ -1261,6 +1272,7 @@
 
         // Checks active user session on page load
         function checkUserAuth() {
+            cleanupLegacyDefaults();
             const saved = localStorage.getItem('chronos_simple_user');
             if (saved) {
                 try {
@@ -1279,14 +1291,12 @@
             clearAuthError();
             const emailInput = document.getElementById('auth-input-email');
             const passInput = document.getElementById('auth-input-password');
+            const nameInput = document.getElementById('auth-input-name');
 
-            if (!currentUser) {
-                emailInput.value = 'mattadinu9704637774@gmail.com';
-                passInput.value = '';
-            } else {
-                emailInput.value = currentUser.email;
-                passInput.value = '';
-            }
+            // Strictly clear inputs so nothing is entered by default
+            if (emailInput) emailInput.value = '';
+            if (passInput) passInput.value = '';
+            if (nameInput) nameInput.value = '';
 
             const cancelBtn = document.getElementById('btn-auth-cancel');
             if (cancelBtn) {
@@ -1296,11 +1306,7 @@
             switchAuthTab('login');
             document.getElementById('auth-overlay').style.display = 'flex';
             setTimeout(() => {
-                if (emailInput.value) {
-                    passInput.focus();
-                } else {
-                    emailInput.focus();
-                }
+                if (emailInput) emailInput.focus();
             }, 100);
         }
 
