@@ -1,0 +1,192 @@
+"""Unit tests for ChronosMatch Virtual Paper Trading and Real-Time Market Data API."""
+
+import uuid
+import pytest
+from fastapi.testclient import TestClient
+
+from api.index import app
+from chronosmatch.persistence.db import db
+
+
+@pytest.fixture
+def client():
+    return TestClient(app)
+
+
+def test_virtual_auth_and_initial_balance(client):
+    email = f"trader_test_{uuid.uuid4().hex[:8]}@chronos.local"
+    res = client.post("/api/virtual/auth", json={
+        "email": email,
+        "name": "Arjun Sharma",
+        "password": "securepassword",
+    })
+    assert res.status_code == 200
+    data = res.json()["user"]
+    assert data["email"] == email
+    assert data["name"] == "Arjun Sharma"
+    assert data["cash_balance"] == 100000.00
+    assert data["realized_pnl"] == 0.00
+
+
+def test_market_quotes_and_search_endpoints(client):
+    # Fetch quotes
+    res = client.get("/api/market/quotes")
+    assert res.status_code == 200
+    quotes = res.json()
+    assert len(quotes) >= 10
+    symbols = [q["symbol"] for q in quotes]
+    assert "RELIANCE" in symbols
+    assert "AAPL" in symbols
+
+    # Single quote
+    rel_res = client.get("/api/market/quote/RELIANCE")
+    assert rel_res.status_code == 200
+    rel_data = rel_res.json()
+    assert rel_data["symbol"] == "RELIANCE"
+    assert rel_data["price"] > 0
+    assert rel_data["currency"] == "INR"
+
+    # Search
+    s_res = client.get("/api/market/search?q=tata")
+    assert s_res.status_code == 200
+    s_data = s_res.json()
+    assert any("TCS" in item["symbol"] or "Tata" in item["name"] for item in s_data)
+
+    # History
+    h_res = client.get("/api/market/history/RELIANCE?period=1D")
+    assert h_res.status_code == 200
+    h_data = h_res.json()
+    assert len(h_data["points"]) > 0
+
+
+def test_virtual_buy_and_sell_lifecycle(client):
+    email = f"trader_lifecycle_{uuid.uuid4().hex[:8]}@chronos.local"
+    # 1. Initialize user
+    client.post("/api/virtual/auth", json={"email": email, "name": "Deepa Roy", "password": "pass"})
+
+    # 2. Buy 10 shares of RELIANCE at ₹1,200 (Total ₹12,000)
+    buy_res = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "RELIANCE",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 1200.0,
+        "quantity": 10.0,
+    })
+    assert buy_res.status_code == 200
+    trade = buy_res.json()["trade"]
+    assert trade["action"] == "BUY"
+    assert trade["total_value"] == 12000.0
+    assert trade["cash_balance"] == 88000.0
+
+    # 3. Verify portfolio holdings and valuation
+    port_res = client.get(f"/api/virtual/portfolio/{email}")
+    assert port_res.status_code == 200
+    port = port_res.json()
+    assert port["cash_balance"] == 88000.0
+    assert port["total_invested"] == 12000.0
+    assert len(port["holdings"]) == 1
+    assert port["holdings"][0]["symbol"] == "RELIANCE"
+    assert port["holdings"][0]["quantity"] == 10.0
+    assert port["holdings"][0]["avg_buy_price"] == 1200.0
+
+    # 4. Partial sell: sell 4 shares at ₹1,300 (+₹100 gain/share = +₹400 realized PNL)
+    sell_res = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "RELIANCE",
+        "action": "SELL",
+        "order_type": "MARKET",
+        "price": 1300.0,
+        "quantity": 4.0,
+    })
+    assert sell_res.status_code == 200
+    sell_trade = sell_res.json()["trade"]
+    assert sell_trade["action"] == "SELL"
+    assert sell_trade["total_value"] == 5200.0
+    assert sell_trade["realized_pnl"] == 400.0
+    assert sell_trade["cash_balance"] == 93200.0  # 88000 + 5200
+
+    # 5. Verify remaining holding of 6 shares
+    port_res2 = client.get(f"/api/virtual/portfolio/{email}")
+    port2 = port_res2.json()
+    assert port2["cash_balance"] == 93200.0
+    assert port2["realized_pnl"] == 400.0
+    assert len(port2["holdings"]) == 1
+    assert port2["holdings"][0]["quantity"] == 6.0
+
+
+def test_insufficient_funds_rejection(client):
+    email = f"trader_broke_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Broke Trader", "password": "pass"})
+
+    # Attempt to buy ₹2,00,000 worth of stock with only ₹1,00,000 balance
+    res = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "TCS",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 2000.0,
+        "quantity": 100.0,  # ₹2,00,000
+    })
+    assert res.status_code == 400
+    assert "Insufficient virtual cash" in res.json()["detail"]
+
+
+def test_oversell_rejection(client):
+    email = f"trader_short_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Short Seller", "password": "pass"})
+
+    # Attempt to sell shares not owned
+    res = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "INFY",
+        "action": "SELL",
+        "order_type": "MARKET",
+        "price": 1500.0,
+        "quantity": 5.0,
+    })
+    assert res.status_code == 400
+    assert "Insufficient shares" in res.json()["detail"]
+
+
+def test_watchlist_toggle(client):
+    email = f"trader_watch_{uuid.uuid4().hex[:8]}@chronos.local"
+    # Add RELIANCE
+    t1 = client.post("/api/virtual/watchlist/toggle", json={"email": email, "symbol": "RELIANCE"})
+    assert t1.status_code == 200
+    assert t1.json()["in_watchlist"] is True
+
+    # Check watchlist
+    w_res = client.get(f"/api/virtual/watchlist/{email}")
+    assert w_res.status_code == 200
+    assert "RELIANCE" in w_res.json()["watchlist"]
+
+    # Toggle off
+    t2 = client.post("/api/virtual/watchlist/toggle", json={"email": email, "symbol": "RELIANCE"})
+    assert t2.status_code == 200
+    assert t2.json()["in_watchlist"] is False
+
+    w_res2 = client.get(f"/api/virtual/watchlist/{email}")
+    assert "RELIANCE" not in w_res2.json()["watchlist"]
+
+
+def test_order_history_recording(client):
+    email = f"trader_orders_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Order Tracker", "password": "pass"})
+
+    client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "HDFCBANK",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 1000.0,
+        "quantity": 5.0,
+    })
+
+    hist_res = client.get(f"/api/virtual/orders/{email}")
+    assert hist_res.status_code == 200
+    orders = hist_res.json()
+    assert len(orders) >= 1
+    assert orders[0]["symbol"] == "HDFCBANK"
+    assert orders[0]["action"] == "BUY"
+    assert orders[0]["status"] == "Completed"
