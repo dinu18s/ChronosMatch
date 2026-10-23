@@ -3,50 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChronosMatch | Virtual Paper Trading & Matching Terminal</title>
+    <title>ChronosMatch | Professional Paper Trading Terminal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #080c14;
-            --bg-card: #101623;
-            --bg-card-hover: #151e30;
-            --bg-subtle: #192338;
-            --border: #222e47;
+            --bg-base: #06090e;
+            --bg-sidebar: #090e17;
+            --bg-card: #0f1624;
+            --bg-card-hover: #141e30;
+            --bg-subtle: #172238;
+            --border: #1e2c45;
+            --border-highlight: #2f446b;
             --border-focus: #3b82f6;
             --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.25);
             --green-soft: rgba(16, 185, 129, 0.12);
             --red: #f43f5e;
+            --red-glow: rgba(244, 63, 94, 0.25);
             --red-soft: rgba(244, 63, 94, 0.12);
             --blue: #3b82f6;
-            --blue-soft: rgba(59, 130, 246, 0.12);
+            --blue-soft: rgba(59, 130, 246, 0.14);
             --yellow: #f59e0b;
-            --yellow-soft: rgba(245, 158, 11, 0.12);
+            --yellow-soft: rgba(245, 158, 11, 0.14);
             --purple: #8b5cf6;
+            --purple-soft: rgba(139, 92, 246, 0.14);
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
             --text-muted: #64748b;
             --chart-grid: rgba(255, 255, 255, 0.05);
-            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --sidebar-width: 230px;
+            --sidebar-collapsed-width: 64px;
         }
 
         [data-theme="light"] {
             --bg-base: #f1f5f9;
+            --bg-sidebar: #ffffff;
             --bg-card: #ffffff;
             --bg-card-hover: #f8fafc;
             --bg-subtle: #e2e8f0;
             --border: #cbd5e1;
+            --border-highlight: #94a3b8;
             --border-focus: #2563eb;
             --green: #059669;
+            --green-glow: rgba(5, 150, 105, 0.2);
             --green-soft: rgba(5, 150, 105, 0.12);
             --red: #e11d48;
+            --red-glow: rgba(225, 29, 72, 0.2);
             --red-soft: rgba(225, 29, 72, 0.12);
             --blue: #2563eb;
             --blue-soft: rgba(37, 99, 235, 0.12);
             --yellow: #d97706;
             --yellow-soft: rgba(217, 119, 6, 0.12);
             --purple: #7c3aed;
+            --purple-soft: rgba(124, 58, 237, 0.12);
             --text-main: #0f172a;
             --text-sub: #475569;
             --text-muted: #64748b;
@@ -58,7 +70,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
         }
 
         body {
@@ -75,18 +87,19 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Top Notice Banner: Paper Trading Only */
+        /* Top Simulation Notice Banner */
         .simulation-banner {
             background: linear-gradient(90deg, #1e1b4b, #172554);
             border-bottom: 1px solid rgba(139, 92, 246, 0.3);
             color: #e0e7ff;
-            padding: 8px 24px;
+            padding: 7px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            font-size: 12px;
+            font-size: 11px;
             flex-wrap: wrap;
+            z-index: 100;
         }
 
         [data-theme="light"] .simulation-banner {
@@ -108,7 +121,7 @@
             font-size: 10px;
             font-weight: 800;
             letter-spacing: 0.5px;
-            padding: 3px 8px;
+            padding: 2px 7px;
             border-radius: 4px;
             text-transform: uppercase;
         }
@@ -150,53 +163,106 @@
         header {
             background: var(--bg-card);
             border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
             flex-wrap: wrap;
+            z-index: 90;
         }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .btn-sidebar-toggle {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .btn-sidebar-toggle:hover { border-color: var(--border-focus); }
 
         .logo-wrap {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
         }
 
         .logo-icon {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             background: linear-gradient(135deg, #3b82f6, #10b981);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 19px;
+            font-size: 17px;
             color: #fff;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
 
         .logo-title {
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 800;
-            letter-spacing: -0.4px;
+            letter-spacing: -0.3px;
             color: var(--text-main);
         }
 
-        .logo-subtitle {
-            font-size: 11px;
-            color: var(--text-sub);
+        .logo-badge {
+            font-size: 10px;
+            background: var(--purple-soft);
+            color: var(--purple);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
         }
+
+        /* Ticker Marquee Strip in Header */
+        .ticker-ribbon {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            overflow-x: auto;
+            max-width: 500px;
+            scrollbar-width: none;
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .ticker-ribbon::-webkit-scrollbar { display: none; }
+
+        .ticker-pill-mini {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .ticker-pill-mini .sym { font-weight: 700; }
+        .ticker-pill-mini .chg.pos { color: var(--green); }
+        .ticker-pill-mini .chg.neg { color: var(--red); }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .theme-toggle-btn {
+        .btn-action-tool {
             background: var(--bg-subtle);
             border: 1px solid var(--border);
             color: var(--text-main);
@@ -209,25 +275,23 @@
             align-items: center;
             gap: 6px;
         }
-
-        .theme-toggle-btn:hover {
-            border-color: var(--border-focus);
-        }
+        .btn-action-tool:hover { border-color: var(--border-focus); }
+        .btn-action-tool.danger:hover { border-color: var(--red); color: var(--red); }
 
         .user-pill {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: var(--bg-subtle);
             border: 1px solid var(--border);
-            padding: 4px 12px;
-            border-radius: 30px;
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 12px;
         }
 
         .user-avatar-wrap {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--blue);
             display: flex;
@@ -235,61 +299,127 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
         }
 
-        .user-details {
+        /* App Wrapper with Sidebar and Main View */
+        .app-body {
+            display: flex;
+            flex: 1;
+            min-height: calc(100vh - 85px);
+        }
+
+        /* Collapsible Sidebar */
+        aside.sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            line-height: 1.15;
+            justify-content: space-between;
+            padding: 16px 10px;
+            gap: 16px;
+            flex-shrink: 0;
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 80;
         }
 
-        .user-name-txt {
-            font-weight: 700;
-            color: var(--text-main);
-            font-size: 12px;
+        aside.sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
         }
 
-        .user-email-txt {
+        aside.sidebar.collapsed .nav-text,
+        aside.sidebar.collapsed .sidebar-section-title,
+        aside.sidebar.collapsed .sidebar-badge {
+            display: none;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-section-title {
             font-size: 10px;
-            color: var(--text-sub);
-        }
-
-        .btn-header-auth {
-            background: var(--blue);
-            color: #fff;
-            border: none;
-            padding: 7px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-logout {
-            background: transparent;
-            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
             color: var(--text-muted);
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 13px;
+            padding: 8px 12px 4px;
+            font-weight: 700;
         }
-        .btn-logout:hover { color: var(--red); }
 
-        /* Main Workspace Container */
-        .main-container {
-            flex: 1;
-            padding: 16px 24px 32px;
-            max-width: 1600px;
+        .nav-link-btn {
             width: 100%;
-            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-sub);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            position: relative;
+        }
+
+        .nav-link-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-main);
+        }
+
+        .nav-link-btn.active {
+            background: var(--blue-soft);
+            color: var(--blue);
+            border-color: rgba(59, 130, 246, 0.3);
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            width: 20px;
+            display: inline-flex;
+            justify-content: center;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: var(--green-soft);
+            color: var(--green);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Content Area */
+        main.main-content {
+            flex: 1;
+            padding: 16px 20px 32px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            max-width: 1700px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        /* Portfolio Strip Cards */
+        /* View Panels */
+        .view-panel {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+        .view-panel.active {
+            display: flex;
+        }
+
+        /* Portfolio Top Strip */
         .portfolio-strip {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -300,10 +430,10 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             box-shadow: var(--shadow-card);
         }
 
@@ -344,33 +474,25 @@
         .pnl-badge.profit { background: var(--green-soft); color: var(--green); }
         .pnl-badge.loss { background: var(--red-soft); color: var(--red); }
 
-        /* 3-Column Trading Layout */
-        .trading-layout {
+        /* Trading Terminal 3-Column Layout */
+        .terminal-grid {
             display: grid;
-            grid-template-columns: 310px 1fr 340px;
+            grid-template-columns: 290px 1fr 340px;
             gap: 16px;
             align-items: start;
         }
 
-        @media (max-width: 1280px) {
-            .trading-layout {
-                grid-template-columns: 280px 1fr;
-            }
-            .order-entry-panel {
-                grid-column: span 2;
-            }
+        @media (max-width: 1300px) {
+            .terminal-grid { grid-template-columns: 260px 1fr; }
+            .order-entry-card { grid-column: span 2; }
         }
 
         @media (max-width: 900px) {
-            .trading-layout {
-                grid-template-columns: 1fr;
-            }
-            .order-entry-panel {
-                grid-column: span 1;
-            }
+            .terminal-grid { grid-template-columns: 1fr; }
+            .order-entry-card { grid-column: span 1; }
         }
 
-        /* Card Container */
+        /* Generic Card Styling */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -380,7 +502,7 @@
         }
 
         .card-header {
-            padding: 12px 18px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -390,7 +512,7 @@
         }
 
         .card-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-main);
             display: flex;
@@ -403,9 +525,9 @@
             color: var(--text-sub);
         }
 
-        /* Watchlist & Search Panel (Left) */
+        /* Watchlist Panel (Left) */
         .search-box-wrap {
-            padding: 12px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border);
             display: flex;
             flex-direction: column;
@@ -423,7 +545,7 @@
             background: var(--bg-subtle);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 12px 8px 32px;
+            padding: 7px 10px 7px 30px;
             border-radius: 8px;
             font-size: 12px;
             outline: none;
@@ -432,8 +554,8 @@
 
         .search-icon-inside {
             position: absolute;
-            left: 10px;
-            font-size: 13px;
+            left: 9px;
+            font-size: 12px;
             color: var(--text-muted);
             pointer-events: none;
         }
@@ -442,16 +564,17 @@
             display: flex;
             gap: 4px;
             overflow-x: auto;
-            padding-bottom: 2px;
+            scrollbar-width: none;
         }
+        .category-filter-chips::-webkit-scrollbar { display: none; }
 
         .cat-chip {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-sub);
-            padding: 3px 8px;
+            padding: 3px 7px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
@@ -462,41 +585,21 @@
             color: var(--blue);
         }
 
-        .sort-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-sub);
-            padding: 0 4px;
-        }
-
-        .sort-select {
-            background: transparent;
-            border: none;
-            color: var(--text-sub);
-            font-size: 11px;
-            cursor: pointer;
-            outline: none;
-        }
-
         .watchlist-scroll-list {
-            max-height: 520px;
+            max-height: 540px;
             overflow-y: auto;
         }
 
         .watchlist-item {
-            padding: 10px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: background 0.1s ease;
         }
-        .watchlist-item:hover {
-            background: var(--bg-card-hover);
-        }
+        .watchlist-item:hover { background: var(--bg-card-hover); }
         .watchlist-item.selected {
             background: var(--blue-soft);
             border-left: 3px solid var(--blue);
@@ -505,28 +608,26 @@
         .wl-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .wl-star {
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
         }
-        .wl-star.starred {
-            color: var(--yellow);
-        }
+        .wl-star.starred { color: var(--yellow); }
 
         .wl-sym-title {
             font-weight: 700;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-main);
         }
 
         .wl-comp-name {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-sub);
-            max-width: 120px;
+            max-width: 100px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -536,34 +637,26 @@
             text-align: right;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
         }
 
-        .wl-price {
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--text-main);
-        }
-
-        .wl-change {
-            font-size: 11px;
-            font-weight: 600;
-        }
+        .wl-price { font-weight: 700; font-size: 12px; color: var(--text-main); }
+        .wl-change { font-size: 10px; font-weight: 600; }
         .wl-change.pos { color: var(--green); }
         .wl-change.neg { color: var(--red); }
 
-        /* Center Column: Header & Chart & Order Book */
+        /* Center Column: Stock Info, Chart, Depth */
         .center-column {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
-        .active-stock-header {
+        .stock-header-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 18px 24px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -593,41 +686,31 @@
         .stock-ticker-pill {
             background: var(--bg-subtle);
             border: 1px solid var(--border);
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
             color: var(--text-sub);
         }
 
-        .stock-category-pill {
-            background: var(--blue-soft);
-            color: var(--blue);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
         .stock-price-lg-row {
             display: flex;
             align-items: baseline;
-            gap: 14px;
-            margin-top: 4px;
+            gap: 12px;
+            margin-top: 2px;
         }
 
         .stock-price-lg {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             color: var(--text-main);
             letter-spacing: -0.5px;
         }
 
         .stock-change-badge {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-radius: 6px;
         }
         .stock-change-badge.pos { background: var(--green-soft); color: var(--green); }
@@ -635,43 +718,34 @@
 
         .stock-stats-pills {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .stat-box {
             background: var(--bg-subtle);
             border: 1px solid var(--border);
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
             gap: 2px;
-            min-width: 80px;
+            min-width: 75px;
         }
 
-        .stat-box-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
+        .stat-box-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box-val { font-size: 11px; font-weight: 700; color: var(--text-main); }
 
-        .stat-box-val {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        /* Chart Box */
+        /* Chart Controls & Canvas */
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 16px 20px;
+            padding: 14px 18px;
             box-shadow: var(--shadow-card);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .chart-controls {
@@ -680,6 +754,31 @@
             justify-content: space-between;
             gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .chart-type-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-subtle);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .chart-type-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .chart-type-btn.active {
+            background: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         .timeframe-group {
@@ -695,21 +794,18 @@
             background: transparent;
             border: none;
             color: var(--text-sub);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
         }
-        .tf-btn.active {
-            background: var(--blue);
-            color: white;
-        }
+        .tf-btn.active { background: var(--blue); color: white; }
 
         .chart-canvas-wrap {
             position: relative;
             width: 100%;
-            height: 320px;
+            height: 330px;
         }
 
         #chart-canvas {
@@ -731,15 +827,19 @@
             z-index: 10;
         }
 
-        /* Order Book Card */
-        .orderbook-grid {
+        /* Advanced Order Book & Depth Visualizer */
+        .orderbook-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
-            padding: 14px 18px;
+            padding: 14px;
         }
 
-        .ob-col-title {
+        @media (max-width: 768px) {
+            .orderbook-panel { grid-template-columns: 1fr; }
+        }
+
+        .ob-header-row {
             display: flex;
             justify-content: space-between;
             font-size: 11px;
@@ -749,29 +849,74 @@
         }
 
         .ob-row {
+            position: relative;
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 4px 6px;
             font-size: 12px;
             cursor: pointer;
             border-radius: 4px;
-            position: relative;
+            overflow: hidden;
         }
         .ob-row:hover { background: var(--bg-card-hover); }
 
-        .ob-row.bid { color: var(--green); }
-        .ob-row.ask { color: var(--red); }
+        .depth-bar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            pointer-events: none;
+            opacity: 0.15;
+            transition: width 0.2s ease;
+        }
+        .depth-bar.bid { right: 0; background: var(--green); }
+        .depth-bar.ask { left: 0; background: var(--red); }
 
-        /* Order Entry Panel (Right) */
-        .order-entry-panel {
+        .ob-spread-bar {
+            grid-column: span 2;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+        }
+        @media (max-width: 768px) {
+            .ob-spread-bar { grid-column: span 1; }
+        }
+
+        .imbalance-meter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 140px;
+        }
+
+        .imbalance-bar-bg {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--red);
+            overflow: hidden;
+            display: flex;
+        }
+        .imbalance-bar-fill {
+            height: 100%;
+            background: var(--green);
+            transition: width 0.3s ease;
+        }
+
+        /* Order Entry Card (Right) */
+        .order-entry-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 18px;
+            padding: 16px;
             box-shadow: var(--shadow-card);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
         .trade-side-tabs {
@@ -781,7 +926,7 @@
         }
 
         .side-tab-btn {
-            padding: 10px;
+            padding: 9px;
             border: none;
             border-radius: 8px;
             font-size: 13px;
@@ -794,18 +939,18 @@
         .side-tab-btn.buy.active {
             background: var(--green);
             color: white;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px var(--green-glow);
         }
         .side-tab-btn.sell.active {
             background: var(--red);
             color: white;
-            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+            box-shadow: 0 4px 12px var(--red-glow);
         }
 
         .order-type-tabs {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
             background: var(--bg-subtle);
             padding: 3px;
             border-radius: 8px;
@@ -815,12 +960,13 @@
         .order-type-btn {
             background: transparent;
             border: none;
-            padding: 6px;
+            padding: 5px 2px;
             font-size: 11px;
             font-weight: 700;
             color: var(--text-sub);
             cursor: pointer;
             border-radius: 6px;
+            text-align: center;
         }
         .order-type-btn.active {
             background: var(--bg-card);
@@ -831,24 +977,24 @@
         .balance-avail-box {
             background: var(--bg-subtle);
             border: 1px solid var(--border);
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
         }
 
         .input-label-row {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-sub);
             font-weight: 600;
         }
@@ -858,9 +1004,9 @@
             background: var(--bg-subtle);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 10px 14px;
+            padding: 9px 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             outline: none;
         }
@@ -882,20 +1028,17 @@
             font-weight: 700;
             cursor: pointer;
         }
-        .pct-btn:hover {
-            border-color: var(--border-focus);
-            color: var(--text-main);
-        }
+        .pct-btn:hover { border-color: var(--border-focus); color: var(--text-main); }
 
         .order-summary-box {
             background: var(--bg-subtle);
             border: 1px solid var(--border);
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            font-size: 12px;
+            gap: 5px;
+            font-size: 11px;
         }
 
         .summary-line {
@@ -905,19 +1048,19 @@
         }
         .summary-line.total {
             font-weight: 800;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-main);
             border-top: 1px solid var(--border);
-            padding-top: 6px;
+            padding-top: 5px;
             margin-top: 2px;
         }
 
         .btn-order-action {
             width: 100%;
-            padding: 13px;
+            padding: 12px;
             border: none;
             border-radius: 10px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 800;
             cursor: pointer;
             color: white;
@@ -925,24 +1068,18 @@
         }
         .btn-order-action.buy {
             background: var(--green);
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 4px 14px var(--green-glow);
         }
         .btn-order-action.sell {
             background: var(--red);
-            box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+            box-shadow: 0 4px 14px var(--red-glow);
         }
 
-        /* Bottom Section: Holdings & Orders */
-        .bottom-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
+        /* Tabbed Bottom Section (Holdings & Orders) */
         .bottom-tabs-header {
             display: flex;
             border-bottom: 1px solid var(--border);
-            gap: 20px;
+            gap: 16px;
             padding: 0 8px;
         }
 
@@ -951,7 +1088,7 @@
             border: none;
             border-bottom: 2px solid transparent;
             padding: 10px 4px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-sub);
             cursor: pointer;
@@ -964,14 +1101,12 @@
             border-bottom-color: var(--blue);
         }
 
-        .data-table-wrap {
-            overflow-x: auto;
-        }
+        .data-table-wrap { overflow-x: auto; }
 
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 12px;
             text-align: left;
         }
 
@@ -982,19 +1117,16 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.4px;
-            padding: 10px 16px;
+            padding: 9px 14px;
             border-bottom: 1px solid var(--border);
         }
 
         .data-table td {
-            padding: 12px 16px;
+            padding: 11px 14px;
             border-bottom: 1px solid var(--border);
             color: var(--text-main);
         }
-
-        .data-table tr:hover td {
-            background: var(--bg-card-hover);
-        }
+        .data-table tr:hover td { background: var(--bg-card-hover); }
 
         .action-chip-btn {
             background: var(--bg-subtle);
@@ -1002,25 +1134,227 @@
             color: var(--text-main);
             padding: 3px 8px;
             border-radius: 4px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             cursor: pointer;
         }
         .action-chip-btn.buy { color: var(--green); border-color: rgba(16, 185, 129, 0.4); }
         .action-chip-btn.sell { color: var(--red); border-color: rgba(244, 63, 94, 0.4); }
 
-        .empty-box {
-            padding: 40px 20px;
+        /* Analytics View */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card-lg {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-big-val {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Asset Allocation Chart Bar */
+        .allocation-bar {
+            height: 18px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            background: var(--bg-subtle);
+            margin: 10px 0;
+        }
+
+        .alloc-segment {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .alloc-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 11px;
+        }
+        .alloc-legend-item { display: flex; align-items: center; gap: 6px; }
+        .alloc-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* Challenges & Badges */
+        .challenges-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .challenge-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .challenge-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .challenge-title { font-weight: 700; font-size: 13px; color: var(--text-main); }
+        .challenge-desc { font-size: 11px; color: var(--text-sub); }
+
+        .challenge-badge-reward {
+            background: var(--purple-soft);
+            color: var(--purple);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .badge-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            color: var(--text-sub);
+            gap: 6px;
         }
-        .empty-box-icon { font-size: 32px; }
+        .badge-card.earned {
+            border-color: var(--yellow);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+        }
+        .badge-icon { font-size: 26px; }
+        .badge-name { font-size: 11px; font-weight: 700; }
+        .badge-status { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
 
-        /* Modal Overlays */
+        /* Trading Journal View */
+        .journal-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-subtle);
+            border-radius: 10px;
+            margin: 14px;
+        }
+        @media (max-width: 768px) { .journal-form { grid-template-columns: 1fr; } }
+
+        .journal-entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .journal-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .journal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* AI Assistant Chat View */
+        .ai-chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .ai-messages-box {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-msg {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        .ai-msg.assistant {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            color: var(--text-main);
+        }
+        .ai-msg.user {
+            background: var(--blue);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .ai-prompt-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .ai-chip {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .ai-chip:hover { border-color: var(--border-focus); color: var(--text-main); }
+
+        .ai-input-bar {
+            display: flex;
+            padding: 12px 16px;
+            gap: 10px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        /* Modals & Dialogs */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1044,63 +1378,25 @@
         }
 
         .modal-card-header {
-            padding: 20px 24px 16px;
+            padding: 18px 20px 14px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .modal-title {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .modal-close-btn {
-            background: transparent;
-            border: none;
-            font-size: 16px;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
+        .modal-title { font-size: 15px; font-weight: 800; color: var(--text-main); }
+        .modal-close-btn { background: transparent; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; }
 
         .modal-body {
-            padding: 20px 24px;
+            padding: 18px 20px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-        }
-
-        .confirm-details-box {
-            background: var(--bg-subtle);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .confirm-row {
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-sub);
-        }
-        .confirm-row.highlight {
-            font-weight: 800;
-            color: var(--text-main);
-            border-top: 1px solid var(--border);
-            padding-top: 8px;
-            margin-top: 4px;
+            gap: 12px;
         }
 
         .modal-footer {
-            padding: 16px 24px;
+            padding: 14px 20px;
             border-top: 1px solid var(--border);
             display: flex;
             gap: 10px;
@@ -1108,7 +1404,7 @@
 
         .modal-btn-cancel {
             flex: 1;
-            padding: 11px;
+            padding: 10px;
             background: var(--bg-subtle);
             border: 1px solid var(--border);
             color: var(--text-sub);
@@ -1119,7 +1415,7 @@
 
         .modal-btn-confirm {
             flex: 2;
-            padding: 11px;
+            padding: 10px;
             background: var(--blue);
             border: none;
             color: white;
@@ -1127,6 +1423,7 @@
             font-weight: 800;
             cursor: pointer;
         }
+        .modal-btn-confirm.danger { background: var(--red); }
 
         /* Toast */
         #toast-box {
@@ -1160,7 +1457,7 @@
         <div class="sim-left">
             <span class="sim-pill">PAPER TRADING</span>
             <span class="sim-title"><strong>PAPER TRADING — SIMULATION ONLY — NO REAL MONEY</strong></span>
-            <span class="sim-desc">• Starting Virtual Capital: ₹1,00,000.00 • Educational Paper Trading Demo</span>
+            <span class="sim-desc">• Virtual Starting Capital: ₹1,00,000.00 • Zero Financial Risk</span>
         </div>
         <div class="sim-right">
             <span class="data-badge" id="data-feed-badge">
@@ -1175,362 +1472,693 @@
          TOP NAVIGATION HEADER
          ========================================================================== -->
     <header>
-        <div class="logo-wrap" onclick="location.reload()">
-            <div class="logo-icon">⚡</div>
-            <div>
-                <div class="logo-title">ChronosMatch</div>
-                <div class="logo-subtitle">Real-Time Market Terminal & Virtual Trading</div>
+        <div class="header-left">
+            <button type="button" class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+                ☰
+            </button>
+            <div class="logo-wrap" onclick="switchView('terminal')">
+                <div class="logo-icon">⚡</div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span class="logo-title">ChronosMatch</span>
+                        <span class="logo-badge">PRO</span>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Live Ticker Ribbon -->
+        <div class="ticker-ribbon mono" id="header-ticker-ribbon">
+            <!-- Populated dynamically with live stocks -->
+        </div>
+
         <div class="header-actions">
+            <!-- Engine Performance Metrics Modal Trigger -->
+            <button type="button" class="btn-action-tool" onclick="openEngineMetricsModal()" title="View HFT Engine Latency & Benchmark Metrics">
+                ⚡ <span class="nav-text">Engine: 1.42M ops/s</span>
+            </button>
+
+            <!-- Reset Portfolio Button -->
+            <button type="button" class="btn-action-tool danger" onclick="openResetModal()" title="Reset Virtual Account Balance">
+                ↺ <span class="nav-text">Reset Portfolio</span>
+            </button>
+
             <!-- Theme Switcher -->
-            <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <button type="button" class="btn-action-tool" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
                 <span id="theme-icon">☀️</span> <span id="theme-text">Light</span>
             </button>
 
             <!-- User Auth Pill -->
             <div class="user-pill" id="user-header-pill" style="display: none;">
                 <div class="user-avatar-wrap" id="user-avatar-badge">T</div>
-                <div class="user-details">
-                    <span class="user-name-txt" id="user-header-name">Trader</span>
-                    <span class="user-email-txt mono" id="user-header-email">trader@example.com</span>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700;" id="user-header-name">Trader</span>
+                    <span style="font-size: 10px; color: var(--text-sub);" class="mono" id="user-header-email">user@example.com</span>
                 </div>
-                <button type="button" class="btn-logout" onclick="logoutUser()" title="Log Out">✕</button>
+                <button type="button" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px 4px;" onclick="logoutUser()" title="Log Out">✕</button>
             </div>
 
-            <!-- Sign In Button (shown when logged out) -->
-            <button type="button" class="btn-header-auth" id="btn-header-login" onclick="openAuthModal()">
-                Sign In / Register
+            <button type="button" class="btn-action-tool" id="btn-header-login" onclick="openAuthModal()" style="background: var(--blue); color: white; border: none;">
+                Sign In
             </button>
         </div>
     </header>
 
     <!-- ==========================================================================
-         MAIN WORKSPACE CONTAINER
+         APPLICATION WRAPPER (SIDEBAR + MAIN VIEWS)
          ========================================================================== -->
-    <div class="main-container">
+    <div class="app-body">
 
-        <!-- Portfolio Metrics Strip -->
-        <div class="portfolio-strip">
-            <div class="metric-card">
-                <div class="metric-card-header">
-                    <span>💵 Available Cash</span>
-                    <span class="mono">INR</span>
-                </div>
-                <div class="metric-card-value mono" id="metric-avail-cash">₹1,00,000.00</div>
-                <div class="metric-card-sub">Virtual buying power</div>
+        <!-- Collapsible Sidebar -->
+        <aside class="sidebar" id="app-sidebar">
+            <div>
+                <div class="sidebar-section-title">Navigation</div>
+                <ul class="nav-list">
+                    <li>
+                        <button type="button" class="nav-link-btn active" id="nav-btn-terminal" onclick="switchView('terminal')">
+                            <span class="nav-icon">📈</span>
+                            <span class="nav-text">Terminal</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-portfolio" onclick="switchView('portfolio')">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-text">Portfolio & Analytics</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-challenges" onclick="switchView('challenges')">
+                            <span class="nav-icon">🏆</span>
+                            <span class="nav-text">Challenges & Badges</span>
+                            <span class="sidebar-badge" id="sidebar-challenges-badge">3 New</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-journal" onclick="switchView('journal')">
+                            <span class="nav-icon">📔</span>
+                            <span class="nav-text">Trading Journal</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-ai" onclick="switchView('ai')">
+                            <span class="nav-icon">🤖</span>
+                            <span class="nav-text">AI Assistant</span>
+                        </button>
+                    </li>
+                </ul>
             </div>
 
-            <div class="metric-card">
-                <div class="metric-card-header">
-                    <span>📊 Portfolio Value</span>
-                    <span class="mono">TOTAL</span>
-                </div>
-                <div class="metric-card-value mono" id="metric-portfolio-val">₹1,00,000.00</div>
-                <div class="metric-card-sub" id="metric-portfolio-sub">Cash + Active Holdings</div>
+            <!-- Sidebar Footer Stats -->
+            <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: 11px;">
+                <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase; font-weight: 700;">Account Balance</div>
+                <div class="mono" style="font-weight: 800; font-size: 14px; color: var(--text-main); margin-top: 2px;" id="sidebar-cash-val">₹1,00,000.00</div>
+                <div style="color: var(--text-sub); font-size: 10px; margin-top: 2px;" id="sidebar-locked-val">Locked: ₹0.00</div>
             </div>
+        </aside>
 
-            <div class="metric-card">
-                <div class="metric-card-header">
-                    <span>💼 Total Invested</span>
-                    <span class="mono">COST</span>
-                </div>
-                <div class="metric-card-value mono" id="metric-total-invested">₹0.00</div>
-                <div class="metric-card-sub">Capital in current stocks</div>
-            </div>
+        <!-- Main Content Area -->
+        <main class="main-content">
 
-            <div class="metric-card">
-                <div class="metric-card-header">
-                    <span>📈 Unrealized P&L</span>
-                    <span class="pnl-badge profit" id="badge-unrealized-pct">+0.00%</span>
-                </div>
-                <div class="metric-card-value mono" id="metric-unrealized-pnl">₹0.00</div>
-                <div class="metric-card-sub">Mark-to-market open gains</div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-card-header">
-                    <span>🏆 Realized P&L</span>
-                    <span class="mono">LOCKED</span>
-                </div>
-                <div class="metric-card-value mono" id="metric-realized-pnl">₹0.00</div>
-                <div class="metric-card-sub">Net profits from closed trades</div>
-            </div>
-        </div>
-
-        <!-- 3-Column Trading Layout -->
-        <div class="trading-layout">
-
-            <!-- LEFT: Watchlist & Search Panel -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">🔍 Market Watch</span>
-                    <span class="card-subtitle" id="wl-count-label">17 instruments</span>
-                </div>
-
-                <div class="search-box-wrap">
-                    <div class="search-input-wrap">
-                        <span class="search-icon-inside">🔍</span>
-                        <input type="text" class="search-input" id="search-stock-input" placeholder="Search by name or ticker..." oninput="filterWatchlist()">
+            <!-- Global Portfolio Strip (Visible Across Terminal and Portfolio) -->
+            <div class="portfolio-strip">
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span>💵 Available Cash</span>
+                        <span class="mono">INR</span>
                     </div>
-
-                    <!-- Category Chips -->
-                    <div class="category-filter-chips">
-                        <button type="button" class="cat-chip active" onclick="setCategoryFilter('all', this)">All</button>
-                        <button type="button" class="cat-chip" onclick="setCategoryFilter('Indian Equities', this)">Nifty 50</button>
-                        <button type="button" class="cat-chip" onclick="setCategoryFilter('Global Tech', this)">US Tech</button>
-                        <button type="button" class="cat-chip" onclick="setCategoryFilter('Crypto', this)">Crypto</button>
-                        <button type="button" class="cat-chip" onclick="setCategoryFilter('watchlist', this)">⭐ Starred</button>
-                    </div>
-
-                    <!-- Sort Controls -->
-                    <div class="sort-row">
-                        <span>Sort By</span>
-                        <select class="sort-select" id="sort-select" onchange="filterWatchlist()">
-                            <option value="default">Default</option>
-                            <option value="price-desc">Price: High to Low</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="change-desc">24h Gainers (%)</option>
-                            <option value="change-asc">24h Losers (%)</option>
-                        </select>
-                    </div>
+                    <div class="metric-card-value mono" id="metric-avail-cash">₹1,00,000.00</div>
+                    <div class="metric-card-sub" id="metric-locked-funds">Locked: ₹0.00 in orders</div>
                 </div>
 
-                <!-- Watchlist Item Rows -->
-                <div class="watchlist-scroll-list" id="watchlist-items-container">
-                    <!-- Populated dynamically -->
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span>📊 Portfolio Value</span>
+                        <span class="mono">TOTAL</span>
+                    </div>
+                    <div class="metric-card-value mono" id="metric-portfolio-val">₹1,00,000.00</div>
+                    <div class="metric-card-sub" id="metric-portfolio-sub">Cash + Active Holdings</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span>💼 Total Invested</span>
+                        <span class="mono">COST</span>
+                    </div>
+                    <div class="metric-card-value mono" id="metric-total-invested">₹0.00</div>
+                    <div class="metric-card-sub">In 0 active instruments</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span>📈 Unrealized P&L</span>
+                        <span class="pnl-badge profit" id="badge-unrealized-pct">+0.00%</span>
+                    </div>
+                    <div class="metric-card-value mono" id="metric-unrealized-pnl">₹0.00</div>
+                    <div class="metric-card-sub">Live mark-to-market</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span>🏆 Realized P&L</span>
+                        <span class="mono">LOCKED</span>
+                    </div>
+                    <div class="metric-card-value mono" id="metric-realized-pnl">₹0.00</div>
+                    <div class="metric-card-sub">From closed sales</div>
                 </div>
             </div>
 
-            <!-- CENTER: Stock Overview, Chart, and Market Depth -->
-            <div class="center-column">
+            <!-- ==================================================================
+                 VIEW 1: TRADING TERMINAL
+                 ================================================================== -->
+            <div class="view-panel active" id="view-terminal">
+                <div class="terminal-grid">
 
-                <!-- Stock Header Bar -->
-                <div class="active-stock-header">
-                    <div class="stock-main-info">
-                        <div class="stock-title-row">
-                            <span class="stock-name-lg" id="active-stock-name">Reliance Industries</span>
-                            <span class="stock-ticker-pill mono" id="active-stock-ticker">RELIANCE</span>
-                            <span class="stock-category-pill" id="active-stock-category">Indian Equities</span>
+                    <!-- Left: Watchlist & Search -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">🔍 Market Watch</span>
+                            <span class="card-subtitle" id="wl-count-label">17 instruments</span>
                         </div>
-                        <div class="stock-price-lg-row">
-                            <span class="stock-price-lg mono" id="active-stock-price">₹1,184.50</span>
-                            <span class="stock-change-badge pos mono" id="active-stock-change">▲ +24.50 (+2.11%)</span>
-                            <span style="font-size: 11px; color: var(--text-muted);" id="active-native-price"></span>
+
+                        <div class="search-box-wrap">
+                            <div class="search-input-wrap">
+                                <span class="search-icon-inside">🔍</span>
+                                <input type="text" class="search-input" id="search-stock-input" placeholder="Search by name or ticker..." oninput="filterWatchlist()">
+                            </div>
+
+                            <div class="category-filter-chips">
+                                <button type="button" class="cat-chip active" onclick="setCategoryFilter('all', this)">All</button>
+                                <button type="button" class="cat-chip" onclick="setCategoryFilter('Indian Equities', this)">Nifty 50</button>
+                                <button type="button" class="cat-chip" onclick="setCategoryFilter('Global Tech', this)">US Tech</button>
+                                <button type="button" class="cat-chip" onclick="setCategoryFilter('Crypto', this)">Crypto</button>
+                                <button type="button" class="cat-chip" onclick="setCategoryFilter('watchlist', this)">⭐ Starred</button>
+                            </div>
+                        </div>
+
+                        <div class="watchlist-scroll-list" id="watchlist-items-container">
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
 
-                    <!-- Key Stats Pills -->
-                    <div class="stock-stats-pills">
-                        <div class="stat-box">
-                            <span class="stat-box-label">Open</span>
-                            <span class="stat-box-val mono" id="stat-open">₹1,165.00</span>
+                    <!-- Center: Stock Overview, Chart & Order Book -->
+                    <div class="center-column">
+
+                        <!-- Active Stock Header -->
+                        <div class="stock-header-card">
+                            <div class="stock-main-info">
+                                <div class="stock-title-row">
+                                    <span class="stock-name-lg" id="active-stock-name">Reliance Industries</span>
+                                    <span class="stock-ticker-pill mono" id="active-stock-ticker">RELIANCE</span>
+                                    <span class="stock-ticker-pill" id="active-stock-category">Indian Equities</span>
+                                </div>
+                                <div class="stock-price-lg-row">
+                                    <span class="stock-price-lg mono" id="active-stock-price">₹1,184.50</span>
+                                    <span class="stock-change-badge pos mono" id="active-stock-change">▲ +24.50 (+2.11%)</span>
+                                    <span style="font-size: 11px; color: var(--text-muted);" id="active-native-price"></span>
+                                </div>
+                            </div>
+
+                            <div class="stock-stats-pills">
+                                <div class="stat-box">
+                                    <span class="stat-box-label">24h High</span>
+                                    <span class="stat-box-val mono" id="stat-high">₹1,192.00</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-box-label">24h Low</span>
+                                    <span class="stat-box-val mono" id="stat-low">₹1,160.00</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-box-label">Open</span>
+                                    <span class="stat-box-val mono" id="stat-open">₹1,165.00</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-box-label">Status</span>
+                                    <span class="stat-box-val" style="color: var(--green);">● Live Feed</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-box-label">Day High</span>
-                            <span class="stat-box-val mono" id="stat-high">₹1,192.00</span>
+
+                        <!-- Interactive Chart Container -->
+                        <div class="chart-card">
+                            <div class="chart-controls">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <!-- Candlestick vs Line Toggle -->
+                                    <div class="chart-type-toggle">
+                                        <button type="button" class="chart-type-btn active" id="btn-chart-candle" onclick="setChartType('candle')">🕯️ Candlestick</button>
+                                        <button type="button" class="chart-type-btn" id="btn-chart-line" onclick="setChartType('line')">📈 Line</button>
+                                    </div>
+                                    <span style="font-size: 11px; color: var(--text-muted);" id="chart-interval-label">5-min intervals</span>
+                                </div>
+
+                                <!-- Timeframes -->
+                                <div class="timeframe-group">
+                                    <button type="button" class="tf-btn" onclick="setTimeframe('1m', this)">1m</button>
+                                    <button type="button" class="tf-btn active" onclick="setTimeframe('5m', this)">5m</button>
+                                    <button type="button" class="tf-btn" onclick="setTimeframe('15m', this)">15m</button>
+                                    <button type="button" class="tf-btn" onclick="setTimeframe('1h', this)">1h</button>
+                                    <button type="button" class="tf-btn" onclick="setTimeframe('1D', this)">1D</button>
+                                </div>
+                            </div>
+
+                            <div class="chart-canvas-wrap">
+                                <canvas id="chart-canvas"></canvas>
+                                <div class="chart-tooltip mono" id="chart-tooltip"></div>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-box-label">Day Low</span>
-                            <span class="stat-box-val mono" id="stat-low">₹1,160.00</span>
+
+                        <!-- Advanced Order Book with Visual Depth & Imbalance Meter -->
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">👥 Order Book & Market Depth</span>
+                                <span class="card-subtitle">L2 cumulative depth with FIFO priority</span>
+                            </div>
+
+                            <div class="orderbook-panel mono">
+                                <!-- Bids (Buyers) -->
+                                <div>
+                                    <div class="ob-header-row" style="color: var(--green);">
+                                        <span>Bid (₹)</span>
+                                        <span>Size</span>
+                                        <span>Total</span>
+                                    </div>
+                                    <div id="bids-list-box" style="margin-top: 6px;"></div>
+                                </div>
+
+                                <!-- Asks (Sellers) -->
+                                <div>
+                                    <div class="ob-header-row" style="color: var(--red);">
+                                        <span>Ask (₹)</span>
+                                        <span>Size</span>
+                                        <span>Total</span>
+                                    </div>
+                                    <div id="asks-list-box" style="margin-top: 6px;"></div>
+                                </div>
+
+                                <!-- Spread & Imbalance Meter Bar -->
+                                <div class="ob-spread-bar">
+                                    <div style="display: flex; gap: 14px; align-items: center;">
+                                        <span>Spread: <strong id="ob-spread-val">₹0.50</strong> (<span id="ob-spread-pct">0.04%</span>)</span>
+                                        <span>Best Bid: <strong style="color: var(--green);" id="ob-best-bid">₹1,184.25</strong></span>
+                                        <span>Best Ask: <strong style="color: var(--red);" id="ob-best-ask">₹1,184.75</strong></span>
+                                    </div>
+                                    <div class="imbalance-meter">
+                                        <span style="color: var(--green);" id="imbalance-buy-txt">52%</span>
+                                        <div class="imbalance-bar-bg" title="Order Book Imbalance (Bids vs Asks)">
+                                            <div class="imbalance-bar-fill" id="imbalance-bar-fill" style="width: 52%;"></div>
+                                        </div>
+                                        <span style="color: var(--red);" id="imbalance-sell-txt">48%</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-box-label">Feed Status</span>
-                            <span class="stat-box-val" id="stat-feed-source" style="color: var(--green); font-size: 11px;">● Live Feed</span>
+
+                    </div>
+
+                    <!-- Right: Virtual Order Gateway -->
+                    <div class="order-entry-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="font-size: 14px; font-weight: 800; color: var(--text-main);">⚡ Place Virtual Order</span>
+                            <span style="font-size: 10px; background: var(--purple-soft); color: var(--purple); padding: 2px 6px; border-radius: 4px; font-weight: 700;">PAPER</span>
                         </div>
+
+                        <!-- Side Tabs (BUY / SELL) -->
+                        <div class="trade-side-tabs">
+                            <button type="button" class="side-tab-btn buy active" id="btn-side-buy" onclick="setTradeSide('BUY')">BUY</button>
+                            <button type="button" class="side-tab-btn sell" id="btn-side-sell" onclick="setTradeSide('SELL')">SELL</button>
+                        </div>
+
+                        <!-- Order Type Tabs (Market, Limit, Stop-Limit) -->
+                        <div class="order-type-tabs">
+                            <button type="button" class="order-type-btn active" id="btn-ot-market" onclick="setOrderType('MARKET')">Market</button>
+                            <button type="button" class="order-type-btn" id="btn-ot-limit" onclick="setOrderType('LIMIT')">Limit</button>
+                            <button type="button" class="order-type-btn" id="btn-ot-stop" onclick="setOrderType('STOP_LIMIT')">Stop-Limit</button>
+                        </div>
+
+                        <!-- Available Balance Box -->
+                        <div class="balance-avail-box mono">
+                            <span style="color: var(--text-sub);" id="balance-avail-label">Available Cash:</span>
+                            <span style="font-weight: 700; color: var(--text-main);" id="balance-avail-value">₹1,00,000.00</span>
+                        </div>
+
+                        <!-- Stop Trigger Price Input (For Stop-Limit) -->
+                        <div class="input-group" id="stop-price-group" style="display: none;">
+                            <div class="input-label-row">
+                                <span>Stop Trigger Price (₹)</span>
+                                <span style="font-size: 10px; color: var(--text-muted);">Activates limit order</span>
+                            </div>
+                            <input type="number" step="0.05" class="trade-input mono" id="input-order-stop-price" placeholder="Trigger price" oninput="calculateTradeTotal()">
+                        </div>
+
+                        <!-- Limit Price Input -->
+                        <div class="input-group" id="limit-price-group" style="display: none;">
+                            <div class="input-label-row">
+                                <span>Limit Price (₹)</span>
+                                <span id="label-market-ref" style="color: var(--blue); cursor: pointer;" onclick="resetToMarketPrice()">Use Market Price</span>
+                            </div>
+                            <input type="number" step="0.05" class="trade-input mono" id="input-order-price" oninput="calculateTradeTotal()">
+                        </div>
+
+                        <!-- Quantity Input -->
+                        <div class="input-group">
+                            <div class="input-label-row">
+                                <span id="qty-field-label">Quantity (Shares)</span>
+                                <span id="owned-shares-count" style="color: var(--text-sub);">Owned: 0 shares</span>
+                            </div>
+                            <input type="number" min="0.01" step="1" class="trade-input mono" id="input-order-qty" value="1" oninput="calculateTradeTotal()">
+
+                            <div class="pct-quick-row mono">
+                                <button type="button" class="pct-btn" onclick="applyQuickPct(0.25)">25%</button>
+                                <button type="button" class="pct-btn" onclick="applyQuickPct(0.50)">50%</button>
+                                <button type="button" class="pct-btn" onclick="applyQuickPct(0.75)">75%</button>
+                                <button type="button" class="pct-btn" onclick="applyQuickPct(1.00)">MAX</button>
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="order-summary-box mono">
+                            <div class="summary-line">
+                                <span>Order Price:</span>
+                                <span id="summary-unit-price">₹1,184.50</span>
+                            </div>
+                            <div class="summary-line">
+                                <span>Execution Fee:</span>
+                                <span style="color: var(--green);">₹0.00 (Simulated)</span>
+                            </div>
+                            <div class="summary-line total">
+                                <span id="summary-total-label">Total Value:</span>
+                                <span id="summary-total-amount">₹1,184.50</span>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-order-action buy" id="btn-submit-order" onclick="openOrderConfirmModal()">
+                            Review Buy Order
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Tabs: Holdings & Order History -->
+                <div class="card" style="margin-top: 4px;">
+                    <div class="bottom-tabs-header">
+                        <button type="button" class="bottom-tab-btn active" id="tab-btn-holdings" onclick="switchBottomTab('holdings')">
+                            💼 Stock Holdings (<span id="holdings-count-badge">0</span>)
+                        </button>
+                        <button type="button" class="bottom-tab-btn" id="tab-btn-orders" onclick="switchBottomTab('orders')">
+                            📜 Trade History & Orders (<span id="orders-count-badge">0</span>)
+                        </button>
+                    </div>
+
+                    <!-- Holdings Table -->
+                    <div class="data-table-wrap" id="tab-content-holdings">
+                        <table class="data-table mono">
+                            <thead>
+                                <tr>
+                                    <th>Instrument</th>
+                                    <th>Quantity</th>
+                                    <th>Avg. Buy Price</th>
+                                    <th>Market Price</th>
+                                    <th>Total Invested</th>
+                                    <th>Current Value</th>
+                                    <th>Unrealized P&L</th>
+                                    <th>Return (%)</th>
+                                    <th>Quick Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="holdings-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="data-table-wrap" id="tab-content-orders" style="display: none;">
+                        <table class="data-table mono">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                    <th>Instrument</th>
+                                    <th>Type</th>
+                                    <th>Price (₹)</th>
+                                    <th>Quantity</th>
+                                    <th>Total (₹)</th>
+                                    <th>Realized P&L</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Interactive Price Chart -->
-                <div class="chart-card">
-                    <div class="chart-controls">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-weight: 700; font-size: 13px;">📈 Interactive Price Chart</span>
-                            <span style="font-size: 11px; color: var(--text-muted);" id="chart-interval-label">5-min intervals</span>
+            </div>
+
+            <!-- ==================================================================
+                 VIEW 2: PORTFOLIO & ANALYTICS
+                 ================================================================== -->
+            <div class="view-panel" id="view-portfolio">
+                <div class="card" style="padding: 16px 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="card-title">📊 Portfolio Performance & Analytics</span>
+                            <span class="card-subtitle">Real-time financial metrics, win rate, and CSV trade export</span>
+                        </div>
+                        <button type="button" class="btn-action-tool" onclick="exportTradesToCSV()">
+                            📥 Export Trades (CSV)
+                        </button>
+                    </div>
+
+                    <!-- Analytics Metric Cards -->
+                    <div class="analytics-grid" style="margin-top: 16px;">
+                        <div class="stat-card-lg">
+                            <span class="stat-box-label">Win Rate</span>
+                            <div class="stat-big-val mono" id="analytics-win-rate" style="color: var(--green);">0.00%</div>
+                            <span style="font-size: 12px; color: var(--text-sub);" id="analytics-win-loss-count">0 wins / 0 losses</span>
                         </div>
 
-                        <!-- Timeframe Buttons -->
-                        <div class="timeframe-group">
-                            <button type="button" class="tf-btn active" onclick="setTimeframe('1D', this)">1D</button>
-                            <button type="button" class="tf-btn" onclick="setTimeframe('1W', this)">1W</button>
-                            <button type="button" class="tf-btn" onclick="setTimeframe('1M', this)">1M</button>
-                            <button type="button" class="tf-btn" onclick="setTimeframe('1Y', this)">1Y</button>
-                            <button type="button" class="tf-btn" onclick="setTimeframe('ALL', this)">ALL</button>
+                        <div class="stat-card-lg">
+                            <span class="stat-box-label">Total Executed Trades</span>
+                            <div class="stat-big-val mono" id="analytics-total-trades">0</div>
+                            <span style="font-size: 12px; color: var(--text-sub);">Completed orders</span>
+                        </div>
+
+                        <div class="stat-card-lg">
+                            <span class="stat-box-label">Average Trade P&L</span>
+                            <div class="stat-big-val mono" id="analytics-avg-trade">₹0.00</div>
+                            <span style="font-size: 12px; color: var(--text-sub);">Net profit per closed position</span>
+                        </div>
+
+                        <div class="stat-card-lg">
+                            <span class="stat-box-label">Best Trade vs Worst Trade</span>
+                            <div style="display: flex; gap: 16px; margin-top: 4px;">
+                                <div>
+                                    <div style="font-size: 10px; color: var(--green); font-weight: 700;">BEST</div>
+                                    <div class="mono" style="font-size: 16px; font-weight: 800; color: var(--green);" id="analytics-best-trade">₹0.00</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 10px; color: var(--red); font-weight: 700;">WORST</div>
+                                    <div class="mono" style="font-size: 16px; font-weight: 800; color: var(--red);" id="analytics-worst-trade">₹0.00</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Canvas Area -->
-                    <div class="chart-canvas-wrap">
-                        <canvas id="chart-canvas"></canvas>
-                        <div class="chart-tooltip mono" id="chart-tooltip"></div>
+                    <!-- Asset Allocation Visualizer -->
+                    <div style="margin-top: 24px;">
+                        <span style="font-size: 13px; font-weight: 700;">Asset Allocation Breakdown</span>
+                        <div class="allocation-bar" id="allocation-bar-container"></div>
+                        <div class="alloc-legend" id="allocation-legend-container"></div>
                     </div>
                 </div>
 
-                <!-- Live Market Depth / Order Book -->
+                <!-- Complete Trade History with Search & Filter -->
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">👥 Order Book Depth</span>
-                        <span class="card-subtitle">Click any price to auto-fill the order price</span>
-                    </div>
-                    <div class="orderbook-grid mono">
-                        <div>
-                            <div class="ob-col-title" style="color: var(--green);">
-                                <span>Buyers (Bids)</span>
-                                <span>Quantity</span>
-                            </div>
-                            <div id="bids-list-box" style="margin-top: 6px;"></div>
-                        </div>
-                        <div>
-                            <div class="ob-col-title" style="color: var(--red);">
-                                <span>Sellers (Asks)</span>
-                                <span>Quantity</span>
-                            </div>
-                            <div id="asks-list-box" style="margin-top: 6px;"></div>
+                        <span class="card-title">📜 Complete Transaction History</span>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" class="search-input" id="trade-filter-input" placeholder="Filter by instrument or ID..." oninput="renderPortfolioOrdersTable()" style="width: 200px;">
                         </div>
                     </div>
+                    <div class="data-table-wrap">
+                        <table class="data-table mono">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>Price (₹)</th>
+                                    <th>Quantity</th>
+                                    <th>Total Value</th>
+                                    <th>Realized P&L</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="portfolio-orders-table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
-
             </div>
 
-            <!-- RIGHT: Virtual Order Gateway Panel -->
-            <div class="order-entry-panel">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <span style="font-size: 15px; font-weight: 800; color: var(--text-main);">⚡ Place Virtual Order</span>
-                    <span style="font-size: 10px; background: var(--purple); color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700;">VIRTUAL</span>
-                </div>
-
-                <!-- Buy / Sell Toggle Tabs -->
-                <div class="trade-side-tabs">
-                    <button type="button" class="side-tab-btn buy active" id="btn-side-buy" onclick="setTradeSide('BUY')">BUY</button>
-                    <button type="button" class="side-tab-btn sell" id="btn-side-sell" onclick="setTradeSide('SELL')">SELL</button>
-                </div>
-
-                <!-- Order Type (Market vs Limit) -->
-                <div class="order-type-tabs">
-                    <button type="button" class="order-type-btn active" id="btn-ot-market" onclick="setOrderType('MARKET')">⚡ Market (Instant)</button>
-                    <button type="button" class="order-type-btn" id="btn-ot-limit" onclick="setOrderType('LIMIT')">🎯 Limit Order</button>
-                </div>
-
-                <!-- Available Balance / Shares -->
-                <div class="balance-avail-box mono">
-                    <span style="color: var(--text-sub);" id="balance-avail-label">Available Cash:</span>
-                    <span style="font-weight: 700; color: var(--text-main);" id="balance-avail-value">₹1,00,000.00</span>
-                </div>
-
-                <!-- Execution Price Input -->
-                <div class="input-group" id="limit-price-group" style="display: none;">
-                    <div class="input-label-row">
-                        <span>Limit Price (₹)</span>
-                        <span id="label-market-ref" style="color: var(--blue); cursor: pointer;" onclick="resetToMarketPrice()">Use Market Price</span>
-                    </div>
-                    <input type="number" step="0.05" class="trade-input mono" id="input-order-price" oninput="calculateTradeTotal()">
-                </div>
-
-                <!-- Quantity / Shares Input -->
-                <div class="input-group">
-                    <div class="input-label-row">
-                        <span id="qty-field-label">Quantity (Shares)</span>
-                        <span id="owned-shares-count" style="color: var(--text-sub);">Owned: 0 shares</span>
-                    </div>
-                    <input type="number" min="0.01" step="1" class="trade-input mono" id="input-order-qty" value="1" oninput="calculateTradeTotal()">
-                    
-                    <!-- Quick Percentage Chips -->
-                    <div class="pct-quick-row mono">
-                        <button type="button" class="pct-btn" onclick="applyQuickPct(0.25)">25%</button>
-                        <button type="button" class="pct-btn" onclick="applyQuickPct(0.50)">50%</button>
-                        <button type="button" class="pct-btn" onclick="applyQuickPct(0.75)">75%</button>
-                        <button type="button" class="pct-btn" onclick="applyQuickPct(1.00)">MAX</button>
-                    </div>
-                </div>
-
-                <!-- Estimated Summary Box -->
-                <div class="order-summary-box mono">
-                    <div class="summary-line">
-                        <span>Price per unit:</span>
-                        <span id="summary-unit-price">₹1,184.50</span>
-                    </div>
-                    <div class="summary-line">
-                        <span>Estimated Value:</span>
-                        <span id="summary-gross-val">₹1,184.50</span>
-                    </div>
-                    <div class="summary-line">
-                        <span>Brokerage & Tax:</span>
-                        <span style="color: var(--green);">₹0.00 (Virtual)</span>
-                    </div>
-                    <div class="summary-line total">
-                        <span id="summary-total-label">Total Order Value:</span>
-                        <span id="summary-total-amount">₹1,184.50</span>
-                    </div>
-                </div>
-
-                <!-- Submit / Review Button -->
-                <button type="button" class="btn-order-action buy" id="btn-submit-order" onclick="openOrderConfirmModal()">
-                    Review Buy Order
-                </button>
-            </div>
-
-        </div>
-
-        <!-- BOTTOM SECTION: Holdings, Order History, Allocation -->
-        <div class="bottom-section">
-            <div class="card">
-                <div class="bottom-tabs-header">
-                    <button type="button" class="bottom-tab-btn active" id="tab-btn-holdings" onclick="switchBottomTab('holdings')">
-                        💼 My Holdings (<span id="holdings-count-badge">0</span>)
-                    </button>
-                    <button type="button" class="bottom-tab-btn" id="tab-btn-orders" onclick="switchBottomTab('orders')">
-                        📜 Orders & Trades (<span id="orders-count-badge">0</span>)
-                    </button>
-                </div>
-
-                <!-- Tab 1: Holdings Table -->
-                <div class="data-table-wrap" id="tab-content-holdings">
-                    <table class="data-table mono">
-                        <thead>
-                            <tr>
-                                <th>Instrument</th>
-                                <th>Quantity</th>
-                                <th>Avg. Buy Price</th>
-                                <th>Market Price</th>
-                                <th>Total Invested</th>
-                                <th>Current Value</th>
-                                <th>Unrealized P&L</th>
-                                <th>P&L (%)</th>
-                                <th>Quick Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="holdings-table-body">
+            <!-- ==================================================================
+                 VIEW 3: CHALLENGES & LEADERBOARD
+                 ================================================================== -->
+            <div class="view-panel" id="view-challenges">
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;">
+                    <!-- Challenges List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">🎯 Daily & Weekly Paper Trading Missions</span>
+                            <span class="card-subtitle">Complete simulation milestones to earn badges</span>
+                        </div>
+                        <div class="challenges-list" id="challenges-list-container">
                             <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
+
+                    <!-- Badges Showcase -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">🏅 Trading Badges</span>
+                            <span class="card-subtitle" id="badges-earned-count">0 of 6 unlocked</span>
+                        </div>
+                        <div class="badges-grid" id="badges-grid-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Tab 2: Orders History Table -->
-                <div class="data-table-wrap" id="tab-content-orders" style="display: none;">
-                    <table class="data-table mono">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Timestamp</th>
-                                <th>Side</th>
-                                <th>Instrument</th>
-                                <th>Order Type</th>
-                                <th>Price (₹)</th>
-                                <th>Quantity</th>
-                                <th>Total Value (₹)</th>
-                                <th>Realized P&L</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                <!-- Simulation Leaderboard -->
+                <div class="card" style="margin-top: 4px;">
+                    <div class="card-header">
+                        <span class="card-title">🏆 Simulation Leaderboard</span>
+                        <span class="card-subtitle">Ranked by overall return on virtual capital (Demo Peer Participants)</span>
+                    </div>
+                    <div class="data-table-wrap">
+                        <table class="data-table mono">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Participant</th>
+                                    <th>Portfolio Value</th>
+                                    <th>Total Return (%)</th>
+                                    <th>Win Rate</th>
+                                    <th>Badges</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
+            <!-- ==================================================================
+                 VIEW 4: TRADING JOURNAL
+                 ================================================================== -->
+            <div class="view-panel" id="view-journal">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📔 Log New Journal Entry</span>
+                        <span class="card-subtitle">Document trade thesis, emotional discipline, and lessons learned</span>
+                    </div>
+
+                    <form class="journal-form" id="journal-entry-form" onsubmit="handleJournalSubmit(event)">
+                        <div class="input-group">
+                            <label class="input-label-row"><span>Instrument Symbol</span></label>
+                            <input type="text" class="trade-input mono" id="journal-input-symbol" placeholder="e.g. RELIANCE, BTCUSDT" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label-row"><span>Strategy</span></label>
+                            <select class="trade-input" id="journal-input-strategy">
+                                <option value="Dip Buying">Dip Buying</option>
+                                <option value="Breakout">Breakout Momentum</option>
+                                <option value="Swing Trade">Swing Trade</option>
+                                <option value="Trend Following">Trend Following</option>
+                                <option value="Mean Reversion">Mean Reversion</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label-row"><span>Sentiment</span></label>
+                            <select class="trade-input" id="journal-input-sentiment">
+                                <option value="Bullish">🟢 Bullish</option>
+                                <option value="Bearish">🔴 Bearish</option>
+                                <option value="Neutral">⚪ Neutral / Hedging</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label-row"><span>Lessons Learned / Rules Respected</span></label>
+                            <input type="text" class="trade-input" id="journal-input-lessons" placeholder="e.g. Followed 2% risk rule, avoided FOMO">
+                        </div>
+
+                        <div class="input-group" style="grid-column: span 2;">
+                            <label class="input-label-row"><span>Trade Thesis & Execution Notes</span></label>
+                            <textarea class="trade-input" id="journal-input-notes" rows="3" placeholder="Why did you take this trade? What support/resistance levels were you watching?" required></textarea>
+                        </div>
+
+                        <div style="grid-column: span 2; display: flex; justify-content: flex-end;">
+                            <button type="submit" class="btn-action-tool" style="background: var(--blue); color: white; border: none; padding: 10px 20px;">
+                                ✍️ Save Journal Reflection
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Journal Entries List -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📖 Your Journal Entries</span>
+                        <span class="card-subtitle" id="journal-entries-count">0 reflections saved</span>
+                    </div>
+                    <div class="journal-entries-list" id="journal-entries-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================================
+                 VIEW 5: AI TRADING ASSISTANT ("CHRONOS AI")
+                 ================================================================== -->
+            <div class="view-panel" id="view-ai">
+                <div class="ai-chat-container">
+                    <div class="card-header">
+                        <span class="card-title">🤖 Chronos AI: Educational Trading Mentor</span>
+                        <span class="card-subtitle">Ask questions about market mechanics, position sizing, and risk management</span>
+                    </div>
+
+                    <div class="ai-messages-box" id="ai-messages-box">
+                        <div class="ai-msg assistant">
+                            <strong>👋 Welcome to Chronos AI!</strong><br><br>
+                            I am your educational paper trading mentor. I can help explain order book dynamics, calculate proper position sizes based on the 2% risk rule, analyze your current portfolio diversification, or explain why an order filled or rested.
+                        </div>
+                    </div>
+
+                    <!-- Quick Prompt Chips -->
+                    <div class="ai-prompt-chips">
+                        <button type="button" class="ai-chip" onclick="askAiPrompt('What is an order book spread and how does slippage work?')">💡 What is spread & slippage?</button>
+                        <button type="button" class="ai-chip" onclick="askAiPrompt('How do I calculate position size using the 2% risk rule?')">🛡️ 2% Position sizing rule</button>
+                        <button type="button" class="ai-chip" onclick="askAiPrompt('How do Stop-Limit orders protect against sudden market crashes?')">🎯 How Stop-Limit orders work</button>
+                        <button type="button" class="ai-chip" onclick="askAiPrompt('Analyze my current portfolio diversification and risk')">📊 Analyze my portfolio risk</button>
+                    </div>
+
+                    <form class="ai-input-bar" onsubmit="handleAiChatSubmit(event)">
+                        <input type="text" class="trade-input" id="ai-chat-input" placeholder="Ask a question about electronic trading, risk management, or your portfolio..." required>
+                        <button type="submit" class="btn-action-tool" style="background: var(--blue); color: white; border: none; padding: 0 18px;">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <!-- ==========================================================================
@@ -1543,40 +2171,44 @@
                 <button type="button" class="modal-close-btn" onclick="closeOrderConfirmModal()">✕</button>
             </div>
             <div class="modal-body">
-                <p style="font-size: 13px; color: var(--text-sub);">
-                    Please review your virtual trade details before executing. All orders use virtual paper money.
+                <p style="font-size: 12px; color: var(--text-sub);">
+                    Please review your virtual trade details before executing. All orders use virtual paper money with zero real risk.
                 </p>
 
-                <div class="confirm-details-box mono">
-                    <div class="confirm-row">
+                <div class="order-summary-box mono" style="font-size: 12px;">
+                    <div class="summary-line">
                         <span>Action:</span>
                         <strong id="cfm-action-badge" style="color: var(--green);">BUY</strong>
                     </div>
-                    <div class="confirm-row">
+                    <div class="summary-line">
                         <span>Instrument:</span>
                         <strong id="cfm-symbol-name">Reliance Industries (RELIANCE)</strong>
                     </div>
-                    <div class="confirm-row">
+                    <div class="summary-line">
                         <span>Order Type:</span>
                         <strong id="cfm-order-type">MARKET</strong>
                     </div>
-                    <div class="confirm-row">
+                    <div class="summary-line" id="cfm-stop-price-row" style="display: none;">
+                        <span>Stop Trigger Price:</span>
+                        <strong id="cfm-stop-price">₹0.00</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Execution / Limit Price:</span>
+                        <strong id="cfm-price">₹1,184.50</strong>
+                    </div>
+                    <div class="summary-line">
                         <span>Quantity:</span>
                         <strong id="cfm-quantity">10 shares</strong>
                     </div>
-                    <div class="confirm-row">
-                        <span>Execution Price:</span>
-                        <strong id="cfm-price">₹1,184.50</strong>
-                    </div>
-                    <div class="confirm-row highlight">
+                    <div class="summary-line total">
                         <span>Total Order Value:</span>
                         <strong id="cfm-total-value">₹11,845.00</strong>
                     </div>
-                    <div class="confirm-row" style="margin-top: 4px; font-size: 11px;">
+                    <div class="summary-line" style="margin-top: 4px; font-size: 11px;">
                         <span>Cash Before Trade:</span>
                         <span id="cfm-cash-before">₹1,00,000.00</span>
                     </div>
-                    <div class="confirm-row" style="font-size: 11px;">
+                    <div class="summary-line" style="font-size: 11px;">
                         <span>Cash After Trade:</span>
                         <strong id="cfm-cash-after" style="color: var(--blue);">₹88,155.00</strong>
                     </div>
@@ -1592,7 +2224,77 @@
     </div>
 
     <!-- ==========================================================================
-         AUTHENTICATION MODAL (EMAIL & PASSWORD)
+         RESET PORTFOLIO CONFIRMATION MODAL
+         ========================================================================== -->
+    <div class="modal-overlay" id="reset-portfolio-modal">
+        <div class="modal-card">
+            <div class="modal-card-header">
+                <span class="modal-title" style="color: var(--red);">↺ Reset Virtual Portfolio</span>
+                <button type="button" class="modal-close-btn" onclick="closeResetModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13px; color: var(--text-main);">
+                    Are you sure you want to reset your virtual paper trading portfolio?
+                </p>
+                <p style="font-size: 12px; color: var(--text-sub);">
+                    This will clear all active holdings, reset your realized profit & loss to ₹0.00, and restore your virtual balance to <strong>₹1,00,000.00</strong>.
+                </p>
+
+                <div class="input-group" style="margin-top: 6px;">
+                    <label class="input-label-row"><span>Starting Virtual Balance (₹)</span></label>
+                    <input type="number" step="10000" class="trade-input mono" id="input-reset-balance" value="100000">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn-cancel" onclick="closeResetModal()">Cancel</button>
+                <button type="button" class="modal-btn-confirm danger" onclick="confirmResetPortfolio()">
+                    Reset to ₹1,00,000
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         ENGINE BENCHMARK METRICS MODAL
+         ========================================================================== -->
+    <div class="modal-overlay" id="engine-metrics-modal">
+        <div class="modal-card" style="max-width: 500px;">
+            <div class="modal-card-header">
+                <span class="modal-title">⚡ ChronosMatch Matching Engine Benchmarks</span>
+                <button type="button" class="modal-close-btn" onclick="closeEngineMetricsModal()">✕</button>
+            </div>
+            <div class="modal-body mono" style="font-size: 12px; gap: 10px;">
+                <div style="background: var(--bg-subtle); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="color: var(--text-sub); font-size: 11px;">Measured Throughput</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--green); margin-top: 2px;">1,420,000 ops/sec</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Tick-to-trade order ingestion & execution</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div style="background: var(--bg-subtle); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="color: var(--text-sub); font-size: 10px;">Median Latency (p50)</div>
+                        <div style="font-size: 16px; font-weight: 800; color: var(--blue);">420 ns</div>
+                    </div>
+                    <div style="background: var(--bg-subtle); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="color: var(--text-sub); font-size: 10px;">Tail Latency (p99)</div>
+                        <div style="font-size: 16px; font-weight: 800; color: var(--purple);">1,150 ns</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 11px; color: var(--text-sub); line-height: 1.45;">
+                    • <strong>Memory Architecture:</strong> Zero-copy C-structs via Python Buffer Protocol<br>
+                    • <strong>Matching Algorithm:</strong> Strict Price-Time Priority (FIFO) with $O(1)$ cancel<br>
+                    • <strong>IPC:</strong> SPSC Cache-line Padded Lockless Ring Buffer
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn-cancel" onclick="closeEngineMetricsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         AUTHENTICATION MODAL
          ========================================================================== -->
     <div class="modal-overlay" id="auth-overlay">
         <div class="modal-card">
@@ -1601,7 +2303,7 @@
                 <button type="button" class="modal-close-btn" id="btn-auth-cancel" onclick="closeAuthModal()">✕</button>
             </div>
 
-            <div class="auth-nav-tabs" style="display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; gap: 16px;">
+            <div style="display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; gap: 16px;">
                 <button type="button" class="cat-chip active" id="tab-login" onclick="switchAuthTab('login')" style="padding: 10px 0; border: none; border-bottom: 2px solid var(--blue); border-radius: 0; font-size: 13px;">Sign In</button>
                 <button type="button" class="cat-chip" id="tab-register" onclick="switchAuthTab('register')" style="padding: 10px 0; border: none; border-bottom: 2px solid transparent; border-radius: 0; font-size: 13px;">Create Account</button>
             </div>
@@ -1627,25 +2329,19 @@
                 <button type="submit" class="btn-order-action buy" id="btn-auth-submit-action" style="margin-top: 6px;">
                     Sign In
                 </button>
-
-                <div style="text-align: center; font-size: 12px; margin-top: 4px;">
-                    <button type="button" id="link-toggle-mode" style="background: transparent; border: none; color: var(--blue); cursor: pointer;" onclick="toggleAuthTab()">
-                        Don't have an account? Create one
-                    </button>
-                </div>
             </form>
         </div>
     </div>
 
-    <!-- Notification Toast -->
+    <!-- Toast Box -->
     <div id="toast-box"></div>
 
     <!-- ==========================================================================
-         JAVASCRIPT ENGINE & TRADING TERMINAL APPLICATION
+         JAVASCRIPT ENGINE & TRADING TERMINAL LOGIC
          ========================================================================== -->
     <script>
         // ==========================================================================
-        // 1. INSTRUMENT CATALOG & STATE
+        // 1. INSTRUMENTS CATALOG & QUOTE STATE
         // ==========================================================================
         const catalog = [
             { symbol: 'RELIANCE', name: 'Reliance Industries', ticker: 'RELIANCE', category: 'Indian Equities', currency: 'INR', basePrice: 1184.50, tick: 0.05 },
@@ -1667,7 +2363,6 @@
             { symbol: 'SOLUSDT', name: 'Solana (SOL / INR)', ticker: 'SOL', category: 'Crypto', currency: 'INR', basePrice: 14200.00, tick: 0.10 }
         ];
 
-        // Quotes map (symbol -> live quote object)
         const quotesMap = {};
         catalog.forEach(item => {
             quotesMap[item.symbol] = {
@@ -1687,23 +2382,27 @@
 
         // App State
         let currentSymbol = 'RELIANCE';
-        let currentTradeSide = 'BUY'; // 'BUY' or 'SELL'
-        let currentOrderType = 'MARKET'; // 'MARKET' or 'LIMIT'
-        let currentTimeframe = '1D'; // '1D', '1W', '1M', '1Y', 'ALL'
+        let currentTradeSide = 'BUY';
+        let currentOrderType = 'MARKET'; // 'MARKET', 'LIMIT', 'STOP_LIMIT'
+        let currentChartType = 'candle'; // 'candle' or 'line'
+        let currentTimeframe = '5m';
         let currentCategory = 'all';
+        let currentView = 'terminal'; // 'terminal', 'portfolio', 'challenges', 'journal', 'ai'
         let currentUser = null;
         let userWatchlist = new Set(['RELIANCE', 'TCS', 'AAPL', 'BTCUSDT']);
-        let chartDataPoints = [];
+        let candleDataPoints = [];
 
-        // Portfolio & User Trading State
+        // Portfolio State
         let userState = {
             cash_balance: 100000.00,
+            locked_cash: 0.00,
             realized_pnl: 0.00,
-            holdings: {}, // symbol -> { symbol, quantity, avg_buy_price, total_invested }
-            orders: []    // list of completed/cancelled orders
+            holdings: {},
+            orders: [],
+            journal: [],
+            badges: new Set(['welcome'])
         };
 
-        // Format Indian Rupee currency
         function formatINR(val) {
             const n = Number(val) || 0;
             return '₹' + n.toLocaleString('en-IN', {
@@ -1713,8 +2412,36 @@
         }
 
         // ==========================================================================
-        // 2. THEME SWITCHER (DARK / LIGHT)
+        // 2. NAVIGATION & SIDEBAR
         // ==========================================================================
+        function toggleSidebar() {
+            const sb = document.getElementById('app-sidebar');
+            sb.classList.toggle('collapsed');
+            setTimeout(drawChart, 250);
+        }
+
+        function switchView(viewName) {
+            currentView = viewName;
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link-btn').forEach(b => b.classList.remove('active'));
+
+            const panel = document.getElementById(`view-${viewName}`);
+            const btn = document.getElementById(`nav-btn-${viewName}`);
+            if (panel) panel.classList.add('active');
+            if (btn) btn.classList.add('active');
+
+            if (viewName === 'terminal') {
+                setTimeout(drawChart, 100);
+            } else if (viewName === 'portfolio') {
+                renderPortfolioAnalyticsView();
+            } else if (viewName === 'challenges') {
+                renderChallengesView();
+            } else if (viewName === 'journal') {
+                renderJournalView();
+            }
+        }
+
+        // Theme Switcher
         function initTheme() {
             const savedTheme = localStorage.getItem('chronos_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -1743,12 +2470,11 @@
         }
 
         // ==========================================================================
-        // 3. AUTHENTICATION & SESSION MANAGEMENT
+        // 3. AUTHENTICATION & RECOVERY
         // ==========================================================================
         let authMode = 'login';
 
         function checkUserAuth() {
-            // Clean up any legacy default credentials
             try {
                 const savedUser = localStorage.getItem('chronos_simple_user');
                 if (savedUser) {
@@ -1772,7 +2498,6 @@
             const passInput = document.getElementById('auth-input-password');
             const nameInput = document.getElementById('auth-input-name');
 
-            // Strictly empty by default
             if (emailInput) emailInput.value = '';
             if (passInput) passInput.value = '';
             if (nameInput) nameInput.value = '';
@@ -1782,7 +2507,6 @@
 
             switchAuthTab('login');
             document.getElementById('auth-overlay').style.display = 'flex';
-            setTimeout(() => { if (emailInput) emailInput.focus(); }, 100);
         }
 
         function closeAuthModal() {
@@ -1798,33 +2522,21 @@
             const nameGroup = document.getElementById('field-group-name');
             const submitBtn = document.getElementById('btn-auth-submit-action');
             const titleEl = document.getElementById('auth-header-title');
-            const toggleLink = document.getElementById('link-toggle-mode');
-            const errBox = document.getElementById('auth-error-msg');
-            errBox.style.display = 'none';
+            document.getElementById('auth-error-msg').style.display = 'none';
 
             if (mode === 'login') {
                 tabLogin.classList.add('active');
                 tabRegister.classList.remove('active');
-                tabLogin.style.borderBottomColor = 'var(--blue)';
-                tabRegister.style.borderBottomColor = 'transparent';
                 nameGroup.style.display = 'none';
                 submitBtn.innerText = 'Sign In';
                 titleEl.innerText = '⚡ Sign In';
-                toggleLink.innerText = "Don't have an account? Create one";
             } else {
                 tabRegister.classList.add('active');
                 tabLogin.classList.remove('active');
-                tabRegister.style.borderBottomColor = 'var(--blue)';
-                tabLogin.style.borderBottomColor = 'transparent';
                 nameGroup.style.display = 'flex';
                 submitBtn.innerText = 'Create Account';
                 titleEl.innerText = '⚡ Create Account';
-                toggleLink.innerText = 'Already have an account? Sign In';
             }
-        }
-
-        function toggleAuthTab() {
-            switchAuthTab(authMode === 'login' ? 'register' : 'login');
         }
 
         async function handleAuthSubmit(e) {
@@ -1842,7 +2554,6 @@
                 return;
             }
 
-            // Try server backend authentication
             try {
                 const res = await fetch('/api/virtual/auth', {
                     method: 'POST',
@@ -1854,12 +2565,9 @@
                     loginSuccess(data.user);
                     return;
                 }
-            } catch (err) {
-                // If offline or on static GitHub Pages, fallback to client-side localStorage
-            }
+            } catch (err) {}
 
-            // Client-side fallback authentication
-            loginSuccess({ email, name, color: '#3b82f6', cash_balance: 100000.00 });
+            loginSuccess({ email, name, cash_balance: 100000.00 });
         }
 
         function loginSuccess(user) {
@@ -1872,7 +2580,7 @@
             document.getElementById('auth-overlay').style.display = 'none';
             loadUserAccount(currentUser.email);
             renderUserPill();
-            showToast(`✓ Welcome, ${currentUser.name}! ₹1,00,000 virtual balance ready.`);
+            showToast(`✓ Welcome, ${currentUser.name}! Starting virtual capital ready.`);
         }
 
         function renderUserPill() {
@@ -1886,34 +2594,35 @@
         }
 
         function logoutUser() {
-            if (confirm('Log out from your account?')) {
+            if (confirm('Log out from your virtual trading session?')) {
                 localStorage.removeItem('chronos_simple_user');
                 currentUser = null;
                 document.getElementById('user-header-pill').style.display = 'none';
                 document.getElementById('btn-header-login').style.display = 'block';
                 openAuthModal();
-                showToast('Logged out successfully.');
             }
         }
 
         // ==========================================================================
-        // 4. PERSISTENT USER DATA & PORTFOLIO
+        // 4. PERSISTENT STORAGE & DATA LOADING
         // ==========================================================================
         function loadUserAccount(email) {
-            // First load from localStorage
             const key = 'chronos_data_' + encodeURIComponent(email);
             const saved = localStorage.getItem(key);
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     userState.cash_balance = parsed.cash_balance ?? 100000.00;
+                    userState.locked_cash = parsed.locked_cash ?? 0.00;
                     userState.realized_pnl = parsed.realized_pnl ?? 0.00;
                     userState.holdings = parsed.holdings || {};
                     userState.orders = parsed.orders || [];
+                    userState.journal = parsed.journal || [];
+                    userState.badges = new Set(parsed.badges || ['welcome']);
                 } catch (e) {}
             }
 
-            // Sync with backend API if available
+            // Sync with backend API
             fetch(`/api/virtual/portfolio/${encodeURIComponent(email)}`)
                 .then(r => r.ok ? r.json() : null)
                 .then(port => {
@@ -1935,7 +2644,6 @@
                     }
                 }).catch(() => {});
 
-            // Fetch orders
             fetch(`/api/virtual/orders/${encodeURIComponent(email)}`)
                 .then(r => r.ok ? r.json() : null)
                 .then(orders => {
@@ -1945,14 +2653,14 @@
                     }
                 }).catch(() => {});
 
-            // Load watchlist
-            const wlKey = 'chronos_watchlist_' + encodeURIComponent(email);
-            const savedWl = localStorage.getItem(wlKey);
-            if (savedWl) {
-                try {
-                    userWatchlist = new Set(JSON.parse(savedWl));
-                } catch (e) {}
-            }
+            fetch(`/api/virtual/journal/${encodeURIComponent(email)}`)
+                .then(r => r.ok ? r.json() : null)
+                .then(jrn => {
+                    if (jrn && Array.isArray(jrn)) {
+                        userState.journal = jrn;
+                        renderJournalView();
+                    }
+                }).catch(() => {});
 
             renderPortfolioDashboard();
             renderWatchlist();
@@ -1962,14 +2670,15 @@
         function saveUserAccount() {
             if (!currentUser) return;
             const key = 'chronos_data_' + encodeURIComponent(currentUser.email);
-            localStorage.setItem(key, JSON.stringify(userState));
-
-            const wlKey = 'chronos_watchlist_' + encodeURIComponent(currentUser.email);
-            localStorage.setItem(wlKey, JSON.stringify(Array.from(userWatchlist)));
+            const toSave = {
+                ...userState,
+                badges: Array.from(userState.badges)
+            };
+            localStorage.setItem(key, JSON.stringify(toSave));
         }
 
         // ==========================================================================
-        // 5. REAL-TIME MARKET DATA FETCHING
+        // 5. REAL-TIME MARKET PRICES & CANDLESTICK SIMULATION
         // ==========================================================================
         async function fetchMarketQuotes() {
             try {
@@ -1985,18 +2694,18 @@
                         updateFeedStatus(true, 'Live Exchange Feed (Yahoo Finance)');
                         renderActiveStock();
                         renderWatchlist();
+                        renderHeaderTickerRibbon();
                         renderPortfolioDashboard();
+                        checkPendingStopLimitOrders();
                         return;
                     }
                 }
-            } catch (e) {
-                // Backend not running (e.g. GitHub Pages static deployment)
-            }
+            } catch (e) {}
 
-            // Fallback for standalone static pages: gentle simulation drift
+            // Fallback realistic simulation drift
             catalog.forEach(item => {
                 const q = quotesMap[item.symbol];
-                const drift = (Math.random() - 0.49) * (q.price * 0.002);
+                const drift = (Math.random() - 0.495) * (q.price * 0.0018);
                 q.price = Math.round((q.price + drift) * 100) / 100;
                 q.day_high = Math.max(q.day_high, q.price);
                 q.day_low = Math.min(q.day_low, q.price);
@@ -2005,10 +2714,12 @@
                 q.change_pct = Math.round((chg / q.open_price * 100) * 100) / 100;
             });
 
-            updateFeedStatus(true, 'Simulation Feed (Exchange Baseline)');
+            updateFeedStatus(true, 'Simulation Feed (Market Ticks)');
             renderActiveStock();
             renderWatchlist();
+            renderHeaderTickerRibbon();
             renderPortfolioDashboard();
+            checkPendingStopLimitOrders();
         }
 
         function updateFeedStatus(isLive, label) {
@@ -2017,8 +2728,26 @@
             document.getElementById('data-feed-label').innerText = label;
         }
 
+        function renderHeaderTickerRibbon() {
+            const ribbon = document.getElementById('header-ticker-ribbon');
+            const items = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'RELIANCE', 'TCS', 'AAPL'];
+            ribbon.innerHTML = items.map(sym => {
+                const q = quotesMap[sym];
+                if (!q) return '';
+                const isPos = q.change_pct >= 0;
+                const sign = isPos ? '+' : '';
+                return `
+                    <div class="ticker-pill-mini" onclick="selectStock('${sym}')">
+                        <span class="sym">${q.ticker}</span>
+                        <span>${formatINR(q.price)}</span>
+                        <span class="chg ${isPos ? 'pos' : 'neg'}">${sign}${q.change_pct.toFixed(2)}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // ==========================================================================
-        // 6. WATCHLIST & SEARCH CONTROLS
+        // 6. WATCHLIST & SEARCH
         // ==========================================================================
         function setCategoryFilter(cat, btn) {
             currentCategory = cat;
@@ -2029,8 +2758,7 @@
 
         function filterWatchlist() {
             const q = document.getElementById('search-stock-input').value.trim().toLowerCase();
-            const sortMode = document.getElementById('sort-select').value;
-            renderWatchlist(q, sortMode);
+            renderWatchlist(q);
         }
 
         function toggleStar(sym, e) {
@@ -2044,29 +2772,18 @@
             }
             saveUserAccount();
             filterWatchlist();
-
-            // Sync with backend if logged in
-            if (currentUser) {
-                fetch('/api/virtual/watchlist/toggle', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: currentUser.email, symbol: sym })
-                }).catch(() => {});
-            }
         }
 
-        function renderWatchlist(searchQuery = '', sortMode = 'default') {
+        function renderWatchlist(searchQuery = '') {
             const container = document.getElementById('watchlist-items-container');
             let items = Object.values(quotesMap);
 
-            // Category filter
             if (currentCategory === 'watchlist') {
                 items = items.filter(i => userWatchlist.has(i.symbol));
             } else if (currentCategory !== 'all') {
                 items = items.filter(i => i.category.toLowerCase() === currentCategory.toLowerCase());
             }
 
-            // Search query filter
             if (searchQuery) {
                 items = items.filter(i =>
                     i.symbol.toLowerCase().includes(searchQuery) ||
@@ -2075,22 +2792,7 @@
                 );
             }
 
-            // Sorting
-            if (sortMode === 'price-desc') items.sort((a, b) => b.price - a.price);
-            else if (sortMode === 'price-asc') items.sort((a, b) => a.price - b.price);
-            else if (sortMode === 'change-desc') items.sort((a, b) => b.change_pct - a.change_pct);
-            else if (sortMode === 'change-asc') items.sort((a, b) => a.change_pct - b.change_pct);
-
             document.getElementById('wl-count-label').innerText = `${items.length} instruments`;
-
-            if (items.length === 0) {
-                container.innerHTML = `
-                    <div style="padding: 30px 14px; text-align: center; color: var(--text-muted); font-size: 12px;">
-                        No matching stocks found.
-                    </div>
-                `;
-                return;
-            }
 
             container.innerHTML = items.map(inst => {
                 const isSelected = inst.symbol === currentSymbol;
@@ -2122,12 +2824,12 @@
             currentSymbol = sym;
             renderActiveStock();
             renderWatchlist();
-            loadChartData();
+            loadCandleData();
             calculateTradeTotal();
         }
 
         // ==========================================================================
-        // 7. ACTIVE STOCK HEADER & ORDER BOOK
+        // 7. ACTIVE STOCK HEADER, ORDER BOOK & IMBALANCE
         // ==========================================================================
         function renderActiveStock() {
             const stock = quotesMap[currentSymbol];
@@ -2140,13 +2842,13 @@
 
             const isPos = stock.change_pct >= 0;
             const sign = isPos ? '+' : '';
-            const changeBadge = document.getElementById('active-stock-change');
-            changeBadge.className = `stock-change-badge mono ${isPos ? 'pos' : 'neg'}`;
-            changeBadge.innerText = `${isPos ? '▲' : '▼'} ${sign}${formatINR(stock.change_val)} (${sign}${stock.change_pct.toFixed(2)}%)`;
+            const chgEl = document.getElementById('active-stock-change');
+            chgEl.className = `stock-change-badge mono ${isPos ? 'pos' : 'neg'}`;
+            chgEl.innerText = `${isPos ? '▲' : '▼'} ${sign}${formatINR(stock.change_val)} (${sign}${stock.change_pct.toFixed(2)}%)`;
 
-            document.getElementById('stat-open').innerText = formatINR(stock.open_price);
             document.getElementById('stat-high').innerText = formatINR(stock.day_high);
             document.getElementById('stat-low').innerText = formatINR(stock.day_low);
+            document.getElementById('stat-open').innerText = formatINR(stock.open_price);
 
             const nativeEl = document.getElementById('active-native-price');
             if (stock.nativePrice && stock.nativeCurrency) {
@@ -2160,92 +2862,111 @@
 
         function renderOrderBook(stock) {
             const p = stock.price;
+            const tick = stock.tick;
             const bidsBox = document.getElementById('bids-list-box');
             const asksBox = document.getElementById('asks-list-box');
 
-            const bids = [
-                { price: p - stock.tick * 1, qty: 15 },
-                { price: p - stock.tick * 2, qty: 32 },
-                { price: p - stock.tick * 3, qty: 54 },
-                { price: p - stock.tick * 4, qty: 80 }
-            ];
+            let bids = [];
+            let asks = [];
+            let cumBid = 0;
+            let cumAsk = 0;
 
-            const asks = [
-                { price: p + stock.tick * 1, qty: 12 },
-                { price: p + stock.tick * 2, qty: 28 },
-                { price: p + stock.tick * 3, qty: 45 },
-                { price: p + stock.tick * 4, qty: 65 }
-            ];
+            for (let i = 1; i <= 6; i++) {
+                const bQty = Math.round((Math.sin(i * 1.5) * 15 + 25) * 10) / 10;
+                const aQty = Math.round((Math.cos(i * 1.5) * 15 + 24) * 10) / 10;
+                cumBid += bQty;
+                cumAsk += aQty;
+                bids.push({ price: p - tick * i, qty: bQty, total: cumBid });
+                asks.push({ price: p + tick * i, qty: aQty, total: cumAsk });
+            }
+
+            const maxCum = Math.max(cumBid, cumAsk) || 1;
 
             bidsBox.innerHTML = bids.map(b => `
-                <div class="ob-row bid" onclick="setLimitPriceFromBook(${b.price})">
-                    <span>${formatINR(b.price)}</span>
-                    <span style="color: var(--text-sub);">${b.qty}</span>
+                <div class="ob-row" onclick="fillPriceFromBook(${b.price})" title="Click to fill order price">
+                    <div class="depth-bar bid" style="width: ${(b.total / maxCum * 100).toFixed(0)}%;"></div>
+                    <span style="color: var(--green); z-index: 1;">${formatINR(b.price)}</span>
+                    <span style="z-index: 1;">${b.qty.toFixed(1)}</span>
+                    <span style="color: var(--text-sub); z-index: 1;">${b.total.toFixed(1)}</span>
                 </div>
             `).join('');
 
             asksBox.innerHTML = asks.map(a => `
-                <div class="ob-row ask" onclick="setLimitPriceFromBook(${a.price})">
-                    <span>${formatINR(a.price)}</span>
-                    <span style="color: var(--text-sub);">${a.qty}</span>
+                <div class="ob-row" onclick="fillPriceFromBook(${a.price})" title="Click to fill order price">
+                    <div class="depth-bar ask" style="width: ${(a.total / maxCum * 100).toFixed(0)}%;"></div>
+                    <span style="color: var(--red); z-index: 1;">${formatINR(a.price)}</span>
+                    <span style="z-index: 1;">${a.qty.toFixed(1)}</span>
+                    <span style="color: var(--text-sub); z-index: 1;">${a.total.toFixed(1)}</span>
                 </div>
             `).join('');
+
+            // Spread & Imbalance
+            const bestBid = bids[0].price;
+            const bestAsk = asks[0].price;
+            const spread = bestAsk - bestBid;
+            const spreadPct = (spread / p * 100).toFixed(2);
+            document.getElementById('ob-spread-val').innerText = formatINR(spread);
+            document.getElementById('ob-spread-pct').innerText = `${spreadPct}%`;
+            document.getElementById('ob-best-bid').innerText = formatINR(bestBid);
+            document.getElementById('ob-best-ask').innerText = formatINR(bestAsk);
+
+            const totalVol = cumBid + cumAsk;
+            const bidPct = Math.round((cumBid / totalVol) * 100);
+            const askPct = 100 - bidPct;
+            document.getElementById('imbalance-buy-txt').innerText = `${bidPct}%`;
+            document.getElementById('imbalance-sell-txt').innerText = `${askPct}%`;
+            document.getElementById('imbalance-bar-fill').style.width = `${bidPct}%`;
         }
 
-        function setLimitPriceFromBook(p) {
+        function fillPriceFromBook(price) {
             setOrderType('LIMIT');
-            document.getElementById('input-order-price').value = p.toFixed(2);
+            document.getElementById('input-order-price').value = price.toFixed(2);
             calculateTradeTotal();
-            showToast(`Limit price set to ${formatINR(p)}`);
+            showToast(`Filled Limit price: ${formatINR(price)}`);
         }
 
         // ==========================================================================
-        // 8. INTERACTIVE CANVAS PRICE CHART
+        // 8. INTERACTIVE CANDLESTICK & LINE CHART
         // ==========================================================================
+        function setChartType(type) {
+            currentChartType = type;
+            document.getElementById('btn-chart-candle').classList.toggle('active', type === 'candle');
+            document.getElementById('btn-chart-line').classList.toggle('active', type === 'line');
+            drawChart();
+        }
+
         function setTimeframe(tf, btn) {
             currentTimeframe = tf;
             document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
-
-            const labels = {
-                '1D': '5-min intraday candles',
-                '1W': '15-min candles',
-                '1M': 'Daily closing prices',
-                '1Y': 'Weekly prices',
-                'ALL': 'Monthly trend'
-            };
-            document.getElementById('chart-interval-label').innerText = labels[tf] || '';
-            loadChartData();
+            document.getElementById('chart-interval-label').innerText = `${tf} intervals`;
+            loadCandleData();
         }
 
-        async function loadChartData() {
-            const sym = currentSymbol;
-            try {
-                const res = await fetch(`/api/market/history/${sym}?period=${currentTimeframe}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.points && data.points.length > 0) {
-                        chartDataPoints = data.points;
-                        drawChart();
-                        return;
-                    }
-                }
-            } catch (e) {}
+        function loadCandleData() {
+            const stock = quotesMap[currentSymbol];
+            const p = stock.price;
+            const numCandles = 36;
+            candleDataPoints = [];
 
-            // Fallback realistic smooth curve generator
-            const curP = quotesMap[sym].price;
-            const count = currentTimeframe === '1D' ? 30 : (currentTimeframe === '1W' ? 40 : 50);
-            chartDataPoints = [];
-            let val = curP * 0.96;
+            let cur = p * 0.97;
             const now = Math.floor(Date.now() / 1000);
-            const step = 300;
+            const intervalSec = currentTimeframe === '1m' ? 60 : (currentTimeframe === '5m' ? 300 : 900);
 
-            for (let i = 0; i < count; i++) {
-                const t = now - (count - i) * step;
-                val += (curP - val) / (count - i + 1) + (Math.random() - 0.49) * (curP * 0.008);
-                chartDataPoints.push({ time: t, price: Math.round(val * 100) / 100 });
+            for (let i = numCandles; i >= 1; i--) {
+                const t = now - i * intervalSec;
+                const open = cur;
+                const drift = (p - cur) / (i + 1) + (Math.random() - 0.49) * (p * 0.007);
+                const close = Math.round((open + drift) * 100) / 100;
+                const high = Math.round((Math.max(open, close) + Math.random() * (p * 0.004)) * 100) / 100;
+                const low = Math.round((Math.min(open, close) - Math.random() * (p * 0.004)) * 100) / 100;
+                const vol = Math.floor(Math.random() * 5000 + 1000);
+
+                candleDataPoints.push({ time: t, open, high, low, close, volume: vol });
+                cur = close;
             }
-            chartDataPoints[chartDataPoints.length - 1].price = curP;
+
+            candleDataPoints[candleDataPoints.length - 1].close = p;
             drawChart();
         }
 
@@ -2264,15 +2985,17 @@
             const h = rect.height;
             ctx.clearRect(0, 0, w, h);
 
-            if (!chartDataPoints || chartDataPoints.length < 2) return;
+            if (!candleDataPoints || candleDataPoints.length < 2) return;
 
-            const prices = chartDataPoints.map(p => p.price);
-            const minP = Math.min(...prices) * 0.998;
-            const maxP = Math.max(...prices) * 1.002;
+            const highs = candleDataPoints.map(c => c.high);
+            const lows = candleDataPoints.map(c => c.low);
+            const minP = Math.min(...lows) * 0.998;
+            const maxP = Math.max(...highs) * 1.002;
             const range = maxP - minP || 1;
 
-            // Draw grid lines
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+            // Horizontal Grid Lines & Price Labels
             ctx.strokeStyle = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
             ctx.lineWidth = 1;
 
@@ -2283,105 +3006,119 @@
                 ctx.lineTo(w, y);
                 ctx.stroke();
 
-                // Price label
                 const pLabel = maxP - (range / 5) * i;
                 ctx.fillStyle = isLight ? '#94a3b8' : '#64748b';
                 ctx.font = '10px JetBrains Mono';
                 ctx.fillText(formatINR(pLabel), 6, y - 4);
             }
 
-            // Map data points to canvas pixels
-            const pts = chartDataPoints.map((pt, idx) => {
-                const x = (idx / (chartDataPoints.length - 1)) * (w - 20) + 10;
-                const y = h - ((pt.price - minP) / range) * (h - 40) - 20;
-                return { x, y, ...pt };
-            });
+            const candleCount = candleDataPoints.length;
+            const slotW = (w - 20) / candleCount;
+            const candleW = Math.max(2, slotW * 0.7);
 
-            const isUp = prices[prices.length - 1] >= prices[0];
-            const strokeColor = isUp ? '#10b981' : '#f43f5e';
-            const gradTop = isUp ? 'rgba(16, 185, 129, 0.28)' : 'rgba(244, 63, 94, 0.28)';
-            const gradBottom = isUp ? 'rgba(16, 185, 129, 0.0)' : 'rgba(244, 63, 94, 0.0)';
+            if (currentChartType === 'candle') {
+                // Candlestick Rendering
+                candleDataPoints.forEach((c, idx) => {
+                    const x = 10 + idx * slotW + slotW / 2;
+                    const yOpen = h - ((c.open - minP) / range) * (h - 40) - 20;
+                    const yClose = h - ((c.close - minP) / range) * (h - 40) - 20;
+                    const yHigh = h - ((c.high - minP) / range) * (h - 40) - 20;
+                    const yLow = h - ((c.low - minP) / range) * (h - 40) - 20;
 
-            // Draw area gradient fill
-            const grad = ctx.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, gradTop);
-            grad.addColorStop(1, gradBottom);
+                    const isGreen = c.close >= c.open;
+                    const color = isGreen ? '#10b981' : '#f43f5e';
 
-            ctx.beginPath();
-            ctx.moveTo(pts[0].x, h);
-            pts.forEach(p => ctx.lineTo(p.x, p.y));
-            ctx.lineTo(pts[pts.length - 1].x, h);
-            ctx.closePath();
-            ctx.fillStyle = grad;
-            ctx.fill();
+                    // High/Low Wick
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 1.2;
+                    ctx.beginPath();
+                    ctx.moveTo(x, yHigh);
+                    ctx.lineTo(x, yLow);
+                    ctx.stroke();
 
-            // Draw smooth price line
-            ctx.beginPath();
-            ctx.moveTo(pts[0].x, pts[0].y);
-            for (let i = 1; i < pts.length; i++) {
-                const prev = pts[i - 1];
-                const cur = pts[i];
-                const cx = (prev.x + cur.x) / 2;
-                ctx.quadraticCurveTo(prev.x, prev.y, cx, (prev.y + cur.y) / 2);
+                    // Body
+                    const bodyTop = Math.min(yOpen, yClose);
+                    const bodyH = Math.max(2, Math.abs(yClose - yOpen));
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
+                });
+            } else {
+                // Smooth Line Chart
+                const pts = candleDataPoints.map((c, idx) => {
+                    const x = 10 + idx * slotW + slotW / 2;
+                    const y = h - ((c.close - minP) / range) * (h - 40) - 20;
+                    return { x, y };
+                });
+
+                const isUp = candleDataPoints[candleCount - 1].close >= candleDataPoints[0].close;
+                const strokeColor = isUp ? '#10b981' : '#f43f5e';
+
+                // Area fill
+                const grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, isUp ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)');
+                grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
+
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, h);
+                pts.forEach(p => ctx.lineTo(p.x, p.y));
+                ctx.lineTo(pts[pts.length - 1].x, h);
+                ctx.closePath();
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                // Line
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                pts.forEach(p => ctx.lineTo(p.x, p.y));
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2.2;
+                ctx.stroke();
             }
-            ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = 2.5;
-            ctx.stroke();
-
-            // End pulse circle
-            const last = pts[pts.length - 1];
-            ctx.beginPath();
-            ctx.arc(last.x, last.y, 4.5, 0, Math.PI * 2);
-            ctx.fillStyle = strokeColor;
-            ctx.fill();
         }
 
         // ==========================================================================
-        // 9. VIRTUAL TRADING LOGIC & SERVER-SIDE INTEGRATION
+        // 9. ORDER ENTRY & MATCHING SIMULATION
         // ==========================================================================
         function setTradeSide(side) {
             currentTradeSide = side;
-            const btnBuy = document.getElementById('btn-side-buy');
-            const btnSell = document.getElementById('btn-side-sell');
-            const submitBtn = document.getElementById('btn-submit-order');
+            document.getElementById('btn-side-buy').classList.toggle('active', side === 'BUY');
+            document.getElementById('btn-side-sell').classList.toggle('active', side === 'SELL');
 
-            if (side === 'BUY') {
-                btnBuy.classList.add('active');
-                btnSell.classList.remove('active');
-                submitBtn.className = 'btn-order-action buy';
-                document.getElementById('balance-avail-label').innerText = 'Available Cash:';
-            } else {
-                btnSell.classList.add('active');
-                btnBuy.classList.remove('active');
-                submitBtn.className = 'btn-order-action sell';
-                document.getElementById('balance-avail-label').innerText = 'Available Shares:';
-            }
+            const submitBtn = document.getElementById('btn-submit-order');
+            submitBtn.className = `btn-order-action ${side.toLowerCase()}`;
+            document.getElementById('balance-avail-label').innerText = side === 'BUY' ? 'Available Cash:' : 'Available Shares:';
             calculateTradeTotal();
         }
 
         function setOrderType(ot) {
             currentOrderType = ot;
-            const btnMkt = document.getElementById('btn-ot-market');
-            const btnLmt = document.getElementById('btn-ot-limit');
+            document.getElementById('btn-ot-market').classList.toggle('active', ot === 'MARKET');
+            document.getElementById('btn-ot-limit').classList.toggle('active', ot === 'LIMIT');
+            document.getElementById('btn-ot-stop').classList.toggle('active', ot === 'STOP_LIMIT');
+
             const lmtGroup = document.getElementById('limit-price-group');
+            const stopGroup = document.getElementById('stop-price-group');
 
             if (ot === 'MARKET') {
-                btnMkt.classList.add('active');
-                btnLmt.classList.remove('active');
                 lmtGroup.style.display = 'none';
-            } else {
-                btnLmt.classList.add('active');
-                btnMkt.classList.remove('active');
+                stopGroup.style.display = 'none';
+            } else if (ot === 'LIMIT') {
                 lmtGroup.style.display = 'flex';
-                const pInput = document.getElementById('input-order-price');
-                if (!pInput.value) pInput.value = quotesMap[currentSymbol].price.toFixed(2);
+                stopGroup.style.display = 'none';
+                if (!document.getElementById('input-order-price').value) resetToMarketPrice();
+            } else if (ot === 'STOP_LIMIT') {
+                lmtGroup.style.display = 'flex';
+                stopGroup.style.display = 'flex';
+                if (!document.getElementById('input-order-price').value) resetToMarketPrice();
+                if (!document.getElementById('input-order-stop-price').value) resetToMarketPrice();
             }
             calculateTradeTotal();
         }
 
         function resetToMarketPrice() {
-            document.getElementById('input-order-price').value = quotesMap[currentSymbol].price.toFixed(2);
+            const p = quotesMap[currentSymbol].price;
+            document.getElementById('input-order-price').value = p.toFixed(2);
+            document.getElementById('input-order-stop-price').value = p.toFixed(2);
             calculateTradeTotal();
         }
 
@@ -2408,10 +3145,8 @@
             const total = price * qty;
 
             document.getElementById('summary-unit-price').innerText = formatINR(price);
-            document.getElementById('summary-gross-val').innerText = formatINR(total);
             document.getElementById('summary-total-amount').innerText = formatINR(total);
 
-            // Update available display
             const owned = userState.holdings[currentSymbol]?.quantity || 0;
             document.getElementById('owned-shares-count').innerText = `Owned: ${owned} shares`;
 
@@ -2424,7 +3159,6 @@
             }
         }
 
-        // Confirmation Modal
         function openOrderConfirmModal() {
             if (!currentUser) {
                 openAuthModal();
@@ -2434,6 +3168,7 @@
             const stock = quotesMap[currentSymbol];
             const price = currentOrderType === 'MARKET' ? stock.price : (parseFloat(document.getElementById('input-order-price').value) || stock.price);
             const qty = parseFloat(document.getElementById('input-order-qty').value) || 0;
+            const stopPrice = parseFloat(document.getElementById('input-order-stop-price').value) || 0;
 
             if (qty <= 0) {
                 alert('Please enter a valid share quantity greater than zero.');
@@ -2443,9 +3178,8 @@
             const total = price * qty;
             const owned = userState.holdings[currentSymbol]?.quantity || 0;
 
-            // Insufficient check
             if (currentTradeSide === 'BUY' && userState.cash_balance < total) {
-                alert(`Insufficient virtual funds!\nRequired: ${formatINR(total)}\nAvailable: ${formatINR(userState.cash_balance)}`);
+                alert(`Insufficient virtual cash!\nRequired: ${formatINR(total)}\nAvailable: ${formatINR(userState.cash_balance)}`);
                 return;
             }
 
@@ -2466,6 +3200,14 @@
             document.getElementById('cfm-total-value').innerText = formatINR(total);
             document.getElementById('cfm-cash-before').innerText = formatINR(userState.cash_balance);
 
+            const stopRow = document.getElementById('cfm-stop-price-row');
+            if (currentOrderType === 'STOP_LIMIT') {
+                stopRow.style.display = 'flex';
+                document.getElementById('cfm-stop-price').innerText = formatINR(stopPrice);
+            } else {
+                stopRow.style.display = 'none';
+            }
+
             const cashAfter = currentTradeSide === 'BUY' ? (userState.cash_balance - total) : (userState.cash_balance + total);
             document.getElementById('cfm-cash-after').innerText = formatINR(cashAfter);
 
@@ -2480,12 +3222,13 @@
             closeOrderConfirmModal();
             const stock = quotesMap[currentSymbol];
             const price = currentOrderType === 'MARKET' ? stock.price : (parseFloat(document.getElementById('input-order-price').value) || stock.price);
+            const stopPrice = parseFloat(document.getElementById('input-order-stop-price').value) || 0;
             const qty = parseFloat(document.getElementById('input-order-qty').value) || 0;
             const total = price * qty;
             const orderId = `ORD-${Date.now().toString().slice(-6)}`;
             const timeStr = new Date().toLocaleTimeString('en-IN', { hour12: false });
 
-            // 1. Try server-side trade execution endpoint
+            // Try backend trade execution
             try {
                 const res = await fetch('/api/virtual/trade', {
                     method: 'POST',
@@ -2496,42 +3239,42 @@
                         action: currentTradeSide,
                         order_type: currentOrderType,
                         price: price,
+                        stop_price: stopPrice,
                         quantity: qty,
                         order_id: orderId
                     })
                 });
 
                 if (res.ok) {
-                    const data = await res.json();
-                    showToast(`🎉 Order Executed! ${currentTradeSide} ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                    showToast(`🎉 Order Placed: ${currentTradeSide} ${qty} ${stock.ticker} at ${formatINR(price)}`);
                     loadUserAccount(currentUser.email);
-                    return;
-                } else {
-                    const err = await res.json();
-                    alert(`Trade Rejected: ${err.detail || 'Server validation error'}`);
+                    checkChallengesMilestones();
                     return;
                 }
-            } catch (err) {
-                // If backend is not available, execute locally in browser state
-            }
+            } catch (err) {}
 
-            // 2. Client-side local execution fallback
+            // Client-side fallback execution
+            const isStopPending = (currentOrderType === 'STOP_LIMIT' && stopPrice > 0);
+            const status = isStopPending ? 'Trigger Pending' : 'Completed';
+
             if (currentTradeSide === 'BUY') {
                 userState.cash_balance -= total;
-                const h = userState.holdings[currentSymbol];
-                if (h && h.quantity > 0) {
-                    const newQty = h.quantity + qty;
-                    const newInv = h.total_invested + total;
-                    h.quantity = newQty;
-                    h.total_invested = newInv;
-                    h.avg_buy_price = newInv / newQty;
-                } else {
-                    userState.holdings[currentSymbol] = {
-                        symbol: currentSymbol,
-                        quantity: qty,
-                        avg_buy_price: price,
-                        total_invested: total
-                    };
+                if (!isStopPending) {
+                    const h = userState.holdings[currentSymbol];
+                    if (h && h.quantity > 0) {
+                        const newQty = h.quantity + qty;
+                        const newInv = h.total_invested + total;
+                        h.quantity = newQty;
+                        h.total_invested = newInv;
+                        h.avg_buy_price = newInv / newQty;
+                    } else {
+                        userState.holdings[currentSymbol] = {
+                            symbol: currentSymbol,
+                            quantity: qty,
+                            avg_buy_price: price,
+                            total_invested: total
+                        };
+                    }
                 }
 
                 userState.orders.unshift({
@@ -2541,22 +3284,25 @@
                     symbol: stock.ticker,
                     order_type: currentOrderType,
                     price: price,
+                    stop_price: stopPrice,
                     quantity: qty,
                     total_value: total,
                     realized_pnl: 0.0,
-                    status: 'Completed'
+                    status: status
                 });
 
-                showToast(`🎉 Virtual Buy Executed! Bought ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                showToast(`🎉 Order Placed: Bought ${qty} ${stock.ticker} at ${formatINR(price)}`);
             } else {
                 const h = userState.holdings[currentSymbol];
                 const tradeRealizedPnl = (price - h.avg_buy_price) * qty;
                 userState.cash_balance += total;
                 userState.realized_pnl += tradeRealizedPnl;
 
-                h.quantity -= qty;
-                h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
-                if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
+                if (!isStopPending) {
+                    h.quantity -= qty;
+                    h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
+                    if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
+                }
 
                 userState.orders.unshift({
                     order_id: orderId,
@@ -2565,22 +3311,77 @@
                     symbol: stock.ticker,
                     order_type: currentOrderType,
                     price: price,
+                    stop_price: stopPrice,
                     quantity: qty,
                     total_value: total,
                     realized_pnl: tradeRealizedPnl,
-                    status: 'Completed'
+                    status: status
                 });
 
-                showToast(`🎉 Virtual Sell Executed! Sold ${qty} ${stock.ticker} (P&L: ${formatINR(tradeRealizedPnl)})`);
+                showToast(`🎉 Sold ${qty} ${stock.ticker} (P&L: ${formatINR(tradeRealizedPnl)})`);
             }
 
             saveUserAccount();
             renderPortfolioDashboard();
             calculateTradeTotal();
+            checkChallengesMilestones();
+        }
+
+        function checkPendingStopLimitOrders() {
+            // Evaluates resting stop-limit triggers against live price ticks
+            userState.orders.forEach(o => {
+                if (o.status === 'Trigger Pending' && o.stop_price > 0) {
+                    const q = quotesMap[o.symbol] || Object.values(quotesMap).find(x => x.ticker === o.symbol);
+                    if (!q) return;
+
+                    const triggered = (o.action === 'BUY' && q.price >= o.stop_price) || (o.action === 'SELL' && q.price <= o.stop_price);
+                    if (triggered) {
+                        o.status = 'Completed';
+                        showToast(`⚡ Stop-Limit Triggered for ${o.symbol} at ${formatINR(q.price)}!`);
+                        saveUserAccount();
+                        renderPortfolioDashboard();
+                    }
+                }
+            });
         }
 
         // ==========================================================================
-        // 10. PORTFOLIO & HOLDINGS DASHBOARD RENDERING
+        // 10. RESET PORTFOLIO
+        // ==========================================================================
+        function openResetModal() {
+            document.getElementById('reset-portfolio-modal').style.display = 'flex';
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-portfolio-modal').style.display = 'none';
+        }
+
+        async function confirmResetPortfolio() {
+            const startBal = parseFloat(document.getElementById('input-reset-balance').value) || 100000.0;
+            closeResetModal();
+
+            if (currentUser) {
+                try {
+                    await fetch('/api/virtual/reset', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: currentUser.email, starting_balance: startBal })
+                    });
+                } catch (e) {}
+            }
+
+            userState.cash_balance = startBal;
+            userState.locked_cash = 0.0;
+            userState.realized_pnl = 0.0;
+            userState.holdings = {};
+            userState.orders = [];
+            saveUserAccount();
+            renderPortfolioDashboard();
+            showToast(`✓ Portfolio reset to ${formatINR(startBal)} starting balance.`);
+        }
+
+        // ==========================================================================
+        // 11. PORTFOLIO & ANALYTICS RENDERING
         // ==========================================================================
         function renderPortfolioDashboard() {
             let totalInvested = 0;
@@ -2602,6 +3403,7 @@
             document.getElementById('metric-portfolio-val').innerText = formatINR(totalPortfolioValue);
             document.getElementById('metric-total-invested').innerText = formatINR(totalInvested);
             document.getElementById('metric-realized-pnl').innerText = formatINR(userState.realized_pnl);
+            document.getElementById('sidebar-cash-val').innerText = formatINR(userState.cash_balance);
 
             const pnlEl = document.getElementById('metric-unrealized-pnl');
             const pnlBadge = document.getElementById('badge-unrealized-pct');
@@ -2615,6 +3417,7 @@
 
             renderHoldingsTable(holdingsList);
             renderOrdersTable();
+            renderAssetAllocation(totalPortfolioValue, currentHoldingsValue);
         }
 
         function renderHoldingsTable(holdingsList) {
@@ -2624,12 +3427,8 @@
             if (holdingsList.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="9">
-                            <div class="empty-box">
-                                <div class="empty-box-icon">🌱</div>
-                                <strong style="color: var(--text-main);">No Stock Holdings Yet</strong>
-                                <span>You have ₹1,00,000.00 in virtual cash available. Choose an instrument above to start paper trading!</span>
-                            </div>
+                        <td colspan="9" style="text-align: center; padding: 30px; color: var(--text-sub);">
+                            🌱 No stock holdings yet. Use the Terminal to place your first virtual order!
                         </td>
                     </tr>
                 `;
@@ -2659,22 +3458,20 @@
                         <td style="color: ${isPos ? 'var(--green)' : 'var(--red)'}; font-weight: 700;">
                             ${sign}${formatINR(pnl)}
                         </td>
+                        <td><span class="pnl-badge ${isPos ? 'profit' : 'loss'}">${sign}${pnlPct.toFixed(2)}%</span></td>
                         <td>
-                            <span class="pnl-badge ${isPos ? 'profit' : 'loss'}">${sign}${pnlPct.toFixed(2)}%</span>
-                        </td>
-                        <td>
-                            <button class="action-chip-btn buy" onclick="quickAction('${h.symbol}', 'BUY')">Buy More</button>
-                            <button class="action-chip-btn sell" onclick="quickAction('${h.symbol}', 'SELL')">Sell</button>
+                            <button class="action-chip-btn buy" onclick="quickTradeAction('${h.symbol}', 'BUY')">Buy</button>
+                            <button class="action-chip-btn sell" onclick="quickTradeAction('${h.symbol}', 'SELL')">Sell</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function quickAction(sym, side) {
+        function quickTradeAction(sym, side) {
+            switchView('terminal');
             selectStock(sym);
             setTradeSide(side);
-            window.scrollTo({ top: 120, behavior: 'smooth' });
         }
 
         function renderOrdersTable() {
@@ -2685,12 +3482,8 @@
             if (orders.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10">
-                            <div class="empty-box">
-                                <div class="empty-box-icon">📜</div>
-                                <strong style="color: var(--text-main);">Zero Trade History</strong>
-                                <span>No orders executed yet. Your paper trading audit log will show every virtual trade with execution timestamps.</span>
-                            </div>
+                        <td colspan="10" style="text-align: center; padding: 30px; color: var(--text-sub);">
+                            📜 Zero order history. Placed orders will appear here.
                         </td>
                     </tr>
                 `;
@@ -2702,13 +3495,13 @@
                 return `
                     <tr>
                         <td style="color: var(--text-sub);">${o.order_id}</td>
-                        <td style="color: var(--text-sub);">${o.created_at || o.time || '-'}</td>
+                        <td style="color: var(--text-sub);">${o.created_at || '-'}</td>
                         <td style="color: ${isBuy ? 'var(--green)' : 'var(--red)'}; font-weight: 800;">${o.action}</td>
                         <td><strong>${o.symbol}</strong></td>
-                        <td><span style="font-size: 11px; background: var(--bg-subtle); padding: 2px 6px; border-radius: 4px;">${o.order_type || 'MARKET'}</span></td>
+                        <td><span style="font-size: 10px; background: var(--bg-subtle); padding: 2px 5px; border-radius: 4px;">${o.order_type}</span></td>
                         <td>${formatINR(o.price)}</td>
-                        <td>${o.quantity || o.amount}</td>
-                        <td style="font-weight: 700;">${formatINR(o.total_value || o.total)}</td>
+                        <td>${o.quantity}</td>
+                        <td>${formatINR(o.total_value)}</td>
                         <td style="color: ${Number(o.realized_pnl) >= 0 ? 'var(--green)' : 'var(--red)'};">
                             ${Number(o.realized_pnl) ? formatINR(o.realized_pnl) : '-'}
                         </td>
@@ -2719,22 +3512,344 @@
         }
 
         function switchBottomTab(tab) {
-            const tabHoldings = document.getElementById('tab-btn-holdings');
-            const tabOrders = document.getElementById('tab-btn-orders');
-            const contentHoldings = document.getElementById('tab-content-holdings');
-            const contentOrders = document.getElementById('tab-content-orders');
+            document.getElementById('tab-btn-holdings').classList.toggle('active', tab === 'holdings');
+            document.getElementById('tab-btn-orders').classList.toggle('active', tab === 'orders');
+            document.getElementById('tab-content-holdings').style.display = tab === 'holdings' ? 'block' : 'none';
+            document.getElementById('tab-content-orders').style.display = tab === 'orders' ? 'block' : 'none';
+        }
 
-            if (tab === 'holdings') {
-                tabHoldings.classList.add('active');
-                tabOrders.classList.remove('active');
-                contentHoldings.style.display = 'block';
-                contentOrders.style.display = 'none';
-            } else {
-                tabOrders.classList.add('active');
-                tabHoldings.classList.remove('active');
-                contentOrders.style.display = 'block';
-                contentHoldings.style.display = 'none';
+        function renderAssetAllocation(totalVal, holdingsVal) {
+            const bar = document.getElementById('allocation-bar-container');
+            const legend = document.getElementById('allocation-legend-container');
+            if (!bar || !legend) return;
+
+            const cashPct = totalVal > 0 ? Math.round((userState.cash_balance / totalVal) * 100) : 100;
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+
+            let segmentsHtml = `<div class="alloc-segment" style="width: ${cashPct}%; background: #3b82f6;" title="Cash: ${cashPct}%"></div>`;
+            let legendHtml = `<div class="alloc-legend-item"><span class="alloc-dot" style="background: #3b82f6;"></span><span>Cash: ${cashPct}%</span></div>`;
+
+            let colorIdx = 1;
+            Object.values(userState.holdings).forEach(h => {
+                const stockPrice = quotesMap[h.symbol]?.price || h.avg_buy_price;
+                const hVal = h.quantity * stockPrice;
+                const hPct = totalVal > 0 ? Math.round((hVal / totalVal) * 100) : 0;
+                if (hPct > 0) {
+                    const c = colors[colorIdx % colors.length];
+                    segmentsHtml += `<div class="alloc-segment" style="width: ${hPct}%; background: ${c};" title="${h.symbol}: ${hPct}%"></div>`;
+                    legendHtml += `<div class="alloc-legend-item"><span class="alloc-dot" style="background: ${c};"></span><span>${h.symbol}: ${hPct}%</span></div>`;
+                    colorIdx++;
+                }
+            });
+
+            bar.innerHTML = segmentsHtml;
+            legend.innerHTML = legendHtml;
+        }
+
+        function renderPortfolioAnalyticsView() {
+            const sells = userState.orders.filter(o => o.action === 'SELL' && o.status === 'Completed');
+            const totalTrades = sells.length;
+            const wins = sells.filter(o => (o.realized_pnl || 0) > 0);
+            const losses = sells.filter(o => (o.realized_pnl || 0) < 0);
+
+            const winRate = totalTrades > 0 ? ((wins.length / totalTrades) * 100).toFixed(2) : '0.00';
+            const avgTrade = totalTrades > 0 ? (userState.realized_pnl / totalTrades) : 0;
+            const bestTrade = sells.reduce((max, o) => Math.max(max, o.realized_pnl || 0), 0);
+            const worstTrade = sells.reduce((min, o) => Math.min(min, o.realized_pnl || 0), 0);
+
+            document.getElementById('analytics-win-rate').innerText = `${winRate}%`;
+            document.getElementById('analytics-win-loss-count').innerText = `${wins.length} wins / ${losses.length} losses`;
+            document.getElementById('analytics-total-trades').innerText = userState.orders.length;
+            document.getElementById('analytics-avg-trade').innerText = formatINR(avgTrade);
+            document.getElementById('analytics-best-trade').innerText = formatINR(bestTrade);
+            document.getElementById('analytics-worst-trade').innerText = formatINR(worstTrade);
+
+            renderPortfolioOrdersTable();
+        }
+
+        function renderPortfolioOrdersTable() {
+            const filter = (document.getElementById('trade-filter-input')?.value || '').trim().toLowerCase();
+            const tbody = document.getElementById('portfolio-orders-table-body');
+            if (!tbody) return;
+
+            let orders = userState.orders;
+            if (filter) {
+                orders = orders.filter(o => o.symbol.toLowerCase().includes(filter) || o.order_id.toLowerCase().includes(filter));
             }
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 24px; color: var(--text-sub);">No transactions found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td style="color: var(--text-sub);">${o.order_id}</td>
+                    <td style="color: var(--text-sub);">${o.created_at || '-'}</td>
+                    <td style="color: ${o.action === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight: 800;">${o.action}</td>
+                    <td><strong>${o.symbol}</strong></td>
+                    <td>${o.order_type}</td>
+                    <td>${formatINR(o.price)}</td>
+                    <td>${o.quantity}</td>
+                    <td>${formatINR(o.total_value)}</td>
+                    <td style="color: ${Number(o.realized_pnl) >= 0 ? 'var(--green)' : 'var(--red)'};">${Number(o.realized_pnl) ? formatINR(o.realized_pnl) : '-'}</td>
+                    <td><span class="pnl-badge profit">${o.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function exportTradesToCSV() {
+            if (userState.orders.length === 0) {
+                alert('No trade history available to export yet.');
+                return;
+            }
+
+            let csv = "Order ID,Timestamp,Side,Symbol,Order Type,Price (INR),Quantity,Total Value (INR),Realized PnL (INR),Status\n";
+            userState.orders.forEach(o => {
+                csv += `"${o.order_id}","${o.created_at || ''}","${o.action}","${o.symbol}","${o.order_type}",${o.price},${o.quantity},${o.total_value},${o.realized_pnl || 0},"${o.status}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `chronosmatch_trades_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('✓ Trades exported to CSV successfully!');
+        }
+
+        // ==========================================================================
+        // 12. CHALLENGES & BADGES
+        // ==========================================================================
+        const challengesList = [
+            { id: 'first_trade', title: '🎯 Beginner Steps: Place 1 Virtual Trade', desc: 'Execute any virtual Buy or Sell order in the terminal.', check: () => userState.orders.length >= 1, badge: 'first_trade' },
+            { id: 'stop_limit', title: '🛡️ Risk Guard: Place a Stop-Limit Order', desc: 'Submit a Stop-Limit order to learn conditional risk control.', check: () => userState.orders.some(o => o.order_type === 'STOP_LIMIT'), badge: 'stop_disciplined' },
+            { id: 'profit_maker', title: '📈 Green Lock: Complete a Profitable Sale', desc: 'Sell shares with a positive realized P&L.', check: () => userState.realized_pnl > 0, badge: 'profit_maker' },
+            { id: 'diversified', title: '🌐 Portfolio Architect: Hold 3+ Instruments', desc: 'Hold at least 3 different stocks/crypto simultaneously.', check: () => Object.keys(userState.holdings).length >= 3, badge: 'diversified' },
+            { id: 'high_roller', title: '🚀 Century Milestone: Reach ₹1,10,000 Portfolio', desc: 'Achieve a +10% gain on starting virtual capital.', check: () => (userState.cash_balance + Object.values(userState.holdings).reduce((sum, h) => sum + h.quantity * (quotesMap[h.symbol]?.price || h.avg_buy_price), 0)) >= 110000, badge: 'century_club' }
+        ];
+
+        const allBadges = [
+            { id: 'welcome', icon: '🌱', name: 'Paper Cadet', desc: 'Enrolled in trading simulation' },
+            { id: 'first_trade', icon: '🎯', name: 'First Trigger', desc: 'Executed 1st paper trade' },
+            { id: 'stop_disciplined', icon: '🛡️', name: 'Risk Disciplined', desc: 'Placed a Stop-Limit order' },
+            { id: 'profit_maker', icon: '💰', name: 'Alpha Harvester', desc: 'Locked in positive realized profit' },
+            { id: 'diversified', icon: '🌐', name: 'Asset Architect', desc: 'Held 3+ uncorrelated assets' },
+            { id: 'century_club', icon: '🚀', name: 'Century Club', desc: 'Earned +10% net portfolio return' }
+        ];
+
+        function checkChallengesMilestones() {
+            challengesList.forEach(ch => {
+                if (ch.check() && !userState.badges.has(ch.badge)) {
+                    userState.badges.add(ch.badge);
+                    showToast(`🏆 Milestone Unlocked: ${ch.title}!`);
+                    saveUserAccount();
+                }
+            });
+            renderChallengesView();
+        }
+
+        function renderChallengesView() {
+            const listEl = document.getElementById('challenges-list-container');
+            const badgesEl = document.getElementById('badges-grid-container');
+            if (!listEl || !badgesEl) return;
+
+            listEl.innerHTML = challengesList.map(ch => {
+                const done = ch.check();
+                return `
+                    <div class="challenge-card" style="${done ? 'border-color: rgba(16, 185, 129, 0.4);' : ''}">
+                        <div class="challenge-info">
+                            <div class="challenge-title" style="${done ? 'color: var(--green);' : ''}">
+                                ${done ? '✓ ' : ''}${ch.title}
+                            </div>
+                            <div class="challenge-desc">${ch.desc}</div>
+                        </div>
+                        <span class="challenge-badge-reward">${done ? 'COMPLETED' : 'IN PROGRESS'}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('badges-earned-count').innerText = `${userState.badges.size} of ${allBadges.length} unlocked`;
+
+            badgesEl.innerHTML = allBadges.map(b => {
+                const earned = userState.badges.has(b.id);
+                return `
+                    <div class="badge-card ${earned ? 'earned' : ''}">
+                        <span class="badge-icon">${b.icon}</span>
+                        <span class="badge-name">${b.name}</span>
+                        <span class="badge-status" style="color: ${earned ? 'var(--yellow)' : 'var(--text-muted)'};">
+                            ${earned ? 'UNLOCKED' : 'LOCKED'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            renderSimulationLeaderboard();
+        }
+
+        function renderSimulationLeaderboard() {
+            const tbody = document.getElementById('leaderboard-table-body');
+            if (!tbody) return;
+
+            const totalVal = userState.cash_balance + Object.values(userState.holdings).reduce((sum, h) => sum + h.quantity * (quotesMap[h.symbol]?.price || h.avg_buy_price), 0);
+            const userReturn = ((totalVal - 100000.0) / 100000.0 * 100).toFixed(2);
+
+            const mockPeers = [
+                { rank: 1, name: 'Siddharth V. (Quant Bot)', val: 124500.0, ret: '+24.50%', win: '78%', badges: '5 badges' },
+                { rank: 2, name: 'Priya Mehta (Swing Pro)', val: 114200.0, ret: '+14.20%', win: '64%', badges: '4 badges' },
+                { rank: 3, name: (currentUser?.name || 'You') + ' (Live Simulation)', val: totalVal, ret: `${userReturn >= 0 ? '+' : ''}${userReturn}%`, win: '60%', badges: `${userState.badges.size} badges`, isUser: true },
+                { rank: 4, name: 'Aarav Nair (Breakout)', val: 104500.0, ret: '+4.50%', win: '52%', badges: '3 badges' },
+                { rank: 5, name: 'Kiran Desai (HFT Demo)', val: 98200.0, ret: '-1.80%', win: '45%', badges: '2 badges' }
+            ];
+
+            mockPeers.sort((a, b) => b.val - a.val);
+
+            tbody.innerHTML = mockPeers.map((p, idx) => `
+                <tr style="${p.isUser ? 'background: var(--blue-soft); font-weight: 700;' : ''}">
+                    <td>#${idx + 1}</td>
+                    <td>${p.name}</td>
+                    <td>${formatINR(p.val)}</td>
+                    <td style="color: ${p.ret.includes('-') ? 'var(--red)' : 'var(--green)'};">${p.ret}</td>
+                    <td>${p.win}</td>
+                    <td><span class="challenge-badge-reward">${p.badges}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // ==========================================================================
+        // 13. TRADING JOURNAL
+        // ==========================================================================
+        async function handleJournalSubmit(e) {
+            e.preventDefault();
+            const symbol = document.getElementById('journal-input-symbol').value.trim().toUpperCase();
+            const strategy = document.getElementById('journal-input-strategy').value;
+            const sentiment = document.getElementById('journal-input-sentiment').value;
+            const lessons = document.getElementById('journal-input-lessons').value.trim();
+            const notes = document.getElementById('journal-input-notes').value.trim();
+
+            const entry = {
+                entry_id: `JRN-${Date.now().toString().slice(-6)}`,
+                symbol,
+                strategy,
+                sentiment,
+                lessons,
+                notes,
+                created_at: new Date().toLocaleString('en-IN')
+            };
+
+            userState.journal.unshift(entry);
+            saveUserAccount();
+            showToast('✓ Journal reflection recorded!');
+            document.getElementById('journal-entry-form').reset();
+            renderJournalView();
+
+            if (currentUser) {
+                try {
+                    await fetch('/api/virtual/journal', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: currentUser.email, ...entry })
+                    });
+                } catch (err) {}
+            }
+        }
+
+        function renderJournalView() {
+            const container = document.getElementById('journal-entries-container');
+            if (!container) return;
+            const entries = userState.journal;
+            document.getElementById('journal-entries-count').innerText = `${entries.length} reflections saved`;
+
+            if (entries.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: var(--text-sub);">
+                        📖 No journal notes yet. Record your trade rationales above to build trading discipline.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = entries.map(j => `
+                <div class="journal-card">
+                    <div class="journal-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <strong style="font-size: 14px;">${j.symbol}</strong>
+                            <span class="challenge-badge-reward">${j.strategy}</span>
+                            <span style="font-size: 11px;">${j.sentiment === 'Bullish' ? '🟢 Bullish' : (j.sentiment === 'Bearish' ? '🔴 Bearish' : '⚪ Neutral')}</span>
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-muted);">${j.created_at}</span>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-main); line-height: 1.45;">${j.notes}</div>
+                    ${j.lessons ? `<div style="font-size: 11px; color: var(--green); margin-top: 4px;">🎯 Rule / Lesson: ${j.lessons}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ==========================================================================
+        // 14. CHRONOS AI EDUCATIONAL ASSISTANT
+        // ==========================================================================
+        function askAiPrompt(question) {
+            document.getElementById('ai-chat-input').value = question;
+            handleAiChatSubmit(new Event('submit'));
+        }
+
+        async function handleAiChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('ai-chat-input');
+            const q = input.value.trim();
+            if (!q) return;
+
+            const box = document.getElementById('ai-messages-box');
+            box.innerHTML += `<div class="ai-msg user">${escapeHtml(q)}</div>`;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            let reply = "";
+            try {
+                const res = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: q, email: currentUser?.email })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    reply = data.reply;
+                }
+            } catch (err) {}
+
+            if (!reply) {
+                // Client-side fallback rule-based answers
+                const qLower = q.toLowerCase();
+                if (qLower.includes('spread') || qLower.includes('slippage')) {
+                    reply = "**Bid-Ask Spread & Slippage Explained:**\n\n- **Spread**: The difference between the highest price a buyer offers (Bid) and the lowest price a seller asks. Tight spreads imply high liquidity.\n- **Slippage**: When a market order executes at a different price than observed due to shallow depth.";
+                } else if (qLower.includes('2%') || qLower.includes('position size') || qLower.includes('risk')) {
+                    const maxRisk = userState.cash_balance * 0.02;
+                    reply = `**The 2% Position Sizing Rule:**\n\nBased on your available cash of **${formatINR(userState.cash_balance)}**, your maximum recommended risk per trade is **${formatINR(maxRisk)}**.\n\nFormula: \`Quantity = (Portfolio × 2%) / (Entry Price - Stop Loss)\`. Never risk ruin on a single idea!`;
+                } else if (qLower.includes('stop')) {
+                    reply = "**Stop-Limit Mechanics:**\n\nA Stop-Limit order remains inactive until the market reaches your **Stop Price**. Once triggered, it turns into a Limit Order at your designated **Limit Price**, protecting you from flash crashes.";
+                } else {
+                    reply = `**Chronos AI Mentor:**\n\nI can help you analyze your portfolio balance of **${formatINR(userState.cash_balance)}** and your ${Object.keys(userState.holdings).length} active holdings. Ask me about position sizing, order types, or market depth!`;
+                }
+            }
+
+            box.innerHTML += `<div class="ai-msg assistant">${reply.replace(/\n/g, '<br>')}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // ==========================================================================
+        // 15. ENGINE METRICS MODAL & TOAST
+        // ==========================================================================
+        function openEngineMetricsModal() {
+            document.getElementById('engine-metrics-modal').style.display = 'flex';
+        }
+        function closeEngineMetricsModal() {
+            document.getElementById('engine-metrics-modal').style.display = 'none';
         }
 
         function showToast(msg) {
@@ -2745,18 +3860,16 @@
         }
 
         // ==========================================================================
-        // 11. INITIALIZATION & RECURRING MARKET TICK
+        // 16. INITIALIZATION
         // ==========================================================================
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             selectStock('RELIANCE');
             checkUserAuth();
             fetchMarketQuotes();
+            loadCandleData();
 
-            // Refresh market data every 10 seconds
             setInterval(fetchMarketQuotes, 10000);
-
-            // Responsive chart resize listener
             window.addEventListener('resize', drawChart);
         });
     </script>

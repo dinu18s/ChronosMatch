@@ -34,6 +34,7 @@ class OrderType(IntEnum):
     """Order type classification."""
     LIMIT = 1
     MARKET = 2
+    STOP_LIMIT = 3
 
 
 class TimeInForce(IntEnum):

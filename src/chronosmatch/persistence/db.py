@@ -10,7 +10,7 @@ DB_PATH = Path(os.environ.get("CHRONOS_DB_PATH", Path(__file__).resolve().parent
 
 
 class Database:
-    """Thread-safe SQLite database manager for user accounts, portfolios, and virtual trading."""
+    """Thread-safe SQLite database manager for user accounts, portfolios, virtual trading, and analytics."""
 
     def __init__(self, db_path: Optional[Path] = None):
         self.db_path = db_path or DB_PATH
@@ -61,6 +61,7 @@ class Database:
                     action TEXT NOT NULL,
                     order_type TEXT NOT NULL,
                     price REAL NOT NULL,
+                    stop_price REAL DEFAULT 0.0,
                     quantity REAL NOT NULL,
                     total_value REAL NOT NULL,
                     realized_pnl REAL DEFAULT 0.00,
@@ -76,7 +77,26 @@ class Database:
                     PRIMARY KEY (email, symbol),
                     FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
                 );
+
+                CREATE TABLE IF NOT EXISTS journal_entries (
+                    entry_id TEXT PRIMARY KEY,
+                    email TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    order_id TEXT,
+                    strategy TEXT,
+                    sentiment TEXT,
+                    notes TEXT NOT NULL,
+                    lessons TEXT,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
+                );
             """)
+
+            # Automatic schema migration for existing databases
+            try:
+                conn.execute("ALTER TABLE orders ADD COLUMN stop_price REAL DEFAULT 0.0;")
+            except sqlite3.OperationalError:
+                pass
 
     def register_or_login(self, email: str, name: str, password: str, color: Optional[str] = None) -> Dict[str, Any]:
         """Sign in or register a user, ensuring an account with ₹1,00,000 initial virtual cash."""
@@ -129,6 +149,33 @@ class Database:
             if not row:
                 return None
             return dict(row)
+
+    def reset_account(self, email: str, starting_balance: float = 100000.0) -> Dict[str, Any]:
+        """Reset virtual portfolio balance, clear all active holdings and completed orders."""
+        email = email.strip().lower()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
+                (email, now),
+            )
+            cursor.execute(
+                "INSERT INTO accounts (email, cash_balance, realized_pnl, updated_at) VALUES (?, ?, 0.0, ?) ON CONFLICT(email) DO UPDATE SET cash_balance = ?, realized_pnl = 0.0, updated_at = ?",
+                (email, starting_balance, now, starting_balance, now),
+            )
+            cursor.execute("DELETE FROM holdings WHERE email = ?", (email,))
+            cursor.execute("DELETE FROM orders WHERE email = ?", (email,))
+            conn.commit()
+
+        return {
+            "email": email,
+            "cash_balance": round(starting_balance, 2),
+            "realized_pnl": 0.0,
+            "status": "reset",
+            "message": f"Portfolio successfully reset to starting balance of INR {starting_balance:,.2f}.",
+        }
 
     def get_portfolio(self, email: str, prices_map: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """Calculate complete user portfolio, holdings, invested capital, and profit/loss."""
@@ -215,9 +262,10 @@ class Database:
         order_type: str,
         price: float,
         quantity: float,
+        stop_price: float = 0.0,
         order_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Atomically validate and execute a virtual buy or sell order."""
+        """Atomically validate and execute a virtual buy or sell order (Market, Limit, or Stop-Limit)."""
         email = email.strip().lower()
         symbol = symbol.strip().upper()
         action = action.strip().upper()
@@ -239,7 +287,10 @@ class Database:
             cursor = conn.cursor()
 
             # Ensure user and account exist
-            cursor.execute("INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)", (email, now))
+            cursor.execute(
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
+                (email, now),
+            )
             cursor.execute("SELECT cash_balance, realized_pnl FROM accounts WHERE email = ?", (email,))
             acct = cursor.fetchone()
             if not acct:
@@ -255,6 +306,10 @@ class Database:
 
             trade_realized_pnl = 0.0
 
+            # If Stop-Limit order that is pending trigger
+            is_pending_trigger = (order_type == "STOP_LIMIT" and stop_price > 0)
+            status = "Trigger Pending" if is_pending_trigger else "Completed"
+
             if action == "BUY":
                 if cash_balance < total_value:
                     raise ValueError(
@@ -263,25 +318,29 @@ class Database:
 
                 new_cash = cash_balance - total_value
 
-                # Update or insert holding
-                cursor.execute("SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
-                cur_h = cursor.fetchone()
+                if not is_pending_trigger:
+                    # Update or insert holding
+                    cursor.execute(
+                        "SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?",
+                        (email, symbol),
+                    )
+                    cur_h = cursor.fetchone()
 
-                if cur_h and cur_h["quantity"] > 0:
-                    old_qty = cur_h["quantity"]
-                    old_inv = cur_h["total_invested"]
-                    new_qty = old_qty + quantity
-                    new_inv = old_inv + total_value
-                    new_avg = new_inv / new_qty
-                    cursor.execute(
-                        "UPDATE holdings SET quantity = ?, avg_buy_price = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
-                        (new_qty, new_avg, new_inv, now, email, symbol),
-                    )
-                else:
-                    cursor.execute(
-                        "INSERT OR REPLACE INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-                        (email, symbol, quantity, price, total_value, now),
-                    )
+                    if cur_h and cur_h["quantity"] > 0:
+                        old_qty = cur_h["quantity"]
+                        old_inv = cur_h["total_invested"]
+                        new_qty = old_qty + quantity
+                        new_inv = old_inv + total_value
+                        new_avg = new_inv / new_qty
+                        cursor.execute(
+                            "UPDATE holdings SET quantity = ?, avg_buy_price = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
+                            (new_qty, new_avg, new_inv, now, email, symbol),
+                        )
+                    else:
+                        cursor.execute(
+                            "INSERT OR REPLACE INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                            (email, symbol, quantity, price, total_value, now),
+                        )
 
                 cursor.execute(
                     "UPDATE accounts SET cash_balance = ?, updated_at = ? WHERE email = ?",
@@ -289,7 +348,10 @@ class Database:
                 )
 
             elif action == "SELL":
-                cursor.execute("SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
+                cursor.execute(
+                    "SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?",
+                    (email, symbol),
+                )
                 cur_h = cursor.fetchone()
 
                 if not cur_h or cur_h["quantity"] < quantity:
@@ -306,16 +368,17 @@ class Database:
                 new_realized_pnl = realized_pnl + trade_realized_pnl
                 new_cash = cash_balance + total_value
 
-                new_qty = old_qty - quantity
-                new_inv = max(0.0, old_inv - (avg_buy_price * quantity))
+                if not is_pending_trigger:
+                    new_qty = old_qty - quantity
+                    new_inv = max(0.0, old_inv - (avg_buy_price * quantity))
 
-                if new_qty <= 0.000001:
-                    cursor.execute("DELETE FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
-                else:
-                    cursor.execute(
-                        "UPDATE holdings SET quantity = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
-                        (new_qty, new_inv, now, email, symbol),
-                    )
+                    if new_qty <= 0.000001:
+                        cursor.execute("DELETE FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
+                    else:
+                        cursor.execute(
+                            "UPDATE holdings SET quantity = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
+                            (new_qty, new_inv, now, email, symbol),
+                        )
 
                 cursor.execute(
                     "UPDATE accounts SET cash_balance = ?, realized_pnl = ?, updated_at = ? WHERE email = ?",
@@ -325,9 +388,9 @@ class Database:
             # Record order
             cursor.execute(
                 """INSERT INTO orders
-                   (order_id, email, symbol, action, order_type, price, quantity, total_value, realized_pnl, status, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Completed', ?)""",
-                (order_id, email, symbol, action, order_type, price, quantity, total_value, trade_realized_pnl, now),
+                   (order_id, email, symbol, action, order_type, price, stop_price, quantity, total_value, realized_pnl, status, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (order_id, email, symbol, action, order_type, price, stop_price, quantity, total_value, trade_realized_pnl, status, now),
             )
 
             conn.commit()
@@ -339,23 +402,114 @@ class Database:
             "action": action,
             "order_type": order_type,
             "price": price,
+            "stop_price": stop_price,
             "quantity": quantity,
             "total_value": total_value,
             "realized_pnl": round(trade_realized_pnl, 2),
-            "status": "Completed",
+            "status": status,
             "cash_balance": round(new_cash, 2),
             "created_at": now,
         }
 
-    def get_orders(self, email: str, limit: int = 50) -> List[Dict[str, Any]]:
+    def get_orders(self, email: str, limit: int = 100) -> List[Dict[str, Any]]:
         email = email.strip().lower()
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT order_id, email, symbol, action, order_type, price, quantity, total_value, realized_pnl, status, created_at FROM orders WHERE email = ? ORDER BY created_at DESC LIMIT ?",
+                "SELECT order_id, email, symbol, action, order_type, price, stop_price, quantity, total_value, realized_pnl, status, created_at FROM orders WHERE email = ? ORDER BY created_at DESC LIMIT ?",
                 (email, limit),
             )
             return [dict(row) for row in cursor.fetchall()]
+
+    def get_analytics(self, email: str) -> Dict[str, Any]:
+        """Compute comprehensive win rate, trade metrics, and profit statistics."""
+        orders = self.get_orders(email, limit=500)
+        sells = [o for o in orders if o["action"] == "SELL" and o["status"] == "Completed"]
+
+        total_trades = len(sells)
+        wins = [o for o in sells if (o["realized_pnl"] or 0) > 0]
+        losses = [o for o in sells if (o["realized_pnl"] or 0) < 0]
+
+        win_rate = round((len(wins) / total_trades * 100), 2) if total_trades > 0 else 0.0
+        gross_profit = sum(o["realized_pnl"] for o in wins)
+        gross_loss = abs(sum(o["realized_pnl"] for o in losses))
+        profit_factor = round(gross_profit / gross_loss, 2) if gross_loss > 0 else (round(gross_profit, 2) if gross_profit > 0 else 1.0)
+
+        best_trade = max((o["realized_pnl"] for o in sells), default=0.0)
+        worst_trade = min((o["realized_pnl"] for o in sells), default=0.0)
+        avg_trade = round(sum(o["realized_pnl"] for o in sells) / total_trades, 2) if total_trades > 0 else 0.0
+
+        return {
+            "email": email,
+            "total_trades": total_trades,
+            "winning_trades": len(wins),
+            "losing_trades": len(losses),
+            "win_rate_pct": win_rate,
+            "gross_profit": round(gross_profit, 2),
+            "gross_loss": round(gross_loss, 2),
+            "profit_factor": profit_factor,
+            "best_trade": round(best_trade, 2),
+            "worst_trade": round(worst_trade, 2),
+            "average_trade": avg_trade,
+        }
+
+    def add_journal_entry(
+        self,
+        email: str,
+        symbol: str,
+        notes: str,
+        strategy: str = "General",
+        sentiment: str = "Bullish",
+        order_id: Optional[str] = None,
+        lessons: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Record a user trading journal entry."""
+        email = email.strip().lower()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        entry_id = f"JRN-{int(datetime.datetime.now().timestamp() * 1000)}"
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
+                (email, now),
+            )
+            cursor.execute(
+                """INSERT INTO journal_entries
+                   (entry_id, email, symbol, order_id, strategy, sentiment, notes, lessons, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (entry_id, email, symbol.upper(), order_id, strategy, sentiment, notes, lessons, now),
+            )
+            conn.commit()
+
+        return {
+            "entry_id": entry_id,
+            "email": email,
+            "symbol": symbol.upper(),
+            "strategy": strategy,
+            "sentiment": sentiment,
+            "notes": notes,
+            "lessons": lessons,
+            "created_at": now,
+        }
+
+    def get_journal_entries(self, email: str, limit: int = 50) -> List[Dict[str, Any]]:
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT entry_id, email, symbol, order_id, strategy, sentiment, notes, lessons, created_at FROM journal_entries WHERE email = ? ORDER BY created_at DESC LIMIT ?",
+                (email, limit),
+            )
+            return [dict(row) for row in cursor.fetchall()]
+
+    def delete_journal_entry(self, email: str, entry_id: str) -> bool:
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM journal_entries WHERE email = ? AND entry_id = ?", (email, entry_id))
+            conn.commit()
+            return cursor.rowcount > 0
 
     def get_watchlist(self, email: str) -> List[str]:
         email = email.strip().lower()
@@ -371,7 +525,10 @@ class Database:
 
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)", (email, now))
+            cursor.execute(
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
+                (email, now),
+            )
             cursor.execute("SELECT 1 FROM watchlists WHERE email = ? AND symbol = ?", (email, symbol))
             if cursor.fetchone():
                 cursor.execute("DELETE FROM watchlists WHERE email = ? AND symbol = ?", (email, symbol))

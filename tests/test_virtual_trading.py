@@ -190,3 +190,97 @@ def test_order_history_recording(client):
     assert orders[0]["symbol"] == "HDFCBANK"
     assert orders[0]["action"] == "BUY"
     assert orders[0]["status"] == "Completed"
+
+
+def test_portfolio_reset_and_analytics(client):
+    email = f"trader_reset_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Reset Tester", "password": "pass"})
+
+    # Execute a trade
+    client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "TCS",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 2000.0,
+        "quantity": 5.0,
+    })
+    client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "TCS",
+        "action": "SELL",
+        "order_type": "MARKET",
+        "price": 2200.0,
+        "quantity": 5.0,
+    })
+
+    # Verify analytics
+    an_res = client.get(f"/api/virtual/analytics/{email}")
+    assert an_res.status_code == 200
+    an_data = an_res.json()
+    assert an_data["total_trades"] == 1
+    assert an_data["winning_trades"] == 1
+    assert an_data["win_rate_pct"] == 100.0
+    assert an_data["best_trade"] == 1000.0
+
+    # Reset portfolio
+    rst_res = client.post("/api/virtual/reset", json={"email": email, "starting_balance": 100000.0})
+    assert rst_res.status_code == 200
+    rst_data = rst_res.json()
+    assert rst_data["cash_balance"] == 100000.0
+    assert rst_data["realized_pnl"] == 0.0
+
+    # Verify portfolio is clean
+    p_res = client.get(f"/api/virtual/portfolio/{email}")
+    assert p_res.status_code == 200
+    assert p_res.json()["cash_balance"] == 100000.0
+    assert len(p_res.json()["holdings"]) == 0
+
+
+def test_trading_journal_crud(client):
+    email = f"trader_jrn_{uuid.uuid4().hex[:8]}@chronos.local"
+    # Create journal entry
+    c_res = client.post("/api/virtual/journal", json={
+        "email": email,
+        "symbol": "RELIANCE",
+        "notes": "Bought dip near 200 EMA support",
+        "strategy": "Dip Buying",
+        "sentiment": "Bullish",
+        "lessons": "Strict stop loss respected",
+    })
+    assert c_res.status_code == 200
+    entry_id = c_res.json()["entry_id"]
+
+    # Read entries
+    r_res = client.get(f"/api/virtual/journal/{email}")
+    assert r_res.status_code == 200
+    entries = r_res.json()
+    assert len(entries) == 1
+    assert entries[0]["symbol"] == "RELIANCE"
+    assert entries[0]["strategy"] == "Dip Buying"
+
+    # Delete entry
+    d_res = client.delete(f"/api/virtual/journal/{email}/{entry_id}")
+    assert d_res.status_code == 200
+    assert d_res.json()["status"] == "deleted"
+
+    r_res2 = client.get(f"/api/virtual/journal/{email}")
+    assert len(r_res2.json()) == 0
+
+
+def test_ai_chat_assistant(client):
+    res = client.post("/api/ai/chat", json={
+        "message": "What is an order book spread and how does slippage work?",
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert "Bid-Ask Spread" in data["reply"]
+    assert "Slippage" in data["reply"]
+
+
+def test_engine_metrics_endpoint(client):
+    res = client.get("/api/engine/metrics")
+    assert res.status_code == 200
+    data = res.json()
+    assert "orders/sec" in data["benchmark_throughput_ops"]
+    assert data["matching_algorithm"] == "Price-Time Priority (FIFO)"
