@@ -473,6 +473,25 @@
         }
         .pnl-badge.profit { background: var(--green-soft); color: var(--green); }
         .pnl-badge.loss { background: var(--red-soft); color: var(--red); }
+        .pnl-badge.pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .pnl-badge.neutral { background: var(--bg-subtle); color: var(--text-sub); }
+
+        .btn-cancel-order {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #f87171;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-cancel-order:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #ffffff;
+            border-color: #ef4444;
+        }
 
         /* Trading Terminal 3-Column Layout */
         .terminal-grid {
@@ -1905,6 +1924,7 @@
                                     <th>Total (₹)</th>
                                     <th>Realized P&L</th>
                                     <th>Status</th>
+                                    <th>Manage</th>
                                 </tr>
                             </thead>
                             <tbody id="orders-table-body">
@@ -1996,6 +2016,7 @@
                                     <th>Total Value</th>
                                     <th>Realized P&L</th>
                                     <th>Status</th>
+                                    <th>Manage</th>
                                 </tr>
                             </thead>
                             <tbody id="portfolio-orders-table-body"></tbody>
@@ -2329,6 +2350,12 @@
                 <button type="submit" class="btn-order-action buy" id="btn-auth-submit-action" style="margin-top: 6px;">
                     Sign In
                 </button>
+
+                <div style="text-align: center; margin-top: 8px;">
+                    <button type="button" class="modal-btn-cancel" style="width: 100%; border: 1px dashed var(--border); font-size: 12px; cursor: pointer;" onclick="quickDemoLogin()">
+                        ⚡ Quick Demo Trader (Instant ₹1,00,000)
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -2570,6 +2597,10 @@
             loginSuccess({ email, name, cash_balance: 100000.00 });
         }
 
+        function quickDemoLogin() {
+            loginSuccess({ email: 'demo.trader@chronos.local', name: 'Demo Trader', cash_balance: 100000.00 });
+        }
+
         function loginSuccess(user) {
             currentUser = {
                 name: user.name || user.email.split('@')[0],
@@ -2696,7 +2727,7 @@
                         renderWatchlist();
                         renderHeaderTickerRibbon();
                         renderPortfolioDashboard();
-                        checkPendingStopLimitOrders();
+                        checkPendingOrders();
                         return;
                     }
                 }
@@ -2719,7 +2750,7 @@
             renderWatchlist();
             renderHeaderTickerRibbon();
             renderPortfolioDashboard();
-            checkPendingStopLimitOrders();
+            checkPendingOrders();
         }
 
         function updateFeedStatus(isLive, label) {
@@ -3254,12 +3285,29 @@
             } catch (err) {}
 
             // Client-side fallback execution
-            const isStopPending = (currentOrderType === 'STOP_LIMIT' && stopPrice > 0);
-            const status = isStopPending ? 'Trigger Pending' : 'Completed';
+            let isPending = false;
+            let status = 'Completed';
+
+            if (currentOrderType === 'STOP_LIMIT' && stopPrice > 0) {
+                isPending = true;
+                status = 'Trigger Pending';
+            } else if (currentOrderType === 'LIMIT') {
+                if (currentTradeSide === 'BUY' && price < stock.price) {
+                    isPending = true;
+                    status = 'Pending';
+                } else if (currentTradeSide === 'SELL' && price > stock.price) {
+                    isPending = true;
+                    status = 'Pending';
+                }
+            }
 
             if (currentTradeSide === 'BUY') {
+                if (userState.cash_balance < total) {
+                    showToast(`❌ Insufficient virtual cash! Need ${formatINR(total)}, available: ${formatINR(userState.cash_balance)}`);
+                    return;
+                }
                 userState.cash_balance -= total;
-                if (!isStopPending) {
+                if (!isPending) {
                     const h = userState.holdings[currentSymbol];
                     if (h && h.quantity > 0) {
                         const newQty = h.quantity + qty;
@@ -3286,19 +3334,34 @@
                     price: price,
                     stop_price: stopPrice,
                     quantity: qty,
+                    filled_qty: isPending ? 0.0 : qty,
+                    leaves_qty: isPending ? qty : 0.0,
                     total_value: total,
                     realized_pnl: 0.0,
                     status: status
                 });
 
-                showToast(`🎉 Order Placed: Bought ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                if (isPending) {
+                    showToast(`📌 Resting ${currentOrderType} BUY Placed: ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                } else {
+                    showToast(`🎉 Order Placed: Bought ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                }
             } else {
                 const h = userState.holdings[currentSymbol];
+                if (!h || h.quantity < qty) {
+                    showToast(`❌ Insufficient shares! Owned: ${h ? h.quantity : 0}, requested: ${qty}`);
+                    return;
+                }
                 const tradeRealizedPnl = (price - h.avg_buy_price) * qty;
-                userState.cash_balance += total;
-                userState.realized_pnl += tradeRealizedPnl;
 
-                if (!isStopPending) {
+                if (!isPending) {
+                    userState.cash_balance += total;
+                    userState.realized_pnl += tradeRealizedPnl;
+                    h.quantity -= qty;
+                    h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
+                    if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
+                } else {
+                    // For resting sell, reserve shares from available holding
                     h.quantity -= qty;
                     h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
                     if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
@@ -3313,12 +3376,19 @@
                     price: price,
                     stop_price: stopPrice,
                     quantity: qty,
+                    filled_qty: isPending ? 0.0 : qty,
+                    leaves_qty: isPending ? qty : 0.0,
                     total_value: total,
-                    realized_pnl: tradeRealizedPnl,
+                    avg_cost_basis: h.avg_buy_price,
+                    realized_pnl: isPending ? 0.0 : tradeRealizedPnl,
                     status: status
                 });
 
-                showToast(`🎉 Sold ${qty} ${stock.ticker} (P&L: ${formatINR(tradeRealizedPnl)})`);
+                if (isPending) {
+                    showToast(`📌 Resting ${currentOrderType} SELL Placed: ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                } else {
+                    showToast(`🎉 Sold ${qty} ${stock.ticker} (P&L: ${formatINR(tradeRealizedPnl)})`);
+                }
             }
 
             saveUserAccount();
@@ -3327,22 +3397,130 @@
             checkChallengesMilestones();
         }
 
-        function checkPendingStopLimitOrders() {
-            // Evaluates resting stop-limit triggers against live price ticks
+        function checkPendingOrders() {
+            let stateChanged = false;
             userState.orders.forEach(o => {
-                if (o.status === 'Trigger Pending' && o.stop_price > 0) {
-                    const q = quotesMap[o.symbol] || Object.values(quotesMap).find(x => x.ticker === o.symbol);
-                    if (!q) return;
+                if (o.status === 'Cancelled' || o.status === 'Completed' || o.status === 'Filled') return;
 
-                    const triggered = (o.action === 'BUY' && q.price >= o.stop_price) || (o.action === 'SELL' && q.price <= o.stop_price);
+                const stock = quotesMap[o.symbol] || Object.values(quotesMap).find(x => x.ticker === o.symbol);
+                if (!stock) return;
+
+                // 1. Check STOP_LIMIT trigger
+                if (o.status === 'Trigger Pending' && o.stop_price > 0) {
+                    const triggered = (o.action === 'BUY' && stock.price >= o.stop_price) || (o.action === 'SELL' && stock.price <= o.stop_price);
                     if (triggered) {
-                        o.status = 'Completed';
-                        showToast(`⚡ Stop-Limit Triggered for ${o.symbol} at ${formatINR(q.price)}!`);
-                        saveUserAccount();
-                        renderPortfolioDashboard();
+                        const canFill = (o.action === 'BUY' && stock.price <= o.price) || (o.action === 'SELL' && stock.price >= o.price) || o.price === 0;
+                        if (canFill) {
+                            fillOrderLocally(o, stock.price);
+                            showToast(`⚡ Stop-Limit Executed for ${o.symbol} at ${formatINR(stock.price)}!`);
+                        } else {
+                            o.status = 'Pending';
+                            showToast(`⚡ Stop Triggered for ${o.symbol}! Resting as Limit Order at ${formatINR(o.price)}.`);
+                        }
+                        stateChanged = true;
+                    }
+                }
+                // 2. Check resting LIMIT order
+                else if (o.status === 'Pending') {
+                    const canFill = (o.action === 'BUY' && stock.price <= o.price) || (o.action === 'SELL' && stock.price >= o.price);
+                    if (canFill) {
+                        fillOrderLocally(o, o.price);
+                        showToast(`⚡ Limit Order Filled: ${o.action} ${o.quantity} ${o.symbol} at ${formatINR(o.price)}!`);
+                        stateChanged = true;
                     }
                 }
             });
+
+            if (stateChanged) {
+                saveUserAccount();
+                renderPortfolioDashboard();
+            }
+        }
+
+        function fillOrderLocally(o, execPrice) {
+            const sym = o.symbol;
+            const qty = (o.leaves_qty && o.leaves_qty > 0) ? o.leaves_qty : o.quantity;
+            const val = execPrice * qty;
+
+            if (o.action === 'BUY') {
+                const h = userState.holdings[sym];
+                if (h && h.quantity > 0) {
+                    const newQty = h.quantity + qty;
+                    const newInv = h.total_invested + val;
+                    h.quantity = newQty;
+                    h.total_invested = newInv;
+                    h.avg_buy_price = newInv / newQty;
+                } else {
+                    userState.holdings[sym] = {
+                        symbol: sym,
+                        quantity: qty,
+                        avg_buy_price: execPrice,
+                        total_invested: val
+                    };
+                }
+            } else if (o.action === 'SELL') {
+                userState.cash_balance += val;
+                const avgCost = o.avg_cost_basis || execPrice;
+                const pnl = (execPrice - avgCost) * qty;
+                userState.realized_pnl += pnl;
+                o.realized_pnl = pnl;
+            }
+
+            o.status = 'Completed';
+            o.filled_qty = o.quantity;
+            o.leaves_qty = 0.0;
+        }
+
+        async function cancelOrder(orderId) {
+            if (!orderId) return;
+            const order = userState.orders.find(o => o.order_id === orderId);
+            if (!order) return;
+            if (order.status === 'Cancelled' || order.status === 'Completed' || order.status === 'Filled') {
+                showToast(`Order #${orderId} is already ${order.status}.`);
+                return;
+            }
+
+            if (currentUser) {
+                try {
+                    const res = await fetch('/api/virtual/cancel', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: currentUser.email, order_id: orderId })
+                    });
+                    if (res.ok) {
+                        showToast(`🚫 Order #${orderId} successfully cancelled.`);
+                        loadUserAccount(currentUser.email);
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            const leavesQty = (order.leaves_qty && order.leaves_qty > 0) ? order.leaves_qty : order.quantity;
+            if (order.action === 'BUY') {
+                const refund = leavesQty * order.price;
+                userState.cash_balance += refund;
+                showToast(`🚫 Order #${orderId} cancelled. Refunded ${formatINR(refund)}.`);
+            } else {
+                const sym = order.symbol;
+                const curHolding = userState.holdings[sym];
+                if (curHolding) {
+                    curHolding.quantity += leavesQty;
+                    curHolding.total_invested += leavesQty * (order.avg_cost_basis || order.price);
+                } else {
+                    userState.holdings[sym] = {
+                        symbol: sym,
+                        quantity: leavesQty,
+                        avg_buy_price: order.avg_cost_basis || order.price,
+                        total_invested: leavesQty * (order.avg_cost_basis || order.price)
+                    };
+                }
+                showToast(`🚫 Order #${orderId} cancelled. Reserved shares restored.`);
+            }
+
+            order.status = 'Cancelled';
+            order.leaves_qty = 0.0;
+            saveUserAccount();
+            renderPortfolioDashboard();
         }
 
         // ==========================================================================
@@ -3482,7 +3660,7 @@
             if (orders.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" style="text-align: center; padding: 30px; color: var(--text-sub);">
+                        <td colspan="11" style="text-align: center; padding: 30px; color: var(--text-sub);">
                             📜 Zero order history. Placed orders will appear here.
                         </td>
                     </tr>
@@ -3492,6 +3670,8 @@
 
             tbody.innerHTML = orders.map(o => {
                 const isBuy = o.action === 'BUY';
+                const isCancellable = (o.status === 'Pending' || o.status === 'Trigger Pending' || o.status === 'Partially Filled');
+                const statusBadgeClass = (o.status === 'Completed' || o.status === 'Filled') ? 'profit' : ((o.status === 'Cancelled') ? 'loss' : 'pending');
                 return `
                     <tr>
                         <td style="color: var(--text-sub);">${o.order_id}</td>
@@ -3505,7 +3685,10 @@
                         <td style="color: ${Number(o.realized_pnl) >= 0 ? 'var(--green)' : 'var(--red)'};">
                             ${Number(o.realized_pnl) ? formatINR(o.realized_pnl) : '-'}
                         </td>
-                        <td><span class="pnl-badge profit">${o.status}</span></td>
+                        <td><span class="pnl-badge ${statusBadgeClass}">${o.status}</span></td>
+                        <td>
+                            ${isCancellable ? `<button class="btn-cancel-order" onclick="cancelOrder('${o.order_id}')" title="Cancel open order and refund funds">Cancel</button>` : `<span style="color: var(--text-sub); font-size: 11px;">-</span>`}
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -3578,11 +3761,14 @@
             }
 
             if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 24px; color: var(--text-sub);">No transactions found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 24px; color: var(--text-sub);">No transactions found.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = orders.map(o => `
+            tbody.innerHTML = orders.map(o => {
+                const isCancellable = (o.status === 'Pending' || o.status === 'Trigger Pending' || o.status === 'Partially Filled');
+                const statusBadgeClass = (o.status === 'Completed' || o.status === 'Filled') ? 'profit' : ((o.status === 'Cancelled') ? 'loss' : 'pending');
+                return `
                 <tr>
                     <td style="color: var(--text-sub);">${o.order_id}</td>
                     <td style="color: var(--text-sub);">${o.created_at || '-'}</td>
@@ -3593,9 +3779,13 @@
                     <td>${o.quantity}</td>
                     <td>${formatINR(o.total_value)}</td>
                     <td style="color: ${Number(o.realized_pnl) >= 0 ? 'var(--green)' : 'var(--red)'};">${Number(o.realized_pnl) ? formatINR(o.realized_pnl) : '-'}</td>
-                    <td><span class="pnl-badge profit">${o.status}</span></td>
+                    <td><span class="pnl-badge ${statusBadgeClass}">${o.status}</span></td>
+                    <td>
+                        ${isCancellable ? `<button class="btn-cancel-order" onclick="cancelOrder('${o.order_id}')" title="Cancel open order and refund funds">Cancel</button>` : `<span style="color: var(--text-sub); font-size: 11px;">-</span>`}
+                    </td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         function exportTradesToCSV() {

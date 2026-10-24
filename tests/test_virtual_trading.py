@@ -284,3 +284,87 @@ def test_engine_metrics_endpoint(client):
     data = res.json()
     assert "orders/sec" in data["benchmark_throughput_ops"]
     assert data["matching_algorithm"] == "Price-Time Priority (FIFO)"
+
+
+def test_virtual_order_cancellation_and_refund(client):
+    email = f"trader_cancel_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Cancel Tester", "password": "pass"})
+
+    # Place a resting LIMIT BUY order: 10 shares of INFY at ₹1000 = ₹10,000 reserved
+    order_id = f"ORD-TEST-CNC-{uuid.uuid4().hex[:4]}"
+    buy_res = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "INFY",
+        "action": "BUY",
+        "order_type": "LIMIT",
+        "price": 1000.0,
+        "quantity": 10.0,
+        "order_id": order_id,
+    })
+    assert buy_res.status_code == 200
+    trade = buy_res.json()["trade"]
+    assert trade["status"] == "Pending"
+    assert trade["cash_balance"] == 90000.0  # 100,000 - 10,000
+
+    # Cancel the pending order via POST /api/virtual/cancel
+    cancel_res = client.post("/api/virtual/cancel", json={"email": email, "order_id": order_id})
+    assert cancel_res.status_code == 200
+    c_data = cancel_res.json()["order"]
+    assert c_data["status"] == "Cancelled"
+    assert c_data["refunded_cash"] == 10000.0
+
+    # Verify cash balance restored to ₹1,00,000
+    port_res = client.get(f"/api/virtual/portfolio/{email}")
+    assert port_res.json()["cash_balance"] == 100000.0
+
+    # Cancelling again should raise error
+    cancel_dup = client.post("/api/virtual/cancel", json={"email": email, "order_id": order_id})
+    assert cancel_dup.status_code == 400
+
+
+def test_virtual_order_partial_fills_and_leaves(client):
+    email = f"trader_partial_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Partial Fill Tester", "password": "pass"})
+
+    # Place a resting LIMIT BUY order: 20 shares of TCS at ₹2000 = ₹40,000 reserved
+    order_id = f"ORD-TEST-PF-{uuid.uuid4().hex[:4]}"
+    buy_res = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "TCS",
+        "action": "BUY",
+        "order_type": "LIMIT",
+        "price": 2000.0,
+        "quantity": 20.0,
+        "order_id": order_id,
+    })
+    assert buy_res.status_code == 200
+    assert buy_res.json()["trade"]["status"] == "Pending"
+
+    # Execute partial fill of 8 shares
+    f1_res = client.post("/api/virtual/fill", json={
+        "email": email,
+        "order_id": order_id,
+        "fill_qty": 8.0,
+        "fill_price": 2000.0,
+    })
+    assert f1_res.status_code == 200
+    f1 = f1_res.json()["fill"]
+    assert f1["status"] == "Partially Filled"
+    assert f1["leaves_qty"] == 12.0
+
+    # Verify portfolio has 8 shares
+    port = client.get(f"/api/virtual/portfolio/{email}").json()
+    assert len(port["holdings"]) == 1
+    assert port["holdings"][0]["quantity"] == 8.0
+
+    # Cancel the remaining 12 shares
+    del_res = client.delete(f"/api/virtual/orders/{email}/{order_id}")
+    assert del_res.status_code == 200
+    del_data = del_res.json()["order"]
+    assert del_data["status"] == "Cancelled"
+    assert del_data["refunded_cash"] == 24000.0  # 12 * 2000 refunded
+
+    # Cash balance should be: 100,000 - 40,000 + 24,000 = 84,000
+    port_final = client.get(f"/api/virtual/portfolio/{email}").json()
+    assert port_final["cash_balance"] == 84000.0
+    assert port_final["holdings"][0]["quantity"] == 8.0

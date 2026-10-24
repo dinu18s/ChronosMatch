@@ -63,6 +63,8 @@ class Database:
                     price REAL NOT NULL,
                     stop_price REAL DEFAULT 0.0,
                     quantity REAL NOT NULL,
+                    filled_qty REAL DEFAULT 0.0,
+                    leaves_qty REAL DEFAULT 0.0,
                     total_value REAL NOT NULL,
                     realized_pnl REAL DEFAULT 0.00,
                     status TEXT NOT NULL,
@@ -93,10 +95,15 @@ class Database:
             """)
 
             # Automatic schema migration for existing databases
-            try:
-                conn.execute("ALTER TABLE orders ADD COLUMN stop_price REAL DEFAULT 0.0;")
-            except sqlite3.OperationalError:
-                pass
+            for col_sql in [
+                "ALTER TABLE orders ADD COLUMN stop_price REAL DEFAULT 0.0;",
+                "ALTER TABLE orders ADD COLUMN filled_qty REAL DEFAULT 0.0;",
+                "ALTER TABLE orders ADD COLUMN leaves_qty REAL DEFAULT 0.0;",
+            ]:
+                try:
+                    conn.execute(col_sql)
+                except sqlite3.OperationalError:
+                    pass
 
     def register_or_login(self, email: str, name: str, password: str, color: Optional[str] = None) -> Dict[str, Any]:
         """Sign in or register a user, ensuring an account with ₹1,00,000 initial virtual cash."""
@@ -208,6 +215,13 @@ class Database:
             )
             rows = cursor.fetchall()
 
+            cursor.execute(
+                "SELECT SUM(total_value) as locked FROM orders WHERE email = ? AND action = 'BUY' AND status IN ('Pending', 'Trigger Pending', 'Partially Filled')",
+                (email,),
+            )
+            locked_row = cursor.fetchone()
+            locked_cash = (locked_row["locked"] if locked_row and locked_row["locked"] else 0.0)
+
         holdings = []
         total_invested = 0.0
         current_holdings_value = 0.0
@@ -240,11 +254,12 @@ class Database:
 
         unrealized_pnl = current_holdings_value - total_invested
         unrealized_pnl_pct = (unrealized_pnl / total_invested * 100) if total_invested > 0 else 0.0
-        total_portfolio_value = cash_balance + current_holdings_value
+        total_portfolio_value = cash_balance + locked_cash + current_holdings_value
 
         return {
             "email": email,
             "cash_balance": round(cash_balance, 2),
+            "locked_cash": round(locked_cash, 2),
             "realized_pnl": round(realized_pnl, 2),
             "total_invested": round(total_invested, 2),
             "current_holdings_value": round(current_holdings_value, 2),
@@ -264,6 +279,7 @@ class Database:
         quantity: float,
         stop_price: float = 0.0,
         order_id: Optional[str] = None,
+        status: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Atomically validate and execute a virtual buy or sell order (Market, Limit, or Stop-Limit)."""
         email = email.strip().lower()
@@ -306,9 +322,18 @@ class Database:
 
             trade_realized_pnl = 0.0
 
-            # If Stop-Limit order that is pending trigger
-            is_pending_trigger = (order_type == "STOP_LIMIT" and stop_price > 0)
-            status = "Trigger Pending" if is_pending_trigger else "Completed"
+            # Determine order status
+            if not status:
+                if order_type == "STOP_LIMIT" and stop_price > 0:
+                    status = "Trigger Pending"
+                elif order_type == "LIMIT":
+                    status = "Pending"
+                else:
+                    status = "Completed"
+
+            is_pending = status in ("Pending", "Trigger Pending")
+            filled_qty = quantity if not is_pending else 0.0
+            leaves_qty = 0.0 if not is_pending else quantity
 
             if action == "BUY":
                 if cash_balance < total_value:
@@ -316,9 +341,9 @@ class Database:
                         f"Insufficient virtual cash! Order requires INR {total_value:,.2f}, but available balance is INR {cash_balance:,.2f}."
                     )
 
-                new_cash = cash_balance - total_value
+                new_cash = round(cash_balance - total_value, 2)
 
-                if not is_pending_trigger:
+                if not is_pending:
                     # Update or insert holding
                     cursor.execute(
                         "SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?",
@@ -368,7 +393,7 @@ class Database:
                 new_realized_pnl = realized_pnl + trade_realized_pnl
                 new_cash = cash_balance + total_value
 
-                if not is_pending_trigger:
+                if not is_pending:
                     new_qty = old_qty - quantity
                     new_inv = max(0.0, old_inv - (avg_buy_price * quantity))
 
@@ -380,17 +405,20 @@ class Database:
                             (new_qty, new_inv, now, email, symbol),
                         )
 
-                cursor.execute(
-                    "UPDATE accounts SET cash_balance = ?, realized_pnl = ?, updated_at = ? WHERE email = ?",
-                    (new_cash, new_realized_pnl, now, email),
-                )
+                    cursor.execute(
+                        "UPDATE accounts SET cash_balance = ?, realized_pnl = ?, updated_at = ? WHERE email = ?",
+                        (new_cash, new_realized_pnl, now, email),
+                    )
+                else:
+                    new_cash = cash_balance
+                    trade_realized_pnl = 0.0
 
             # Record order
             cursor.execute(
                 """INSERT INTO orders
-                   (order_id, email, symbol, action, order_type, price, stop_price, quantity, total_value, realized_pnl, status, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (order_id, email, symbol, action, order_type, price, stop_price, quantity, total_value, trade_realized_pnl, status, now),
+                   (order_id, email, symbol, action, order_type, price, stop_price, quantity, filled_qty, leaves_qty, total_value, realized_pnl, status, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (order_id, email, symbol, action, order_type, price, stop_price, quantity, filled_qty, leaves_qty, total_value, trade_realized_pnl, status, now),
             )
 
             conn.commit()
@@ -404,6 +432,8 @@ class Database:
             "price": price,
             "stop_price": stop_price,
             "quantity": quantity,
+            "filled_qty": filled_qty,
+            "leaves_qty": leaves_qty,
             "total_value": total_value,
             "realized_pnl": round(trade_realized_pnl, 2),
             "status": status,
@@ -411,12 +441,177 @@ class Database:
             "created_at": now,
         }
 
+    def cancel_virtual_order(self, email: str, order_id: str) -> Dict[str, Any]:
+        """Cancel an active resting virtual order (Pending or Trigger Pending) and refund reserved funds."""
+        email = email.strip().lower()
+        order_id = order_id.strip()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT order_id, email, symbol, action, order_type, price, quantity, filled_qty, leaves_qty, total_value, status FROM orders WHERE email = ? AND order_id = ?",
+                (email, order_id),
+            )
+            order = cursor.fetchone()
+            if not order:
+                raise ValueError(f"Order #{order_id} not found.")
+
+            cur_status = order["status"]
+            if cur_status in ("Cancelled", "Filled", "Completed"):
+                raise ValueError(f"Order #{order_id} cannot be cancelled because it is already {cur_status}.")
+
+            action = order["action"]
+            price = order["price"]
+            leaves_q = order["leaves_qty"] if (order["leaves_qty"] and order["leaves_qty"] > 0) else order["quantity"]
+            refund_amount = round(leaves_q * price, 2)
+
+            if action == "BUY":
+                cursor.execute("SELECT cash_balance FROM accounts WHERE email = ?", (email,))
+                acct = cursor.fetchone()
+                if acct:
+                    new_balance = round(acct["cash_balance"] + refund_amount, 2)
+                    cursor.execute(
+                        "UPDATE accounts SET cash_balance = ?, updated_at = ? WHERE email = ?",
+                        (new_balance, now, email),
+                    )
+
+            cursor.execute(
+                "UPDATE orders SET status = 'Cancelled', leaves_qty = 0.0 WHERE email = ? AND order_id = ?",
+                (email, order_id),
+            )
+            conn.commit()
+
+        return {
+            "order_id": order_id,
+            "symbol": order["symbol"],
+            "action": order["action"],
+            "status": "Cancelled",
+            "refunded_cash": refund_amount if action == "BUY" else 0.0,
+        }
+
+    def fill_virtual_order(
+        self,
+        email: str,
+        order_id: str,
+        fill_price: Optional[float] = None,
+        fill_qty: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Execute a full or partial fill on a resting virtual order."""
+        email = email.strip().lower()
+        order_id = order_id.strip()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT order_id, email, symbol, action, order_type, price, quantity, filled_qty, leaves_qty, total_value, status FROM orders WHERE email = ? AND order_id = ?",
+                (email, order_id),
+            )
+            order = cursor.fetchone()
+            if not order:
+                raise ValueError(f"Order #{order_id} not found.")
+
+            cur_status = order["status"]
+            if cur_status in ("Cancelled", "Filled", "Completed"):
+                raise ValueError(f"Order #{order_id} is already {cur_status}.")
+
+            action = order["action"]
+            symbol = order["symbol"]
+            order_p = order["price"]
+            exec_price = fill_price if fill_price is not None else order_p
+            remaining = order["leaves_qty"] if (order["leaves_qty"] and order["leaves_qty"] > 0) else order["quantity"]
+
+            exec_qty = fill_qty if fill_qty is not None else remaining
+            if exec_qty <= 0 or exec_qty > remaining:
+                raise ValueError(f"Invalid fill quantity {exec_qty}. Remaining leaves quantity is {remaining}.")
+
+            exec_value = round(exec_price * exec_qty, 2)
+            new_leaves = round(remaining - exec_qty, 4)
+            new_filled = round((order["filled_qty"] or 0.0) + exec_qty, 4)
+            new_status = "Filled" if new_leaves <= 0.0001 else "Partially Filled"
+            trade_realized_pnl = 0.0
+
+            cursor.execute("SELECT cash_balance, realized_pnl FROM accounts WHERE email = ?", (email,))
+            acct = cursor.fetchone()
+            cash_balance = acct["cash_balance"] if acct else 100000.0
+            realized_pnl = acct["realized_pnl"] if acct else 0.0
+
+            if action == "BUY":
+                cursor.execute(
+                    "SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?",
+                    (email, symbol),
+                )
+                cur_h = cursor.fetchone()
+                if cur_h and cur_h["quantity"] > 0:
+                    old_qty = cur_h["quantity"]
+                    old_inv = cur_h["total_invested"]
+                    tot_q = old_qty + exec_qty
+                    tot_i = old_inv + exec_value
+                    avg_p = tot_i / tot_q
+                    cursor.execute(
+                        "UPDATE holdings SET quantity = ?, avg_buy_price = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
+                        (tot_q, avg_p, tot_i, now, email, symbol),
+                    )
+                else:
+                    cursor.execute(
+                        "INSERT OR REPLACE INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                        (email, symbol, exec_qty, exec_price, exec_value, now),
+                    )
+            elif action == "SELL":
+                cursor.execute(
+                    "SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?",
+                    (email, symbol),
+                )
+                cur_h = cursor.fetchone()
+                if not cur_h or cur_h["quantity"] < exec_qty:
+                    raise ValueError("Insufficient shares to execute sell fill.")
+
+                old_q = cur_h["quantity"]
+                old_i = cur_h["total_invested"]
+                avg_buy_p = cur_h["avg_buy_price"]
+                trade_realized_pnl = round((exec_price - avg_buy_p) * exec_qty, 2)
+                new_q = old_q - exec_qty
+                new_i = max(0.0, old_i - (avg_buy_p * exec_qty))
+                new_cash = round(cash_balance + exec_value, 2)
+                new_realized = round(realized_pnl + trade_realized_pnl, 2)
+
+                if new_q <= 0.000001:
+                    cursor.execute("DELETE FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
+                else:
+                    cursor.execute(
+                        "UPDATE holdings SET quantity = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
+                        (new_q, new_i, now, email, symbol),
+                    )
+
+                cursor.execute(
+                    "UPDATE accounts SET cash_balance = ?, realized_pnl = ?, updated_at = ? WHERE email = ?",
+                    (new_cash, new_realized, now, email),
+                )
+
+            cursor.execute(
+                "UPDATE orders SET filled_qty = ?, leaves_qty = ?, status = ?, realized_pnl = realized_pnl + ? WHERE email = ? AND order_id = ?",
+                (new_filled, new_leaves, new_status, trade_realized_pnl, email, order_id),
+            )
+            conn.commit()
+
+        return {
+            "order_id": order_id,
+            "symbol": symbol,
+            "action": action,
+            "fill_price": exec_price,
+            "fill_qty": exec_qty,
+            "leaves_qty": new_leaves,
+            "status": new_status,
+            "realized_pnl": trade_realized_pnl,
+        }
+
     def get_orders(self, email: str, limit: int = 100) -> List[Dict[str, Any]]:
         email = email.strip().lower()
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT order_id, email, symbol, action, order_type, price, stop_price, quantity, total_value, realized_pnl, status, created_at FROM orders WHERE email = ? ORDER BY created_at DESC LIMIT ?",
+                "SELECT order_id, email, symbol, action, order_type, price, stop_price, quantity, filled_qty, leaves_qty, total_value, realized_pnl, status, created_at FROM orders WHERE email = ? ORDER BY created_at DESC LIMIT ?",
                 (email, limit),
             )
             return [dict(row) for row in cursor.fetchall()]
@@ -424,7 +619,7 @@ class Database:
     def get_analytics(self, email: str) -> Dict[str, Any]:
         """Compute comprehensive win rate, trade metrics, and profit statistics."""
         orders = self.get_orders(email, limit=500)
-        sells = [o for o in orders if o["action"] == "SELL" and o["status"] == "Completed"]
+        sells = [o for o in orders if o["action"] == "SELL" and o["status"] in ("Completed", "Filled", "Partially Filled")]
 
         total_trades = len(sells)
         wins = [o for o in sells if (o["realized_pnl"] or 0) > 0]

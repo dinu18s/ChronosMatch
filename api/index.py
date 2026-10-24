@@ -119,6 +119,18 @@ class CancelOrderRequest(BaseModel):
     client_id: int = 1
 
 
+class CancelVirtualOrderRequest(BaseModel):
+    email: str = Field(..., description="User email address")
+    order_id: str = Field(..., description="Virtual order ID to cancel")
+
+
+class FillVirtualOrderRequest(BaseModel):
+    email: str = Field(..., description="User email address")
+    order_id: str = Field(..., description="Virtual order ID")
+    fill_price: Optional[float] = Field(default=None, description="Fill price (defaults to order price)")
+    fill_qty: Optional[float] = Field(default=None, description="Fill quantity (defaults to remaining quantity)")
+
+
 class VirtualAuthRequest(BaseModel):
     email: str = Field(..., description="User email address")
     name: str = Field(default="Trader", description="User display name")
@@ -313,6 +325,41 @@ def execute_virtual_trade(req: VirtualTradeRequest):
 def get_virtual_orders(email: str, limit: int = Query(default=100, ge=1, le=500)):
     """Retrieve user's virtual order and trade transaction history."""
     return db.get_orders(email, limit=limit)
+
+
+@app.post("/api/virtual/cancel")
+def cancel_virtual_order(req: CancelVirtualOrderRequest):
+    """Cancel a resting virtual order and refund reserved funds."""
+    try:
+        res = db.cancel_virtual_order(req.email, req.order_id)
+        return {"status": "success", "order": res}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/api/virtual/orders/{email}/{order_id}")
+def cancel_virtual_order_delete(email: str, order_id: str):
+    """Cancel a resting virtual order and refund reserved funds."""
+    try:
+        res = db.cancel_virtual_order(email, order_id)
+        return {"status": "success", "order": res}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/virtual/fill")
+def fill_virtual_order(req: FillVirtualOrderRequest):
+    """Simulate a full or partial fill on a resting virtual order."""
+    try:
+        res = db.fill_virtual_order(
+            email=req.email,
+            order_id=req.order_id,
+            fill_price=req.fill_price,
+            fill_qty=req.fill_qty,
+        )
+        return {"status": "success", "fill": res}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/api/virtual/watchlist/{email}")
