@@ -493,6 +493,24 @@
             border-color: #ef4444;
         }
 
+        /* Live Price Tick Flash Animations */
+        @keyframes flashGreen {
+            0% { background-color: rgba(16, 185, 129, 0.4); color: #10b981; }
+            100% { background-color: transparent; }
+        }
+        @keyframes flashRed {
+            0% { background-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
+            100% { background-color: transparent; }
+        }
+        .flash-up {
+            animation: flashGreen 0.75s ease-out;
+            border-radius: 4px;
+        }
+        .flash-down {
+            animation: flashRed 0.75s ease-out;
+            border-radius: 4px;
+        }
+
         /* Trading Terminal 3-Column Layout */
         .terminal-grid {
             display: grid;
@@ -2711,7 +2729,11 @@
         // ==========================================================================
         // 5. REAL-TIME MARKET PRICES & CANDLESTICK SIMULATION
         // ==========================================================================
+        let isFetchingQuotes = false;
+
         async function fetchMarketQuotes() {
+            if (isFetchingQuotes) return;
+            isFetchingQuotes = true;
             try {
                 const res = await fetch('/api/market/quotes');
                 if (res.ok) {
@@ -2719,44 +2741,134 @@
                     if (Array.isArray(data) && data.length > 0) {
                         data.forEach(q => {
                             if (quotesMap[q.symbol]) {
+                                const oldP = quotesMap[q.symbol].price;
                                 Object.assign(quotesMap[q.symbol], q);
+                                applyPriceTick(q.symbol, oldP, q.price);
                             }
                         });
                         updateFeedStatus(true, 'Live Exchange Feed (Yahoo Finance)');
-                        renderActiveStock();
-                        renderWatchlist();
-                        renderHeaderTickerRibbon();
-                        renderPortfolioDashboard();
-                        checkPendingOrders();
                         return;
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+                // Backend unavailable (e.g. static GitHub Pages fallback)
+            } finally {
+                isFetchingQuotes = false;
+            }
+        }
 
-            // Fallback realistic simulation drift
-            catalog.forEach(item => {
-                const q = quotesMap[item.symbol];
-                const drift = (Math.random() - 0.495) * (q.price * 0.0018);
-                q.price = Math.round((q.price + drift) * 100) / 100;
-                q.day_high = Math.max(q.day_high, q.price);
-                q.day_low = Math.min(q.day_low, q.price);
-                const chg = q.price - q.open_price;
+        function runLiveMarketTick() {
+            // High-frequency live tick generator (runs every 1000ms)
+            // Picks active instrument + 3 random instruments to tick continuously
+            const syms = Object.keys(quotesMap);
+            if (syms.length === 0) return;
+
+            const toTick = new Set([currentSymbol]);
+            while (toTick.size < Math.min(4, syms.length)) {
+                const randSym = syms[Math.floor(Math.random() * syms.length)];
+                toTick.add(randSym);
+            }
+
+            toTick.forEach(sym => {
+                const q = quotesMap[sym];
+                if (!q) return;
+                const oldPrice = q.price;
+                const tickUnit = q.tick || 0.05;
+
+                // Realistic micro-tick: -2, -1, 0, 1, 2 tick units
+                const numTicks = Math.floor(Math.random() * 5) - 2;
+                if (numTicks === 0 && Math.random() < 0.3) return;
+
+                const step = (numTicks || (Math.random() > 0.49 ? 1 : -1)) * tickUnit;
+                const newPrice = Math.max(tickUnit, Math.round((q.price + step) * 100) / 100);
+
+                q.price = newPrice;
+                q.day_high = Math.max(q.day_high, newPrice);
+                q.day_low = Math.min(q.day_low, newPrice);
+                const chg = newPrice - q.open_price;
                 q.change_val = Math.round(chg * 100) / 100;
                 q.change_pct = Math.round((chg / q.open_price * 100) * 100) / 100;
+
+                applyPriceTick(sym, oldPrice, newPrice);
             });
 
-            updateFeedStatus(true, 'Simulation Feed (Market Ticks)');
-            renderActiveStock();
-            renderWatchlist();
-            renderHeaderTickerRibbon();
+            updateFeedStatus(true, 'Live Market Stream (1s Ticks)');
             renderPortfolioDashboard();
             checkPendingOrders();
         }
 
+        function applyPriceTick(sym, oldPrice, newPrice) {
+            const isUp = newPrice >= oldPrice;
+            const flashClass = isUp ? 'flash-up' : 'flash-down';
+
+            if (sym === currentSymbol) {
+                const priceEl = document.getElementById('active-stock-price');
+                if (priceEl) {
+                    priceEl.innerText = formatINR(newPrice);
+                    priceEl.classList.remove('flash-up', 'flash-down');
+                    void priceEl.offsetWidth; // trigger reflow
+                    priceEl.classList.add(flashClass);
+                }
+
+                const isPos = quotesMap[sym].change_pct >= 0;
+                const sign = isPos ? '+' : '';
+                const chgEl = document.getElementById('active-stock-change');
+                if (chgEl) {
+                    chgEl.className = `stock-change-badge mono ${isPos ? 'pos' : 'neg'}`;
+                    chgEl.innerText = `${isPos ? '▲' : '▼'} ${sign}${formatINR(quotesMap[sym].change_val)} (${sign}${quotesMap[sym].change_pct.toFixed(2)}%)`;
+                }
+
+                document.getElementById('stat-high').innerText = formatINR(quotesMap[sym].day_high);
+                document.getElementById('stat-low').innerText = formatINR(quotesMap[sym].day_low);
+
+                // Update active candlestick chart in real time!
+                updateLiveCandle(newPrice);
+
+                // Update order book with breathing depth
+                renderOrderBook(quotesMap[sym]);
+            }
+
+            // Update ticker ribbon pill
+            updateTickerRibbonPill(sym);
+
+            // Update watchlist row directly without destroying search input focus
+            updateWatchlistRow(sym, flashClass);
+        }
+
+        function updateTickerRibbonPill(sym) {
+            const pEl = document.getElementById(`ribbon-price-${sym}`);
+            const cEl = document.getElementById(`ribbon-chg-${sym}`);
+            const q = quotesMap[sym];
+            if (!pEl || !cEl || !q) return;
+            pEl.innerText = formatINR(q.price);
+            const isPos = q.change_pct >= 0;
+            const sign = isPos ? '+' : '';
+            cEl.className = `chg ${isPos ? 'pos' : 'neg'}`;
+            cEl.innerText = `${sign}${q.change_pct.toFixed(2)}%`;
+        }
+
+        function updateWatchlistRow(sym, flashClass) {
+            const pEl = document.getElementById(`wl-price-${sym}`);
+            const cEl = document.getElementById(`wl-chg-${sym}`);
+            const q = quotesMap[sym];
+            if (!pEl || !cEl || !q) return;
+            pEl.innerText = formatINR(q.price);
+            pEl.classList.remove('flash-up', 'flash-down');
+            void pEl.offsetWidth;
+            pEl.classList.add(flashClass);
+
+            const isPos = q.change_pct >= 0;
+            const sign = isPos ? '+' : '';
+            cEl.className = `wl-change ${isPos ? 'pos' : 'neg'}`;
+            cEl.innerText = `${sign}${q.change_pct.toFixed(2)}%`;
+        }
+
         function updateFeedStatus(isLive, label) {
             const timeStr = new Date().toLocaleTimeString('en-IN', { hour12: false }) + ' IST';
-            document.getElementById('data-feed-time').innerText = `Updated: ${timeStr}`;
-            document.getElementById('data-feed-label').innerText = label;
+            const timeEl = document.getElementById('data-feed-time');
+            const labelEl = document.getElementById('data-feed-label');
+            if (timeEl) timeEl.innerText = `Updated: ${timeStr}`;
+            if (labelEl) labelEl.innerText = label;
         }
 
         function renderHeaderTickerRibbon() {
@@ -2768,10 +2880,10 @@
                 const isPos = q.change_pct >= 0;
                 const sign = isPos ? '+' : '';
                 return `
-                    <div class="ticker-pill-mini" onclick="selectStock('${sym}')">
+                    <div class="ticker-pill-mini" id="ribbon-pill-${sym}" onclick="selectStock('${sym}')">
                         <span class="sym">${q.ticker}</span>
-                        <span>${formatINR(q.price)}</span>
-                        <span class="chg ${isPos ? 'pos' : 'neg'}">${sign}${q.change_pct.toFixed(2)}%</span>
+                        <span id="ribbon-price-${sym}">${formatINR(q.price)}</span>
+                        <span id="ribbon-chg-${sym}" class="chg ${isPos ? 'pos' : 'neg'}">${sign}${q.change_pct.toFixed(2)}%</span>
                     </div>
                 `;
             }).join('');
@@ -2832,7 +2944,7 @@
                 const sign = isPos ? '+' : '';
 
                 return `
-                    <div class="watchlist-item ${isSelected ? 'selected' : ''}" onclick="selectStock('${inst.symbol}')">
+                    <div class="watchlist-item ${isSelected ? 'selected' : ''}" id="wl-row-${inst.symbol}" onclick="selectStock('${inst.symbol}')">
                         <div class="wl-left">
                             <span class="wl-star ${isStarred ? 'starred' : ''}" onclick="toggleStar('${inst.symbol}', event)">
                                 ${isStarred ? '★' : '☆'}
@@ -2843,8 +2955,8 @@
                             </div>
                         </div>
                         <div class="wl-right mono">
-                            <span class="wl-price">${formatINR(inst.price)}</span>
-                            <span class="wl-change ${isPos ? 'pos' : 'neg'}">${sign}${inst.change_pct.toFixed(2)}%</span>
+                            <span class="wl-price" id="wl-price-${inst.symbol}">${formatINR(inst.price)}</span>
+                            <span class="wl-change ${isPos ? 'pos' : 'neg'}" id="wl-chg-${inst.symbol}">${sign}${inst.change_pct.toFixed(2)}%</span>
                         </div>
                     </div>
                 `;
@@ -2902,9 +3014,14 @@
             let cumBid = 0;
             let cumAsk = 0;
 
+            const t = Date.now() / 1500;
             for (let i = 1; i <= 6; i++) {
-                const bQty = Math.round((Math.sin(i * 1.5) * 15 + 25) * 10) / 10;
-                const aQty = Math.round((Math.cos(i * 1.5) * 15 + 24) * 10) / 10;
+                // Organic breathing liquidity
+                const jitter = (Math.sin(t + i) * 6);
+                const bBase = Math.abs(Math.sin(i * 1.5 + t * 0.5)) * 18 + 15 + jitter;
+                const aBase = Math.abs(Math.cos(i * 1.5 + t * 0.5)) * 18 + 15 - jitter;
+                const bQty = Math.max(1.5, Math.round(bBase * 10) / 10);
+                const aQty = Math.max(1.5, Math.round(aBase * 10) / 10);
                 cumBid += bQty;
                 cumAsk += aQty;
                 bids.push({ price: p - tick * i, qty: bQty, total: cumBid });
@@ -2934,8 +3051,20 @@
             // Spread & Imbalance
             const bestBid = bids[0].price;
             const bestAsk = asks[0].price;
-            const spread = bestAsk - bestBid;
+            const spread = Math.round((bestAsk - bestBid) * 100) / 100;
             const spreadPct = (spread / p * 100).toFixed(2);
+            document.getElementById('ob-spread-val').innerText = formatINR(spread);
+            document.getElementById('ob-spread-pct').innerText = `${spreadPct}%`;
+            document.getElementById('ob-best-bid').innerText = formatINR(bestBid);
+            document.getElementById('ob-best-ask').innerText = formatINR(bestAsk);
+
+            const totalVol = cumBid + cumAsk;
+            const bidPct = Math.round((cumBid / totalVol) * 100);
+            const askPct = 100 - bidPct;
+            document.getElementById('imbalance-buy-txt').innerText = `${bidPct}%`;
+            document.getElementById('imbalance-sell-txt').innerText = `${askPct}%`;
+            document.getElementById('imbalance-bar-fill').style.width = `${bidPct}%`;
+        }
             document.getElementById('ob-spread-val').innerText = formatINR(spread);
             document.getElementById('ob-spread-pct').innerText = `${spreadPct}%`;
             document.getElementById('ob-best-bid').innerText = formatINR(bestBid);
@@ -3105,6 +3234,60 @@
                 ctx.lineWidth = 2.2;
                 ctx.stroke();
             }
+
+            // Live Current Price Dotted Line & Tag
+            const lastCandle = candleDataPoints[candleCount - 1];
+            const currentP = lastCandle.close;
+            const yCurrent = h - ((currentP - minP) / range) * (h - 40) - 20;
+            const isPos = currentP >= candleDataPoints[0].open;
+            const tagColor = isPos ? '#10b981' : '#f43f5e';
+
+            ctx.strokeStyle = tagColor;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 3]);
+            ctx.beginPath();
+            ctx.moveTo(0, yCurrent);
+            ctx.lineTo(w, yCurrent);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Floating Live Price Badge on Right Margin
+            const tagW = 75;
+            const tagH = 18;
+            ctx.fillStyle = tagColor;
+            ctx.fillRect(w - tagW - 2, yCurrent - tagH / 2, tagW, tagH);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(formatINR(currentP), w - tagW / 2 - 2, yCurrent);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+        }
+
+        function updateLiveCandle(newPrice) {
+            if (!candleDataPoints || candleDataPoints.length === 0) return;
+            const last = candleDataPoints[candleDataPoints.length - 1];
+            last.close = newPrice;
+            last.high = Math.max(last.high, newPrice);
+            last.low = Math.min(last.low, newPrice);
+            last.volume = (last.volume || 1000) + Math.floor(Math.random() * 5 + 1);
+
+            const now = Math.floor(Date.now() / 1000);
+            if (now - last.time > 60) {
+                candleDataPoints.shift();
+                candleDataPoints.push({
+                    time: now,
+                    open: newPrice,
+                    high: newPrice,
+                    low: newPrice,
+                    close: newPrice,
+                    volume: 10
+                });
+            }
+
+            drawChart();
         }
 
         // ==========================================================================
@@ -4059,7 +4242,10 @@
             fetchMarketQuotes();
             loadCandleData();
 
-            setInterval(fetchMarketQuotes, 10000);
+            // High-frequency live tick generator (every 1s)
+            setInterval(runLiveMarketTick, 1000);
+            // Sync with exchange market quotes API (every 3s)
+            setInterval(fetchMarketQuotes, 3000);
             window.addEventListener('resize', drawChart);
         });
     </script>
