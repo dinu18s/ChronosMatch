@@ -1481,7 +1481,7 @@
         <div class="sim-right">
             <span class="data-badge" id="data-feed-badge">
                 <span class="pulse-dot"></span>
-                <span id="data-feed-label">Live Exchange Feed (Yahoo Finance)</span>
+                <span id="data-feed-label">Simulation Feed (Demo Data)</span>
             </span>
             <span class="data-time mono" id="data-feed-time">Updated: Just now</span>
         </div>
@@ -1710,8 +1710,8 @@
                                     <span class="stat-box-val mono" id="stat-open">₹1,165.00</span>
                                 </div>
                                 <div class="stat-box">
-                                    <span class="stat-box-label">Status</span>
-                                    <span class="stat-box-val" style="color: var(--green);">● Live Feed</span>
+                                    <span class="stat-box-label">Data Source</span>
+                                    <span class="stat-box-val" id="stat-data-source" style="color: var(--yellow);">● Simulated Feed</span>
                                 </div>
                             </div>
                         </div>
@@ -1985,6 +1985,36 @@
                         </div>
                     </div>
 
+                    <!-- Risk Management & Capital Analytics Grid -->
+                    <div style="margin-top: 24px;">
+                        <span style="font-size: 13px; font-weight: 700;">🛡️ Risk Management & Capital Exposure</span>
+                        <div class="analytics-grid" style="margin-top: 10px;">
+                            <div class="stat-card-lg">
+                                <span class="stat-box-label">Portfolio Market Exposure</span>
+                                <div class="stat-big-val mono" id="analytics-exposure-pct">0.00%</div>
+                                <span style="font-size: 12px; color: var(--text-sub);" id="analytics-exposure-status">Cash Buffer: 100%</span>
+                            </div>
+
+                            <div class="stat-card-lg">
+                                <span class="stat-box-label">Max Drawdown (Session)</span>
+                                <div class="stat-big-val mono" id="analytics-max-drawdown" style="color: var(--yellow);">0.00%</div>
+                                <span style="font-size: 12px; color: var(--text-sub);">Peak-to-trough decline</span>
+                            </div>
+
+                            <div class="stat-card-lg">
+                                <span class="stat-box-label">Position Sizing Limit (2% Rule)</span>
+                                <div class="stat-big-val mono" id="analytics-max-risk-amt" style="color: var(--blue);">₹2,000.00</div>
+                                <span style="font-size: 12px; color: var(--text-sub);">Max recommended risk per trade</span>
+                            </div>
+
+                            <div class="stat-card-lg">
+                                <span class="stat-box-label">Largest Asset Concentration</span>
+                                <div class="stat-big-val mono" id="analytics-concentration-pct">0.00%</div>
+                                <span style="font-size: 12px; color: var(--text-sub);" id="analytics-concentration-sym">No active positions</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Asset Allocation Visualizer -->
                     <div style="margin-top: 24px;">
                         <span style="font-size: 13px; font-weight: 700;">Asset Allocation Breakdown</span>
@@ -1996,25 +2026,34 @@
                 <!-- Complete Trade History with Search & Filter -->
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">📜 Complete Transaction History</span>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" class="search-input" id="trade-filter-input" placeholder="Filter by instrument or ID..." oninput="renderPortfolioOrdersTable()" style="width: 200px;">
+                        <div>
+                            <span class="card-title">📜 Complete Transaction History</span>
+                            <span class="card-subtitle">Audited record of all simulated orders and executions</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <div class="category-filter-chips" style="margin-bottom: 0;">
+                                <button type="button" class="cat-chip active" id="filter-trade-all" onclick="setTradeHistoryFilter('ALL', this)">All</button>
+                                <button type="button" class="cat-chip" id="filter-trade-buy" onclick="setTradeHistoryFilter('BUY', this)">BUY</button>
+                                <button type="button" class="cat-chip" id="filter-trade-sell" onclick="setTradeHistoryFilter('SELL', this)">SELL</button>
+                                <button type="button" class="cat-chip" id="filter-trade-pending" onclick="setTradeHistoryFilter('PENDING', this)">Open Orders</button>
+                            </div>
+                            <input type="text" class="search-input" id="trade-filter-input" placeholder="Search orders..." oninput="renderPortfolioOrdersTable()" style="width: 180px;">
                         </div>
                     </div>
                     <div class="data-table-wrap">
                         <table class="data-table mono">
                             <thead>
                                 <tr>
-                                    <th>Order ID</th>
-                                    <th>Timestamp</th>
-                                    <th>Action</th>
-                                    <th>Symbol</th>
+                                    <th onclick="sortPortfolioOrders('order_id')" style="cursor: pointer;" title="Sort by Order ID">Order ID ⇕</th>
+                                    <th onclick="sortPortfolioOrders('created_at')" style="cursor: pointer;" title="Sort by Timestamp">Timestamp ⇕</th>
+                                    <th onclick="sortPortfolioOrders('action')" style="cursor: pointer;" title="Sort by Side">Action ⇕</th>
+                                    <th onclick="sortPortfolioOrders('symbol')" style="cursor: pointer;" title="Sort by Symbol">Symbol ⇕</th>
                                     <th>Type</th>
-                                    <th>Price (₹)</th>
-                                    <th>Quantity</th>
-                                    <th>Total Value</th>
-                                    <th>Realized P&L</th>
-                                    <th>Status</th>
+                                    <th onclick="sortPortfolioOrders('price')" style="cursor: pointer;" title="Sort by Price">Price (₹) ⇕</th>
+                                    <th onclick="sortPortfolioOrders('quantity')" style="cursor: pointer;" title="Sort by Quantity">Quantity ⇕</th>
+                                    <th onclick="sortPortfolioOrders('total_value')" style="cursor: pointer;" title="Sort by Total Value">Total Value ⇕</th>
+                                    <th onclick="sortPortfolioOrders('realized_pnl')" style="cursor: pointer;" title="Sort by Realized PnL">Realized P&L ⇕</th>
+                                    <th onclick="sortPortfolioOrders('status')" style="cursor: pointer;" title="Sort by Status">Status ⇕</th>
                                     <th>Manage</th>
                                 </tr>
                             </thead>
@@ -2055,19 +2094,21 @@
                 <!-- Simulation Leaderboard -->
                 <div class="card" style="margin-top: 4px;">
                     <div class="card-header">
-                        <span class="card-title">🏆 Simulation Leaderboard</span>
-                        <span class="card-subtitle">Ranked by overall return on virtual capital (Demo Peer Participants)</span>
+                        <div>
+                            <span class="card-title">🏆 Strategy & Benchmark Comparison</span>
+                            <span class="card-subtitle">Objective algorithmic benchmarks and systematic reference models (Simulated comparison)</span>
+                        </div>
                     </div>
                     <div class="data-table-wrap">
                         <table class="data-table mono">
                             <thead>
                                 <tr>
                                     <th>Rank</th>
-                                    <th>Participant</th>
+                                    <th>Strategy / Model</th>
                                     <th>Portfolio Value</th>
                                     <th>Total Return (%)</th>
                                     <th>Win Rate</th>
-                                    <th>Badges</th>
+                                    <th>Benchmark Type</th>
                                 </tr>
                             </thead>
                             <tbody id="leaderboard-table-body">
@@ -2305,6 +2346,9 @@
                     • <strong>Memory Architecture:</strong> Zero-copy C-structs via Python Buffer Protocol<br>
                     • <strong>Matching Algorithm:</strong> Strict Price-Time Priority (FIFO) with O(1) cancel<br>
                     • <strong>IPC:</strong> SPSC Cache-line Padded Lockless Ring Buffer
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px;">
+                        * Benchmark metrics measured locally via Python/ctypes test harness (<code>run_benchmarks.py</code>). Browser paper trading executes client-side asynchronously.
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -2643,10 +2687,14 @@
                     userState.cash_balance = parsed.cash_balance ?? 100000.00;
                     userState.locked_cash = parsed.locked_cash ?? 0.00;
                     userState.realized_pnl = parsed.realized_pnl ?? 0.00;
+                    userState.peak_equity = parsed.peak_equity ?? userState.cash_balance;
                     userState.holdings = parsed.holdings || {};
                     userState.orders = parsed.orders || [];
                     userState.journal = parsed.journal || [];
                     userState.badges = new Set(parsed.badges || ['welcome']);
+                    if (parsed.watchlist && Array.isArray(parsed.watchlist)) {
+                        userWatchlist = new Set(parsed.watchlist);
+                    }
                 } catch (e) {}
             }
 
@@ -2700,7 +2748,8 @@
             const key = 'chronos_data_' + encodeURIComponent(currentUser.email);
             const toSave = {
                 ...userState,
-                badges: Array.from(userState.badges)
+                badges: Array.from(userState.badges),
+                watchlist: Array.from(userWatchlist)
             };
             localStorage.setItem(key, JSON.stringify(toSave));
         }
@@ -2742,7 +2791,7 @@
                 q.change_pct = Math.round((chg / q.open_price * 100) * 100) / 100;
             });
 
-            updateFeedStatus(true, 'Simulation Feed (Market Ticks)');
+            updateFeedStatus(false, 'Simulation Feed (Demo Data)');
             renderActiveStock();
             renderWatchlist();
             renderHeaderTickerRibbon();
@@ -2752,8 +2801,15 @@
 
         function updateFeedStatus(isLive, label) {
             const timeStr = new Date().toLocaleTimeString('en-IN', { hour12: false }) + ' IST';
-            document.getElementById('data-feed-time').innerText = `Updated: ${timeStr}`;
-            document.getElementById('data-feed-label').innerText = label;
+            const timeEl = document.getElementById('data-feed-time');
+            const labelEl = document.getElementById('data-feed-label');
+            const sourceEl = document.getElementById('stat-data-source');
+            if (timeEl) timeEl.innerText = `Updated: ${timeStr}`;
+            if (labelEl) labelEl.innerText = label;
+            if (sourceEl) {
+                sourceEl.innerText = isLive ? '● Live Exchange' : '● Simulated Feed';
+                sourceEl.style.color = isLive ? 'var(--green)' : 'var(--yellow)';
+            }
         }
 
         function renderHeaderTickerRibbon() {
@@ -2991,6 +3047,41 @@
             drawChart();
         }
 
+        let chartHoverState = { active: false, x: 0, y: 0, candleIdx: -1 };
+
+        function setupChartInteraction() {
+            const canvas = document.getElementById('chart-canvas');
+            if (!canvas) return;
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!candleDataPoints || candleDataPoints.length === 0) return;
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const candleCount = candleDataPoints.length;
+                const slotW = (rect.width - 20) / candleCount;
+                let idx = Math.floor((mouseX - 10) / slotW);
+                if (idx < 0) idx = 0;
+                if (idx >= candleCount) idx = candleCount - 1;
+
+                chartHoverState = {
+                    active: true,
+                    x: mouseX,
+                    y: mouseY,
+                    candleIdx: idx
+                };
+                drawChart();
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                chartHoverState.active = false;
+                const tip = document.getElementById('chart-tooltip');
+                if (tip) tip.style.display = 'none';
+                drawChart();
+            });
+        }
+
         function drawChart() {
             const canvas = document.getElementById('chart-canvas');
             if (!canvas) return;
@@ -3095,6 +3186,73 @@
                 ctx.lineWidth = 2.2;
                 ctx.stroke();
             }
+
+            // Hover Crosshairs and Tooltip
+            const tip = document.getElementById('chart-tooltip');
+            if (chartHoverState.active && chartHoverState.candleIdx >= 0 && chartHoverState.candleIdx < candleCount) {
+                const c = candleDataPoints[chartHoverState.candleIdx];
+                const candleX = 10 + chartHoverState.candleIdx * slotW + slotW / 2;
+
+                ctx.save();
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 0.35)';
+                ctx.lineWidth = 1;
+
+                // Vertical Crosshair
+                ctx.beginPath();
+                ctx.moveTo(candleX, 0);
+                ctx.lineTo(candleX, h);
+                ctx.stroke();
+
+                // Horizontal Crosshair at mouse y
+                ctx.beginPath();
+                ctx.moveTo(0, chartHoverState.y);
+                ctx.lineTo(w, chartHoverState.y);
+                ctx.stroke();
+                ctx.restore();
+
+                // Price label on axis at crosshair y
+                const crossPrice = maxP - ((chartHoverState.y - 20) / (h - 40)) * range;
+                if (crossPrice >= minP && crossPrice <= maxP) {
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.fillRect(w - 78, Math.max(2, chartHoverState.y - 9), 74, 18);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '10px JetBrains Mono';
+                    ctx.fillText(formatINR(crossPrice), w - 74, Math.max(14, chartHoverState.y + 4));
+                }
+
+                // Update floating tooltip HTML and position
+                if (tip) {
+                    const isGreen = c.close >= c.open;
+                    tip.innerHTML = `
+                        <div style="font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 3px; margin-bottom: 4px; display: flex; justify-content: space-between; gap: 8px;">
+                            <span>${currentSymbol}</span>
+                            <span style="color: var(--text-sub);">${c.time || ''}</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: auto auto; gap: 2px 10px;">
+                            <span style="color: var(--text-sub);">Open:</span> <span class="mono">${formatINR(c.open)}</span>
+                            <span style="color: var(--text-sub);">High:</span> <span class="mono" style="color: var(--green);">${formatINR(c.high)}</span>
+                            <span style="color: var(--text-sub);">Low:</span> <span class="mono" style="color: var(--red);">${formatINR(c.low)}</span>
+                            <span style="color: var(--text-sub);">Close:</span> <span class="mono" style="font-weight: 700; color: ${isGreen ? 'var(--green)' : 'var(--red)'};">${formatINR(c.close)}</span>
+                        </div>
+                    `;
+                    tip.style.display = 'block';
+                    const tooltipW = 150;
+                    const tooltipH = 80;
+                    let left = chartHoverState.x + 14;
+                    if (left + tooltipW > rect.width) {
+                        left = chartHoverState.x - tooltipW - 14;
+                    }
+                    let top = chartHoverState.y - 40;
+                    if (top < 10) top = 10;
+                    if (top + tooltipH > rect.height) top = rect.height - tooltipH - 10;
+
+                    tip.style.left = `${left}px`;
+                    tip.style.top = `${top}px`;
+                }
+            } else if (tip) {
+                tip.style.display = 'none';
+            }
         }
 
         // ==========================================================================
@@ -3191,8 +3349,18 @@
             const qty = parseFloat(document.getElementById('input-order-qty').value) || 0;
             const stopPrice = parseFloat(document.getElementById('input-order-stop-price').value) || 0;
 
-            if (qty <= 0) {
-                alert('Please enter a valid share quantity greater than zero.');
+            if (qty <= 0 || isNaN(qty)) {
+                showToast('❌ Please enter a valid share quantity greater than zero.');
+                return;
+            }
+
+            if (price <= 0 || isNaN(price)) {
+                showToast('❌ Please enter a valid execution price greater than zero.');
+                return;
+            }
+
+            if (currentOrderType === 'STOP_LIMIT' && (stopPrice <= 0 || isNaN(stopPrice))) {
+                showToast('❌ Please enter a valid trigger Stop Price for your Stop-Limit order.');
                 return;
             }
 
@@ -3200,12 +3368,12 @@
             const owned = userState.holdings[currentSymbol]?.quantity || 0;
 
             if (currentTradeSide === 'BUY' && userState.cash_balance < total) {
-                alert(`Insufficient virtual cash!\nRequired: ${formatINR(total)}\nAvailable: ${formatINR(userState.cash_balance)}`);
+                showToast(`❌ Insufficient virtual cash! Need ${formatINR(total)}, available: ${formatINR(userState.cash_balance)}`);
                 return;
             }
 
             if (currentTradeSide === 'SELL' && owned < qty) {
-                alert(`Insufficient shares!\nYou own ${owned} shares of ${stock.ticker}, but attempted to sell ${qty}.`);
+                showToast(`❌ Insufficient shares! You own ${owned} shares of ${stock.ticker}, but attempted to sell ${qty}.`);
                 return;
             }
 
@@ -3402,7 +3570,11 @@
                         const canFill = (o.action === 'BUY' && stock.price <= o.price) || (o.action === 'SELL' && stock.price >= o.price) || o.price === 0;
                         if (canFill) {
                             fillOrderLocally(o, stock.price);
-                            showToast(`⚡ Stop-Limit Executed for ${o.symbol} at ${formatINR(stock.price)}!`);
+                            if (o.status === 'Partially Filled') {
+                                showToast(`⚡ Partial Fill: ${o.filled_qty}/${o.quantity} ${o.symbol} executed at ${formatINR(stock.price)} (${o.leaves_qty} resting)`);
+                            } else {
+                                showToast(`⚡ Stop-Limit Executed for ${o.symbol} at ${formatINR(stock.price)}!`);
+                            }
                         } else {
                             o.status = 'Pending';
                             showToast(`⚡ Stop Triggered for ${o.symbol}! Resting as Limit Order at ${formatINR(o.price)}.`);
@@ -3411,11 +3583,15 @@
                     }
                 }
                 // 2. Check resting LIMIT order
-                else if (o.status === 'Pending') {
+                else if (o.status === 'Pending' || o.status === 'Partially Filled') {
                     const canFill = (o.action === 'BUY' && stock.price <= o.price) || (o.action === 'SELL' && stock.price >= o.price);
                     if (canFill) {
                         fillOrderLocally(o, o.price);
-                        showToast(`⚡ Limit Order Filled: ${o.action} ${o.quantity} ${o.symbol} at ${formatINR(o.price)}!`);
+                        if (o.status === 'Partially Filled') {
+                            showToast(`⚡ Partial Fill: ${o.filled_qty}/${o.quantity} ${o.symbol} filled at ${formatINR(o.price)} (${o.leaves_qty} resting)`);
+                        } else {
+                            showToast(`⚡ Limit Order Filled: ${o.action} ${o.quantity} ${o.symbol} at ${formatINR(o.price)}!`);
+                        }
                         stateChanged = true;
                     }
                 }
@@ -3429,13 +3605,21 @@
 
         function fillOrderLocally(o, execPrice) {
             const sym = o.symbol;
-            const qty = (o.leaves_qty && o.leaves_qty > 0) ? o.leaves_qty : o.quantity;
-            const val = execPrice * qty;
+            let remQty = (o.leaves_qty && o.leaves_qty > 0) ? o.leaves_qty : o.quantity;
+
+            // Partial fill logic for larger resting quantities
+            let fillQty = remQty;
+            if (remQty >= 10 && !o.partial_attempted && Math.random() < 0.35) {
+                fillQty = Math.max(1, Math.floor(remQty * 0.5));
+                o.partial_attempted = true;
+            }
+
+            const val = execPrice * fillQty;
 
             if (o.action === 'BUY') {
                 const h = userState.holdings[sym];
                 if (h && h.quantity > 0) {
-                    const newQty = h.quantity + qty;
+                    const newQty = h.quantity + fillQty;
                     const newInv = h.total_invested + val;
                     h.quantity = newQty;
                     h.total_invested = newInv;
@@ -3443,7 +3627,7 @@
                 } else {
                     userState.holdings[sym] = {
                         symbol: sym,
-                        quantity: qty,
+                        quantity: fillQty,
                         avg_buy_price: execPrice,
                         total_invested: val
                     };
@@ -3451,14 +3635,20 @@
             } else if (o.action === 'SELL') {
                 userState.cash_balance += val;
                 const avgCost = o.avg_cost_basis || execPrice;
-                const pnl = (execPrice - avgCost) * qty;
+                const pnl = (execPrice - avgCost) * fillQty;
                 userState.realized_pnl += pnl;
-                o.realized_pnl = pnl;
+                o.realized_pnl = (o.realized_pnl || 0) + pnl;
             }
 
-            o.status = 'Completed';
-            o.filled_qty = o.quantity;
-            o.leaves_qty = 0.0;
+            o.filled_qty = (o.filled_qty || 0) + fillQty;
+            o.leaves_qty = Math.round((o.quantity - o.filled_qty) * 10000) / 10000;
+
+            if (o.leaves_qty <= 0.0001) {
+                o.status = 'Completed';
+                o.leaves_qty = 0.0;
+            } else {
+                o.status = 'Partially Filled';
+            }
         }
 
         async function cancelOrder(orderId) {
@@ -3541,6 +3731,7 @@
             userState.cash_balance = startBal;
             userState.locked_cash = 0.0;
             userState.realized_pnl = 0.0;
+            userState.peak_equity = startBal;
             userState.holdings = {};
             userState.orders = [];
             saveUserAccount();
@@ -3720,7 +3911,7 @@
         }
 
         function renderPortfolioAnalyticsView() {
-            const sells = userState.orders.filter(o => o.action === 'SELL' && o.status === 'Completed');
+            const sells = userState.orders.filter(o => o.action === 'SELL' && (o.status === 'Completed' || o.status === 'Filled'));
             const totalTrades = sells.length;
             const wins = sells.filter(o => (o.realized_pnl || 0) > 0);
             const losses = sells.filter(o => (o.realized_pnl || 0) < 0);
@@ -3730,13 +3921,87 @@
             const bestTrade = sells.reduce((max, o) => Math.max(max, o.realized_pnl || 0), 0);
             const worstTrade = sells.reduce((min, o) => Math.min(min, o.realized_pnl || 0), 0);
 
-            document.getElementById('analytics-win-rate').innerText = `${winRate}%`;
-            document.getElementById('analytics-win-loss-count').innerText = `${wins.length} wins / ${losses.length} losses`;
-            document.getElementById('analytics-total-trades').innerText = userState.orders.length;
-            document.getElementById('analytics-avg-trade').innerText = formatINR(avgTrade);
-            document.getElementById('analytics-best-trade').innerText = formatINR(bestTrade);
-            document.getElementById('analytics-worst-trade').innerText = formatINR(worstTrade);
+            if (document.getElementById('analytics-win-rate')) document.getElementById('analytics-win-rate').innerText = `${winRate}%`;
+            if (document.getElementById('analytics-win-loss-count')) document.getElementById('analytics-win-loss-count').innerText = `${wins.length} wins / ${losses.length} losses`;
+            if (document.getElementById('analytics-total-trades')) document.getElementById('analytics-total-trades').innerText = userState.orders.length;
+            if (document.getElementById('analytics-avg-trade')) document.getElementById('analytics-avg-trade').innerText = formatINR(avgTrade);
+            if (document.getElementById('analytics-best-trade')) document.getElementById('analytics-best-trade').innerText = formatINR(bestTrade);
+            if (document.getElementById('analytics-worst-trade')) document.getElementById('analytics-worst-trade').innerText = formatINR(worstTrade);
 
+            // 🛡️ Risk Management & Capital Exposure Calculations
+            let holdingsVal = 0;
+            let maxHoldingVal = 0;
+            let maxHoldingSym = '';
+
+            Object.values(userState.holdings).forEach(h => {
+                if (h.quantity > 0) {
+                    const curPrice = quotesMap[h.symbol]?.price || h.avg_buy_price || 0;
+                    const val = h.quantity * curPrice;
+                    holdingsVal += val;
+                    if (val > maxHoldingVal) {
+                        maxHoldingVal = val;
+                        maxHoldingSym = h.symbol;
+                    }
+                }
+            });
+
+            const totalEquity = userState.cash_balance + holdingsVal;
+            const exposurePct = totalEquity > 0 ? ((holdingsVal / totalEquity) * 100) : 0;
+            const cashBufferPct = Math.max(0, 100 - exposurePct);
+
+            if (!userState.peak_equity || totalEquity > userState.peak_equity) {
+                userState.peak_equity = totalEquity;
+            }
+            const drawdownPct = userState.peak_equity > 0 ? (((userState.peak_equity - totalEquity) / userState.peak_equity) * 100) : 0;
+            const maxRisk2Pct = totalEquity * 0.02;
+            const concentrationPct = totalEquity > 0 ? ((maxHoldingVal / totalEquity) * 100) : 0;
+
+            const expEl = document.getElementById('analytics-exposure-pct');
+            if (expEl) expEl.innerText = `${exposurePct.toFixed(2)}%`;
+
+            const expStatEl = document.getElementById('analytics-exposure-status');
+            if (expStatEl) expStatEl.innerText = `Cash Buffer: ${cashBufferPct.toFixed(1)}%`;
+
+            const ddEl = document.getElementById('analytics-max-drawdown');
+            if (ddEl) {
+                ddEl.innerText = `${drawdownPct.toFixed(2)}%`;
+                ddEl.style.color = drawdownPct > 5 ? 'var(--red)' : (drawdownPct > 0 ? 'var(--yellow)' : 'var(--green)');
+            }
+
+            const riskAmtEl = document.getElementById('analytics-max-risk-amt');
+            if (riskAmtEl) riskAmtEl.innerText = formatINR(maxRisk2Pct);
+
+            const concEl = document.getElementById('analytics-concentration-pct');
+            if (concEl) concEl.innerText = `${concentrationPct.toFixed(2)}%`;
+
+            const concSymEl = document.getElementById('analytics-concentration-sym');
+            if (concSymEl) {
+                concSymEl.innerText = maxHoldingSym ? `${maxHoldingSym} (${concentrationPct.toFixed(1)}% of capital)` : 'No active positions';
+            }
+
+            renderPortfolioOrdersTable();
+        }
+
+        let currentTradeFilter = 'ALL';
+        let currentSortCol = 'created_at';
+        let currentSortAsc = false;
+
+        function setTradeHistoryFilter(type, btn) {
+            currentTradeFilter = type;
+            document.querySelectorAll('#filter-trade-all, #filter-trade-buy, #filter-trade-sell, #filter-trade-pending').forEach(c => {
+                c.classList.remove('active');
+            });
+            if (btn) btn.classList.add('active');
+            renderPortfolioOrdersTable();
+        }
+
+        function sortPortfolioOrders(col) {
+            if (currentSortCol === col) {
+                currentSortAsc = !currentSortAsc;
+            } else {
+                currentSortCol = col;
+                currentSortAsc = false;
+            }
             renderPortfolioOrdersTable();
         }
 
@@ -3745,13 +4010,48 @@
             const tbody = document.getElementById('portfolio-orders-table-body');
             if (!tbody) return;
 
-            let orders = userState.orders;
-            if (filter) {
-                orders = orders.filter(o => o.symbol.toLowerCase().includes(filter) || o.order_id.toLowerCase().includes(filter));
+            let orders = [...userState.orders];
+
+            if (currentTradeFilter === 'BUY') {
+                orders = orders.filter(o => o.action === 'BUY');
+            } else if (currentTradeFilter === 'SELL') {
+                orders = orders.filter(o => o.action === 'SELL');
+            } else if (currentTradeFilter === 'PENDING') {
+                orders = orders.filter(o => o.status === 'Pending' || o.status === 'Trigger Pending' || o.status === 'Partially Filled');
             }
 
+            if (filter) {
+                orders = orders.filter(o =>
+                    (o.symbol && o.symbol.toLowerCase().includes(filter)) ||
+                    (o.order_id && o.order_id.toLowerCase().includes(filter)) ||
+                    (o.order_type && o.order_type.toLowerCase().includes(filter)) ||
+                    (o.status && o.status.toLowerCase().includes(filter))
+                );
+            }
+
+            orders.sort((a, b) => {
+                let valA = a[currentSortCol];
+                let valB = b[currentSortCol];
+
+                if (valA === undefined || valA === null) valA = '';
+                if (valB === undefined || valB === null) valB = '';
+
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return currentSortAsc ? valA - valB : valB - valA;
+                }
+
+                const strA = valA.toString().toLowerCase();
+                const strB = valB.toString().toLowerCase();
+                if (strA < strB) return currentSortAsc ? -1 : 1;
+                if (strA > strB) return currentSortAsc ? 1 : -1;
+                return 0;
+            });
+
             if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 24px; color: var(--text-sub);">No transactions found.</td></tr>`;
+                const msg = userState.orders.length === 0
+                    ? 'No transactions recorded yet. Place an order in the terminal to begin paper trading.'
+                    : 'No transactions match your current search and filter criteria.';
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 28px; color: var(--text-sub);">${msg}</td></tr>`;
                 return;
             }
 
@@ -3766,7 +4066,7 @@
                     <td><strong>${o.symbol}</strong></td>
                     <td>${o.order_type}</td>
                     <td>${formatINR(o.price)}</td>
-                    <td>${o.quantity}</td>
+                    <td>${o.quantity} ${o.filled_qty !== undefined && o.filled_qty < o.quantity ? `<span style="font-size: 10px; color: var(--yellow);">(${o.filled_qty}/${o.quantity})</span>` : ''}</td>
                     <td>${formatINR(o.total_value)}</td>
                     <td style="color: ${Number(o.realized_pnl) >= 0 ? 'var(--green)' : 'var(--red)'};">${Number(o.realized_pnl) ? formatINR(o.realized_pnl) : '-'}</td>
                     <td><span class="pnl-badge ${statusBadgeClass}">${o.status}</span></td>
@@ -3875,25 +4175,28 @@
 
             const totalVal = userState.cash_balance + Object.values(userState.holdings).reduce((sum, h) => sum + h.quantity * (quotesMap[h.symbol]?.price || h.avg_buy_price), 0);
             const userReturn = ((totalVal - 100000.0) / 100000.0 * 100).toFixed(2);
+            const sells = userState.orders.filter(o => o.action === 'SELL' && (o.status === 'Completed' || o.status === 'Filled'));
+            const wins = sells.filter(o => (o.realized_pnl || 0) > 0);
+            const userWinRate = sells.length > 0 ? `${((wins.length / sells.length) * 100).toFixed(0)}%` : '0%';
 
-            const mockPeers = [
-                { rank: 1, name: 'Siddharth V. (Quant Bot)', val: 124500.0, ret: '+24.50%', win: '78%', badges: '5 badges' },
-                { rank: 2, name: 'Priya Mehta (Swing Pro)', val: 114200.0, ret: '+14.20%', win: '64%', badges: '4 badges' },
-                { rank: 3, name: (currentUser?.name || 'You') + ' (Live Simulation)', val: totalVal, ret: `${userReturn >= 0 ? '+' : ''}${userReturn}%`, win: '60%', badges: `${userState.badges.size} badges`, isUser: true },
-                { rank: 4, name: 'Aarav Nair (Breakout)', val: 104500.0, ret: '+4.50%', win: '52%', badges: '3 badges' },
-                { rank: 5, name: 'Kiran Desai (HFT Demo)', val: 98200.0, ret: '-1.80%', win: '45%', badges: '2 badges' }
+            const benchmarkModels = [
+                { name: '2% Risk Systematic Momentum Model', val: 114200.0, ret: '+14.20%', win: '64%', badge: 'Rule-Based', isUser: false },
+                { name: 'NIFTY 50 Benchmark Index (Buy & Hold)', val: 108420.0, ret: '+8.42%', win: 'N/A', badge: 'Passive Index', isUser: false },
+                { name: (currentUser?.name || 'Your Account') + ' (Active Session)', val: totalVal, ret: `${userReturn >= 0 ? '+' : ''}${userReturn}%`, win: userWinRate, badge: `${userState.badges.size} badges`, isUser: true },
+                { name: 'Equal-Weight Bluechip Index', val: 104500.0, ret: '+4.50%', win: 'N/A', badge: 'Equal Weight', isUser: false },
+                { name: 'Cash Capital Preservation (0% Beta)', val: 100000.0, ret: '0.00%', win: 'N/A', badge: 'Risk-Off', isUser: false }
             ];
 
-            mockPeers.sort((a, b) => b.val - a.val);
+            benchmarkModels.sort((a, b) => b.val - a.val);
 
-            tbody.innerHTML = mockPeers.map((p, idx) => `
+            tbody.innerHTML = benchmarkModels.map((p, idx) => `
                 <tr style="${p.isUser ? 'background: var(--blue-soft); font-weight: 700;' : ''}">
                     <td>#${idx + 1}</td>
-                    <td>${p.name}</td>
+                    <td>${p.name} ${p.isUser ? '<span class="status-badge" style="background: rgba(59, 130, 246, 0.2); color: var(--blue); margin-left: 6px;">YOU</span>' : ''}</td>
                     <td>${formatINR(p.val)}</td>
-                    <td style="color: ${p.ret.includes('-') ? 'var(--red)' : 'var(--green)'};">${p.ret}</td>
+                    <td style="color: ${p.ret.includes('-') ? 'var(--red)' : (p.ret === '0.00%' ? 'var(--text-sub)' : 'var(--green)')};">${p.ret}</td>
                     <td>${p.win}</td>
-                    <td><span class="challenge-badge-reward">${p.badges}</span></td>
+                    <td><span class="challenge-badge-reward">${p.badge}</span></td>
                 </tr>
             `).join('');
         }
@@ -4003,14 +4306,39 @@
                 // Client-side fallback rule-based answers
                 const qLower = q.toLowerCase();
                 if (qLower.includes('spread') || qLower.includes('slippage')) {
-                    reply = "**Bid-Ask Spread & Slippage Explained:**\n\n- **Spread**: The difference between the highest price a buyer offers (Bid) and the lowest price a seller asks. Tight spreads imply high liquidity.\n- **Slippage**: When a market order executes at a different price than observed due to shallow depth.";
+                    reply = "**Bid-Ask Spread & Slippage Explained:**\n\n- **Spread**: The difference between the lowest seller price (Ask) and highest buyer price (Bid). Tight spreads mean liquid markets.\n- **Slippage**: When market orders consume multiple order book levels, causing the final execution price to drift from the top of the book.";
+                } else if (qLower.includes('diversif') || qLower.includes('portfolio') || qLower.includes('analyze') || qLower.includes('holdings')) {
+                    const holdingsArr = Object.values(userState.holdings).filter(h => h.quantity > 0);
+                    let holdingsVal = 0;
+                    let topSym = '';
+                    let topVal = 0;
+                    holdingsArr.forEach(h => {
+                        const p = quotesMap[h.symbol]?.price || h.avg_buy_price || 0;
+                        const v = h.quantity * p;
+                        holdingsVal += v;
+                        if (v > topVal) { topVal = v; topSym = h.symbol; }
+                    });
+                    const totalEquity = userState.cash_balance + holdingsVal;
+                    const exposurePct = totalEquity > 0 ? ((holdingsVal / totalEquity) * 100).toFixed(1) : 0;
+                    const topPct = totalEquity > 0 ? ((topVal / totalEquity) * 100).toFixed(1) : 0;
+                    const maxRisk2Pct = totalEquity * 0.02;
+
+                    reply = `**Portfolio Risk & Allocation Assessment:**\n\n` +
+                        `• **Total Equity:** ${formatINR(totalEquity)} (Available Cash: ${formatINR(userState.cash_balance)})\n` +
+                        `• **Market Exposure:** ${exposurePct}% in equities / ${(100 - exposurePct).toFixed(1)}% in liquid cash reserve\n` +
+                        `• **Active Positions:** ${holdingsArr.length} asset${holdingsArr.length === 1 ? '' : 's'}\n` +
+                        (topSym ? `• **Highest Concentration:** ${topSym} accounts for ${topPct}% of your capital.\n` : '') +
+                        `• **2% Position Sizing Limit:** Maximum risk per individual trade is **${formatINR(maxRisk2Pct)}**.\n\n` +
+                        (holdingsArr.length < 3 ? `💡 *Prudent Risk Tip:* Consider spreading capital across 3 to 5 uncorrelated assets to prevent single-stock drawdowns.` : `✓ *Good Diversification:* Capital is spread across ${holdingsArr.length} instruments, dampening single-stock volatility.`);
                 } else if (qLower.includes('2%') || qLower.includes('position size') || qLower.includes('risk')) {
-                    const maxRisk = userState.cash_balance * 0.02;
-                    reply = `**The 2% Position Sizing Rule:**\n\nBased on your available cash of **${formatINR(userState.cash_balance)}**, your maximum recommended risk per trade is **${formatINR(maxRisk)}**.\n\nFormula: \`Quantity = (Portfolio × 2%) / (Entry Price - Stop Loss)\`. Never risk ruin on a single idea!`;
+                    const holdingsVal = Object.values(userState.holdings).reduce((sum, h) => sum + h.quantity * (quotesMap[h.symbol]?.price || h.avg_buy_price || 0), 0);
+                    const totalEquity = userState.cash_balance + holdingsVal;
+                    const maxRisk = totalEquity * 0.02;
+                    reply = `**The 2% Position Sizing Rule:**\n\nBased on your total portfolio equity of **${formatINR(totalEquity)}**, your maximum recommended risk per trade is **${formatINR(maxRisk)}**.\n\nFormula: \`Quantity = (Equity × 2%) / (Entry Price - Stop Loss)\`.\nThis ensures no single losing trade jeopardizes your account capital.`;
                 } else if (qLower.includes('stop')) {
-                    reply = "**Stop-Limit Mechanics:**\n\nA Stop-Limit order remains inactive until the market reaches your **Stop Price**. Once triggered, it turns into a Limit Order at your designated **Limit Price**, protecting you from flash crashes.";
+                    reply = "**Stop-Limit Mechanics:**\n\nA Stop-Limit order remains inactive until the market price reaches your **Stop Trigger Price**. Once triggered, it turns into a Limit Order at your designated **Limit Price**, protecting you from flash crashes while preventing fills at unfavorable outlier prices.";
                 } else {
-                    reply = `**Chronos AI Mentor:**\n\nI can help you analyze your portfolio balance of **${formatINR(userState.cash_balance)}** and your ${Object.keys(userState.holdings).length} active holdings. Ask me about position sizing, order types, or market depth!`;
+                    reply = `**Chronos AI Educational Mentor:**\n\nI can help explain electronic order matching (FIFO price-time priority), calculate proper position sizes based on the 2% risk rule, analyze your current portfolio diversification, or explain order types. Ask me anything about risk management or market mechanics!`;
                 }
             }
 
@@ -4044,6 +4372,7 @@
         // ==========================================================================
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            setupChartInteraction();
             selectStock('RELIANCE');
             checkUserAuth();
             fetchMarketQuotes();
