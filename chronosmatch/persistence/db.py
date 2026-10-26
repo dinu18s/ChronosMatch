@@ -6,7 +6,15 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-DB_PATH = Path(os.environ.get("CHRONOS_DB_PATH", Path(__file__).resolve().parent.parent.parent.parent / "chronos_paper_trading.db"))
+def _find_project_root() -> Path:
+    p = Path(__file__).resolve().parent
+    for _ in range(6):
+        if (p / "pyproject.toml").exists() or (p / ".git").exists():
+            return p
+        p = p.parent
+    return Path(__file__).resolve().parent
+
+DB_PATH = Path(os.environ.get("CHRONOS_DB_PATH", _find_project_root() / "chronos_paper_trading.db"))
 
 
 class Database:
@@ -301,6 +309,12 @@ class Database:
 
         with self.get_connection() as conn:
             cursor = conn.cursor()
+
+            # Prevent duplicate order submissions
+            if order_id:
+                cursor.execute("SELECT order_id FROM orders WHERE order_id = ?", (order_id,))
+                if cursor.fetchone():
+                    raise ValueError(f"Duplicate order submission: Order #{order_id} has already been processed.")
 
             # Ensure user and account exist
             cursor.execute(

@@ -202,7 +202,7 @@ class MarketDataService:
     def _get_usd_inr_rate(self) -> float:
         """Fetch or return cached USD/INR exchange rate."""
         now = time.time()
-        if now - self._usd_cache_ts < 300:  # 5 min cache
+        if os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("CHRONOS_OFFLINE") or (now - self._usd_cache_ts < 300):  # 5 min cache
             return self._usd_to_inr
         try:
             with httpx.Client(timeout=4.0, headers={"User-Agent": "Mozilla/5.0"}) as client:
@@ -248,59 +248,60 @@ class MarketDataService:
         yahoo_sym = inst["yahoo_symbol"]
         usd_rate = self._get_usd_inr_rate()
 
-        try:
-            with httpx.Client(timeout=4.0, headers={"User-Agent": "Mozilla/5.0"}) as client:
-                url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_sym}?interval=1d&range=1d"
-                resp = client.get(url)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    res = data["chart"]["result"][0]
-                    meta = res["meta"]
+        if not (os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("CHRONOS_OFFLINE")):
+            try:
+                with httpx.Client(timeout=4.0, headers={"User-Agent": "Mozilla/5.0"}) as client:
+                    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_sym}?interval=1d&range=1d"
+                    resp = client.get(url)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        res = data["chart"]["result"][0]
+                        meta = res["meta"]
 
-                    raw_price = meta.get("regularMarketPrice") or inst["base_price"]
-                    prev_close = meta.get("chartPreviousClose") or raw_price
-                    raw_open = meta.get("regularMarketOpen") or raw_price
-                    raw_high = meta.get("regularMarketDayHigh") or raw_price
-                    raw_low = meta.get("regularMarketDayLow") or raw_price
-                    volume = meta.get("regularMarketVolume") or 0
+                        raw_price = meta.get("regularMarketPrice") or inst["base_price"]
+                        prev_close = meta.get("chartPreviousClose") or raw_price
+                        raw_open = meta.get("regularMarketOpen") or raw_price
+                        raw_high = meta.get("regularMarketDayHigh") or raw_price
+                        raw_low = meta.get("regularMarketDayLow") or raw_price
+                        volume = meta.get("regularMarketVolume") or 0
 
-                    # Convert US equities from USD to INR so terminal is unified in INR
-                    multiplier = usd_rate if inst["currency"] == "USD" else 1.0
+                        # Convert US equities from USD to INR so terminal is unified in INR
+                        multiplier = usd_rate if inst["currency"] == "USD" else 1.0
 
-                    price_inr = round(raw_price * multiplier, 2)
-                    prev_close_inr = round(prev_close * multiplier, 2)
-                    open_inr = round(raw_open * multiplier, 2)
-                    high_inr = round(raw_high * multiplier, 2)
-                    low_inr = round(raw_low * multiplier, 2)
+                        price_inr = round(raw_price * multiplier, 2)
+                        prev_close_inr = round(prev_close * multiplier, 2)
+                        open_inr = round(raw_open * multiplier, 2)
+                        high_inr = round(raw_high * multiplier, 2)
+                        low_inr = round(raw_low * multiplier, 2)
 
-                    change_val = round(price_inr - prev_close_inr, 2)
-                    change_pct = round((change_val / prev_close_inr * 100) if prev_close_inr > 0 else 0.0, 2)
+                        change_val = round(price_inr - prev_close_inr, 2)
+                        change_pct = round((change_val / prev_close_inr * 100) if prev_close_inr > 0 else 0.0, 2)
 
-                    quote_data = {
-                        "symbol": inst["symbol"],
-                        "name": inst["name"],
-                        "ticker": inst["ticker"],
-                        "category": inst["category"],
-                        "price": price_inr,
-                        "native_price": round(raw_price, 2),
-                        "native_currency": inst["currency"],
-                        "currency": "INR",
-                        "change_val": change_val,
-                        "change_pct": change_pct,
-                        "open_price": open_inr,
-                        "day_high": high_inr,
-                        "day_low": low_inr,
-                        "volume": volume,
-                        "is_live": True,
-                        "data_source": "Live Exchange (Yahoo Finance Feed)",
-                        "last_updated": datetime.datetime.now().strftime("%H:%M:%S IST"),
-                    }
+                        quote_data = {
+                            "symbol": inst["symbol"],
+                            "name": inst["name"],
+                            "ticker": inst["ticker"],
+                            "category": inst["category"],
+                            "price": price_inr,
+                            "native_price": round(raw_price, 2),
+                            "native_currency": inst["currency"],
+                            "currency": "INR",
+                            "change_val": change_val,
+                            "change_pct": change_pct,
+                            "open_price": open_inr,
+                            "day_high": high_inr,
+                            "day_low": low_inr,
+                            "volume": volume,
+                            "is_live": True,
+                            "data_source": "Live Exchange (Yahoo Finance Feed)",
+                            "last_updated": datetime.datetime.now().strftime("%H:%M:%S IST"),
+                        }
 
-                    self._quote_cache[sym] = quote_data
-                    self._cache_timestamps[sym] = now
-                    return quote_data
-        except Exception:
-            pass
+                        self._quote_cache[sym] = quote_data
+                        self._cache_timestamps[sym] = now
+                        return quote_data
+            except Exception:
+                pass
 
         # Fallback if network request times out or is offline
         usd_rate = self._get_usd_inr_rate()

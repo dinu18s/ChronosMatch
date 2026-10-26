@@ -2661,7 +2661,12 @@
             const pill = document.getElementById('user-header-pill');
             pill.style.display = 'flex';
             document.getElementById('user-header-name').innerText = currentUser.name;
-            document.getElementById('user-header-email').innerText = currentUser.email;
+            const isLocalDemo = currentUser.email.includes('@chronos.local') || currentUser.isGuest;
+            const emailLabel = isLocalDemo ? `${currentUser.email} • Demo (Local)` : `${currentUser.email} • Cloud Sync`;
+            document.getElementById('user-header-email').innerText = emailLabel;
+            document.getElementById('user-header-email').title = isLocalDemo
+                ? "Local demo account stored in browser localStorage. No cross-device cloud synchronization."
+                : "Authenticated user session synchronized with backend database.";
             document.getElementById('user-avatar-badge').innerText = currentUser.name.charAt(0).toUpperCase();
         }
 
@@ -2684,18 +2689,29 @@
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
-                    userState.cash_balance = parsed.cash_balance ?? 100000.00;
-                    userState.locked_cash = parsed.locked_cash ?? 0.00;
-                    userState.realized_pnl = parsed.realized_pnl ?? 0.00;
-                    userState.peak_equity = parsed.peak_equity ?? userState.cash_balance;
-                    userState.holdings = parsed.holdings || {};
-                    userState.orders = parsed.orders || [];
-                    userState.journal = parsed.journal || [];
-                    userState.badges = new Set(parsed.badges || ['welcome']);
-                    if (parsed.watchlist && Array.isArray(parsed.watchlist)) {
-                        userWatchlist = new Set(parsed.watchlist);
+                    if (typeof parsed === 'object' && parsed !== null) {
+                        userState.cash_balance = (typeof parsed.cash_balance === 'number' && !isNaN(parsed.cash_balance)) ? parsed.cash_balance : 100000.00;
+                        userState.locked_cash = (typeof parsed.locked_cash === 'number' && !isNaN(parsed.locked_cash)) ? parsed.locked_cash : 0.00;
+                        userState.realized_pnl = (typeof parsed.realized_pnl === 'number' && !isNaN(parsed.realized_pnl)) ? parsed.realized_pnl : 0.00;
+                        userState.peak_equity = (typeof parsed.peak_equity === 'number' && !isNaN(parsed.peak_equity)) ? parsed.peak_equity : userState.cash_balance;
+                        userState.holdings = (typeof parsed.holdings === 'object' && parsed.holdings !== null && !Array.isArray(parsed.holdings)) ? parsed.holdings : {};
+                        userState.orders = Array.isArray(parsed.orders) ? parsed.orders : [];
+                        userState.journal = Array.isArray(parsed.journal) ? parsed.journal : [];
+                        userState.badges = new Set(Array.isArray(parsed.badges) ? parsed.badges : ['welcome']);
+                        if (parsed.watchlist && Array.isArray(parsed.watchlist)) {
+                            userWatchlist = new Set(parsed.watchlist);
+                        }
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn("Recovered from corrupted browser localStorage:", e);
+                    userState.cash_balance = 100000.00;
+                    userState.locked_cash = 0.00;
+                    userState.realized_pnl = 0.00;
+                    userState.holdings = {};
+                    userState.orders = [];
+                    userState.journal = [];
+                    userState.badges = new Set(['welcome']);
+                }
             }
 
             // Sync with backend API
@@ -3407,152 +3423,167 @@
             document.getElementById('confirm-order-modal').style.display = 'none';
         }
 
-        async function executeConfirmedTrade() {
-            closeOrderConfirmModal();
-            const stock = quotesMap[currentSymbol];
-            const price = currentOrderType === 'MARKET' ? stock.price : (parseFloat(document.getElementById('input-order-price').value) || stock.price);
-            const stopPrice = parseFloat(document.getElementById('input-order-stop-price').value) || 0;
-            const qty = parseFloat(document.getElementById('input-order-qty').value) || 0;
-            const total = price * qty;
-            const orderId = `ORD-${Date.now().toString().slice(-6)}`;
-            const timeStr = new Date().toLocaleTimeString('en-IN', { hour12: false });
+        let isTradeSubmitting = false;
 
-            // Try backend trade execution
+        async function executeConfirmedTrade() {
+            if (isTradeSubmitting) return;
+            isTradeSubmitting = true;
+            closeOrderConfirmModal();
+
             try {
-                const res = await fetch('/api/virtual/trade', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: currentUser.email,
-                        symbol: currentSymbol,
-                        action: currentTradeSide,
+                const stock = quotesMap[currentSymbol];
+                const price = currentOrderType === 'MARKET' ? stock.price : (parseFloat(document.getElementById('input-order-price').value) || stock.price);
+                const stopPrice = parseFloat(document.getElementById('input-order-stop-price').value) || 0;
+                const qty = parseFloat(document.getElementById('input-order-qty').value) || 0;
+                const total = price * qty;
+                const orderId = `ORD-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`;
+                const timeStr = new Date().toLocaleTimeString('en-IN', { hour12: false });
+
+                // Idempotency check: prevent duplicate local submission
+                if (userState.orders.some(o => o.order_id === orderId)) {
+                    showToast('⚠️ Duplicate order ignored.');
+                    return;
+                }
+
+                // Try backend trade execution
+                try {
+                    const res = await fetch('/api/virtual/trade', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: currentUser.email,
+                            symbol: currentSymbol,
+                            action: currentTradeSide,
+                            order_type: currentOrderType,
+                            price: price,
+                            stop_price: stopPrice,
+                            quantity: qty,
+                            order_id: orderId
+                        })
+                    });
+
+                    if (res.ok) {
+                        showToast(`🎉 Order Placed: ${currentTradeSide} ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                        loadUserAccount(currentUser.email);
+                        checkChallengesMilestones();
+                        return;
+                    }
+                } catch (err) {}
+
+                // Client-side fallback execution
+                let isPending = false;
+                let status = 'Completed';
+
+                if (currentOrderType === 'STOP_LIMIT' && stopPrice > 0) {
+                    isPending = true;
+                    status = 'Trigger Pending';
+                } else if (currentOrderType === 'LIMIT') {
+                    if (currentTradeSide === 'BUY' && price < stock.price) {
+                        isPending = true;
+                        status = 'Pending';
+                    } else if (currentTradeSide === 'SELL' && price > stock.price) {
+                        isPending = true;
+                        status = 'Pending';
+                    }
+                }
+
+                if (currentTradeSide === 'BUY') {
+                    if (userState.cash_balance < total) {
+                        showToast(`❌ Insufficient virtual cash! Need ${formatINR(total)}, available: ${formatINR(userState.cash_balance)}`);
+                        return;
+                    }
+                    userState.cash_balance -= total;
+                    if (!isPending) {
+                        const h = userState.holdings[currentSymbol];
+                        if (h && h.quantity > 0) {
+                            const newQty = h.quantity + qty;
+                            const newInv = h.total_invested + total;
+                            h.quantity = newQty;
+                            h.total_invested = newInv;
+                            h.avg_buy_price = newInv / newQty;
+                        } else {
+                            userState.holdings[currentSymbol] = {
+                                symbol: currentSymbol,
+                                quantity: qty,
+                                avg_buy_price: price,
+                                total_invested: total
+                            };
+                        }
+                    }
+
+                    userState.orders.unshift({
+                        order_id: orderId,
+                        created_at: timeStr,
+                        action: 'BUY',
+                        symbol: stock.ticker,
                         order_type: currentOrderType,
                         price: price,
                         stop_price: stopPrice,
                         quantity: qty,
-                        order_id: orderId
-                    })
-                });
+                        filled_qty: isPending ? 0.0 : qty,
+                        leaves_qty: isPending ? qty : 0.0,
+                        total_value: total,
+                        realized_pnl: 0.0,
+                        status: status
+                    });
 
-                if (res.ok) {
-                    showToast(`🎉 Order Placed: ${currentTradeSide} ${qty} ${stock.ticker} at ${formatINR(price)}`);
-                    loadUserAccount(currentUser.email);
-                    checkChallengesMilestones();
-                    return;
-                }
-            } catch (err) {}
-
-            // Client-side fallback execution
-            let isPending = false;
-            let status = 'Completed';
-
-            if (currentOrderType === 'STOP_LIMIT' && stopPrice > 0) {
-                isPending = true;
-                status = 'Trigger Pending';
-            } else if (currentOrderType === 'LIMIT') {
-                if (currentTradeSide === 'BUY' && price < stock.price) {
-                    isPending = true;
-                    status = 'Pending';
-                } else if (currentTradeSide === 'SELL' && price > stock.price) {
-                    isPending = true;
-                    status = 'Pending';
-                }
-            }
-
-            if (currentTradeSide === 'BUY') {
-                if (userState.cash_balance < total) {
-                    showToast(`❌ Insufficient virtual cash! Need ${formatINR(total)}, available: ${formatINR(userState.cash_balance)}`);
-                    return;
-                }
-                userState.cash_balance -= total;
-                if (!isPending) {
-                    const h = userState.holdings[currentSymbol];
-                    if (h && h.quantity > 0) {
-                        const newQty = h.quantity + qty;
-                        const newInv = h.total_invested + total;
-                        h.quantity = newQty;
-                        h.total_invested = newInv;
-                        h.avg_buy_price = newInv / newQty;
+                    if (isPending) {
+                        showToast(`📌 Resting ${currentOrderType} BUY Placed: ${qty} ${stock.ticker} at ${formatINR(price)}`);
                     } else {
-                        userState.holdings[currentSymbol] = {
-                            symbol: currentSymbol,
-                            quantity: qty,
-                            avg_buy_price: price,
-                            total_invested: total
-                        };
+                        showToast(`🎉 Order Placed: Bought ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                    }
+                } else {
+                    const h = userState.holdings[currentSymbol];
+                    if (!h || h.quantity < qty) {
+                        showToast(`❌ Insufficient shares! Owned: ${h ? h.quantity : 0}, requested: ${qty}`);
+                        return;
+                    }
+                    const tradeRealizedPnl = (price - h.avg_buy_price) * qty;
+
+                    if (!isPending) {
+                        userState.cash_balance += total;
+                        userState.realized_pnl += tradeRealizedPnl;
+                        h.quantity -= qty;
+                        h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
+                        if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
+                    } else {
+                        // For resting sell, reserve shares from available holding
+                        h.quantity -= qty;
+                        h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
+                        if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
+                    }
+
+                    userState.orders.unshift({
+                        order_id: orderId,
+                        created_at: timeStr,
+                        action: 'SELL',
+                        symbol: stock.ticker,
+                        order_type: currentOrderType,
+                        price: price,
+                        stop_price: stopPrice,
+                        quantity: qty,
+                        filled_qty: isPending ? 0.0 : qty,
+                        leaves_qty: isPending ? qty : 0.0,
+                        total_value: total,
+                        avg_cost_basis: h.avg_buy_price,
+                        realized_pnl: isPending ? 0.0 : tradeRealizedPnl,
+                        status: status
+                    });
+
+                    if (isPending) {
+                        showToast(`📌 Resting ${currentOrderType} SELL Placed: ${qty} ${stock.ticker} at ${formatINR(price)}`);
+                    } else {
+                        showToast(`🎉 Sold ${qty} ${stock.ticker} (P&L: ${formatINR(tradeRealizedPnl)})`);
                     }
                 }
 
-                userState.orders.unshift({
-                    order_id: orderId,
-                    created_at: timeStr,
-                    action: 'BUY',
-                    symbol: stock.ticker,
-                    order_type: currentOrderType,
-                    price: price,
-                    stop_price: stopPrice,
-                    quantity: qty,
-                    filled_qty: isPending ? 0.0 : qty,
-                    leaves_qty: isPending ? qty : 0.0,
-                    total_value: total,
-                    realized_pnl: 0.0,
-                    status: status
-                });
-
-                if (isPending) {
-                    showToast(`📌 Resting ${currentOrderType} BUY Placed: ${qty} ${stock.ticker} at ${formatINR(price)}`);
-                } else {
-                    showToast(`🎉 Order Placed: Bought ${qty} ${stock.ticker} at ${formatINR(price)}`);
-                }
-            } else {
-                const h = userState.holdings[currentSymbol];
-                if (!h || h.quantity < qty) {
-                    showToast(`❌ Insufficient shares! Owned: ${h ? h.quantity : 0}, requested: ${qty}`);
-                    return;
-                }
-                const tradeRealizedPnl = (price - h.avg_buy_price) * qty;
-
-                if (!isPending) {
-                    userState.cash_balance += total;
-                    userState.realized_pnl += tradeRealizedPnl;
-                    h.quantity -= qty;
-                    h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
-                    if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
-                } else {
-                    // For resting sell, reserve shares from available holding
-                    h.quantity -= qty;
-                    h.total_invested = Math.max(0, h.total_invested - (h.avg_buy_price * qty));
-                    if (h.quantity <= 0.0001) delete userState.holdings[currentSymbol];
-                }
-
-                userState.orders.unshift({
-                    order_id: orderId,
-                    created_at: timeStr,
-                    action: 'SELL',
-                    symbol: stock.ticker,
-                    order_type: currentOrderType,
-                    price: price,
-                    stop_price: stopPrice,
-                    quantity: qty,
-                    filled_qty: isPending ? 0.0 : qty,
-                    leaves_qty: isPending ? qty : 0.0,
-                    total_value: total,
-                    avg_cost_basis: h.avg_buy_price,
-                    realized_pnl: isPending ? 0.0 : tradeRealizedPnl,
-                    status: status
-                });
-
-                if (isPending) {
-                    showToast(`📌 Resting ${currentOrderType} SELL Placed: ${qty} ${stock.ticker} at ${formatINR(price)}`);
-                } else {
-                    showToast(`🎉 Sold ${qty} ${stock.ticker} (P&L: ${formatINR(tradeRealizedPnl)})`);
-                }
+                saveUserAccount();
+                renderPortfolioDashboard();
+                calculateTradeTotal();
+                checkChallengesMilestones();
+            } finally {
+                isTradeSubmitting = false;
             }
-
-            saveUserAccount();
-            renderPortfolioDashboard();
-            calculateTradeTotal();
-            checkChallengesMilestones();
         }
 
         function checkPendingOrders() {

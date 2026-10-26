@@ -368,3 +368,122 @@ def test_virtual_order_partial_fills_and_leaves(client):
     port_final = client.get(f"/api/virtual/portfolio/{email}").json()
     assert port_final["cash_balance"] == 84000.0
     assert port_final["holdings"][0]["quantity"] == 8.0
+
+
+def test_duplicate_order_rejection(client):
+    """Ensure duplicate order submission is rejected without modifying balances twice."""
+    email = f"trader_dup_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Dup Tester", "password": "pass"})
+
+    order_id = f"ORD-IDEMPOTENT-{uuid.uuid4().hex[:6]}"
+    payload = {
+        "email": email,
+        "symbol": "RELIANCE",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 1000.0,
+        "quantity": 5.0,
+        "order_id": order_id,
+    }
+
+    # First attempt: succeeds
+    res1 = client.post("/api/virtual/trade", json=payload)
+    assert res1.status_code == 200
+    assert res1.json()["trade"]["cash_balance"] == 95000.0
+
+    # Second attempt with same order_id: rejected
+    res2 = client.post("/api/virtual/trade", json=payload)
+    assert res2.status_code == 400
+    assert "Duplicate order submission" in res2.json()["detail"]
+
+    # Balance must remain exactly 95,000 (not deducted twice)
+    port = client.get(f"/api/virtual/portfolio/{email}").json()
+    assert port["cash_balance"] == 95000.0
+    assert len(port["holdings"]) == 1
+    assert port["holdings"][0]["quantity"] == 5.0
+
+
+def test_zero_and_negative_order_validation(client):
+    """Ensure invalid prices or quantities are rejected without modifying state."""
+    email = f"trader_invalid_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Validator", "password": "pass"})
+
+    # Negative quantity
+    r1 = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "RELIANCE",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 1000.0,
+        "quantity": -5.0,
+    })
+    assert r1.status_code in (400, 422)
+
+    # Zero price
+    r2 = client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "RELIANCE",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 0.0,
+        "quantity": 5.0,
+    })
+    assert r2.status_code in (400, 422)
+
+    # Balance remains intact
+    port = client.get(f"/api/virtual/portfolio/{email}").json()
+    assert port["cash_balance"] == 100000.0
+
+
+def test_persistence_across_instances(client):
+    """Ensure stored database state restores identically in fresh database instances."""
+    email = f"trader_persist_{uuid.uuid4().hex[:8]}@chronos.local"
+    client.post("/api/virtual/auth", json={"email": email, "name": "Persist Tester", "password": "pass"})
+
+    client.post("/api/virtual/trade", json={
+        "email": email,
+        "symbol": "AAPL",
+        "action": "BUY",
+        "order_type": "MARKET",
+        "price": 300.0,
+        "quantity": 10.0,
+    })
+
+    # Instantiate fresh Database instance from the same underlying SQLite file
+    from chronosmatch.persistence.db import Database, DB_PATH
+    fresh_db = Database(db_path=DB_PATH)
+
+    port = fresh_db.get_portfolio(email)
+    assert port["cash_balance"] == 97000.0  # 100,000 - 3,000
+    assert len(port["holdings"]) == 1
+    assert port["holdings"][0]["symbol"] == "AAPL"
+    assert port["holdings"][0]["quantity"] == 10.0
+
+
+def test_engine_throughput_and_latency_benchmark():
+    """Verify L3 OrderBook throughput and latency exceed baseline thresholds."""
+    import time
+    from chronosmatch.engine import OrderBook
+    from chronosmatch.protocol import NewOrderMsg, Side, OrderType
+
+    book = OrderBook("BENCH")
+    num_orders = 10000
+    start = time.perf_counter()
+
+    for i in range(1, num_orders + 1):
+        msg = NewOrderMsg.create(
+            order_id=i,
+            client_id=1,
+            symbol="BENCH",
+            side=Side.BUY if i % 2 == 1 else Side.SELL,
+            order_type=OrderType.LIMIT,
+            price=100.0 + (i % 20) * 0.1,
+            quantity=10,
+        )
+        book.process_order(msg)
+
+    duration = time.perf_counter() - start
+    ops_per_sec = num_orders / duration
+
+    assert ops_per_sec > 25000, f"Expected >25,000 ops/sec, got {ops_per_sec:.0f}"
+    assert book.order_count >= 0

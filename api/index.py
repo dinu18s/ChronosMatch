@@ -279,6 +279,8 @@ def virtual_auth(req: VirtualAuthRequest):
         return {"status": "ok", "user": user_data}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Trade execution failed: {str(e)}")
 
 
 @app.post("/api/virtual/reset")
@@ -319,6 +321,8 @@ def execute_virtual_trade(req: VirtualTradeRequest):
         return {"status": "success", "trade": result}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Trade execution failed: {str(e)}")
 
 
 @app.get("/api/virtual/orders/{email}")
@@ -335,6 +339,8 @@ def cancel_virtual_order(req: CancelVirtualOrderRequest):
         return {"status": "success", "order": res}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Trade execution failed: {str(e)}")
 
 
 @app.delete("/api/virtual/orders/{email}/{order_id}")
@@ -345,6 +351,8 @@ def cancel_virtual_order_delete(email: str, order_id: str):
         return {"status": "success", "order": res}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Trade execution failed: {str(e)}")
 
 
 @app.post("/api/virtual/fill")
@@ -360,6 +368,8 @@ def fill_virtual_order(req: FillVirtualOrderRequest):
         return {"status": "success", "fill": res}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Trade execution failed: {str(e)}")
 
 
 @app.get("/api/virtual/watchlist/{email}")
