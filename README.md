@@ -74,6 +74,13 @@
   - Dedicated journal to record trade thesis, strategy, market sentiment, and post-trade reflections.
 - **Chronos AI Trading Assistant**:
   - Educational mentor explaining market terminology, position sizing (2% risk rule), order book mechanics, and portfolio health.
+- **🧪 Risk Management & Strategy Backtesting Lab**:
+  - **Interactive Risk Calculator**: Calculates fee-adjusted maximum potential loss, potential profit target, 1:R risk-to-reward ratio, recommended share sizing based on 1-3% risk budgets, and roundtrip break-even hurdle with step-by-step educational breakdown. One-click "Apply to Order Form" button.
+  - **Pre-Order Trade Risk Guard**: Non-blocking pre-flight safety interceptor in order confirmation modal checking prospective portfolio exposure %, concentration limits, and trade risk budget without altering order parameters.
+  - **Strategy Backtesting Simulator**: Sequential bar-by-bar backtest without lookahead bias supporting SMA Crossover, EMA Momentum, RSI Mean Reversion, and Breakout strategies with stop-loss/take-profit triggers, roundtrip fees, and dual equity curve plotting vs. Buy & Hold baseline.
+  - **Strategy Performance Metrics**: Computes Total Return %, CAGR, Maximum Drawdown %, Win Rate %, Profit Factor, Payoff Ratio, Closed Trades, and Market Exposure Time %.
+  - **Portfolio Scenario Stress Testing**: Models hypothetical market crashes (-5% to -35%), volatility spikes, and correlated shocks against active holdings with risk rating classifications.
+  - **Risk Rules & Win-Rate Fallacy Simulator**: Interactive tool demonstrating why a 70% win-rate with poor R:R produces guaranteed bankruptcy while a 40% win-rate with 3:1 R:R creates consistent wealth. Configurable risk limits.
 
 ---
 
@@ -207,9 +214,9 @@ p99 Latency      : 14.90 us
 
 ---
 
-## 🧪 Automated Test Suite (42 Passed)
+## 🧪 Automated Test Suite (51 Passed)
 
-All 42 automated tests pass deterministically in under 5 seconds:
+All 51 automated tests pass deterministically in under 3 seconds:
 
 ```bash
 python -m pytest -v
@@ -218,52 +225,61 @@ python -m pytest -v
 ```
 ============================= test session starts =============================
 platform win32 -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
-collected 42 items
+collected 51 items
 
 tests/test_api.py::test_order_book_integration PASSED                    [  2%]
 tests/test_api.py::test_api_root_endpoint PASSED                         [  4%]
-tests/test_api.py::test_api_health_endpoint PASSED                       [  7%]
-tests/test_api.py::test_api_bbo_endpoint PASSED                          [  9%]
-tests/test_api.py::test_api_depth_endpoint PASSED                        [ 11%]
-tests/test_api.py::test_api_place_and_cancel_order PASSED               [ 14%]
-tests/test_order_book.py::test_resting_limit_orders PASSED               [ 16%]
-tests/test_order_book.py::test_fifo_price_time_priority PASSED          [ 19%]
-tests/test_order_book.py::test_aggressive_market_order PASSED           [ 21%]
-tests/test_order_book.py::test_ioc_order_cancellation PASSED            [ 23%]
-tests/test_order_book.py::test_order_cancellation_o1 PASSED             [ 26%]
-tests/test_order_book.py::test_spread_calculation PASSED                 [ 28%]
-tests/test_order_book.py::test_fok_order_fill_or_kill PASSED             [ 30%]
-tests/test_order_book.py::test_level2_aggregated_depth PASSED           [ 33%]
-tests/test_protocol.py::test_new_order_msg_binary_packing PASSED        [ 35%]
-tests/test_protocol.py::test_cancel_order_msg_binary_packing PASSED     [ 38%]
-tests/test_protocol.py::test_execution_report_msg_binary_packing PASSED  [ 40%]
-tests/test_protocol.py::test_price_and_symbol_fixed_point_codec PASSED  [ 42%]
-tests/test_protocol.py::test_invalid_symbol_and_price_validation PASSED [ 45%]
-tests/test_protocol.py::test_header_flags_and_bitfield PASSED           [ 47%]
-tests/test_ring_buffer.py::test_ring_buffer_push_pop PASSED              [ 50%]
-tests/test_ring_buffer.py::test_ring_buffer_full_condition PASSED       [ 52%]
-tests/test_ring_buffer.py::test_ring_buffer_wraparound PASSED           [ 54%]
-tests/test_virtual_trading.py::test_virtual_auth_and_initial_balance PASSED [ 57%]
-tests/test_virtual_trading.py::test_market_quotes_and_search_endpoints PASSED [ 59%]
-tests/test_virtual_trading.py::test_virtual_buy_and_sell_lifecycle PASSED [ 61%]
-tests/test_virtual_trading.py::test_insufficient_funds_rejection PASSED   [ 64%]
-tests/test_virtual_trading.py::test_oversell_rejection PASSED             [ 66%]
-tests/test_virtual_trading.py::test_watchlist_toggle PASSED             [ 69%]
-tests/test_virtual_trading.py::test_order_history_recording PASSED       [ 71%]
-tests/test_virtual_trading.py::test_portfolio_reset_and_analytics PASSED [ 73%]
-tests/test_virtual_trading.py::test_trading_journal_crud PASSED         [ 76%]
-tests/test_virtual_trading.py::test_ai_chat_assistant PASSED            [ 78%]
-tests/test_virtual_trading.py::test_engine_metrics_endpoint PASSED      [ 80%]
-tests/test_virtual_trading.py::test_virtual_order_cancellation_and_refund PASSED [ 83%]
-tests/test_virtual_trading.py::test_virtual_order_partial_fills_and_leaves PASSED [ 85%]
-tests/test_virtual_trading.py::test_duplicate_order_rejection PASSED    [ 88%]
-tests/test_virtual_trading.py::test_zero_and_negative_order_validation PASSED [ 90%]
-tests/test_virtual_trading.py::test_persistence_across_instances PASSED  [ 92%]
-tests/test_virtual_trading.py::test_engine_throughput_and_latency_benchmark PASSED [ 95%]
-tests/test_wal.py::test_wal_append_and_recover PASSED                    [ 97%]
+tests/test_api.py::test_api_health_endpoint PASSED                       [  6%]
+tests/test_api.py::test_api_bbo_endpoint PASSED                          [  8%]
+tests/test_api.py::test_api_depth_endpoint PASSED                        [ 10%]
+tests/test_api.py::test_api_place_and_cancel_order PASSED               [ 12%]
+tests/test_order_book.py::test_resting_limit_orders PASSED               [ 14%]
+tests/test_order_book.py::test_fifo_price_time_priority PASSED          [ 16%]
+tests/test_order_book.py::test_aggressive_market_order PASSED           [ 18%]
+tests/test_order_book.py::test_ioc_order_cancellation PASSED            [ 20%]
+tests/test_order_book.py::test_order_cancellation_o1 PASSED             [ 22%]
+tests/test_order_book.py::test_spread_calculation PASSED                 [ 24%]
+tests/test_order_book.py::test_fok_order_fill_or_kill PASSED             [ 25%]
+tests/test_order_book.py::test_level2_aggregated_depth PASSED           [ 27%]
+tests/test_protocol.py::test_new_order_msg_binary_packing PASSED        [ 29%]
+tests/test_protocol.py::test_cancel_order_msg_binary_packing PASSED     [ 31%]
+tests/test_protocol.py::test_execution_report_msg_binary_packing PASSED  [ 33%]
+tests/test_protocol.py::test_price_and_symbol_fixed_point_codec PASSED  [ 35%]
+tests/test_protocol.py::test_invalid_symbol_and_price_validation PASSED [ 37%]
+tests/test_protocol.py::test_header_flags_and_bitfield PASSED           [ 39%]
+tests/test_ring_buffer.py::test_ring_buffer_push_pop PASSED              [ 41%]
+tests/test_ring_buffer.py::test_ring_buffer_full_condition PASSED       [ 43%]
+tests/test_ring_buffer.py::test_ring_buffer_wraparound PASSED           [ 45%]
+tests/test_risk_lab.py::test_position_sizing_calculation_standard PASSED [ 47%]
+tests/test_risk_lab.py::test_position_sizing_input_validation PASSED    [ 49%]
+tests/test_risk_lab.py::test_sma_ema_rsi_indicators PASSED              [ 51%]
+tests/test_risk_lab.py::test_backtest_sma_crossover_execution_and_metrics PASSED [ 53%]
+tests/test_risk_lab.py::test_backtest_stop_loss_trigger PASSED          [ 55%]
+tests/test_risk_lab.py::test_scenario_stress_testing PASSED             [ 57%]
+tests/test_risk_lab.py::test_api_risk_calculate_endpoint PASSED         [ 59%]
+tests/test_risk_lab.py::test_api_backtest_run_endpoint PASSED           [ 61%]
+tests/test_risk_lab.py::test_api_stress_test_endpoint PASSED            [ 63%]
+tests/test_virtual_trading.py::test_virtual_auth_and_initial_balance PASSED [ 65%]
+tests/test_virtual_trading.py::test_market_quotes_and_search_endpoints PASSED [ 67%]
+tests/test_virtual_trading.py::test_virtual_buy_and_sell_lifecycle PASSED [ 69%]
+tests/test_virtual_trading.py::test_insufficient_funds_rejection PASSED   [ 71%]
+tests/test_virtual_trading.py::test_oversell_rejection PASSED             [ 73%]
+tests/test_virtual_trading.py::test_watchlist_toggle PASSED             [ 75%]
+tests/test_virtual_trading.py::test_order_history_recording PASSED       [ 76%]
+tests/test_virtual_trading.py::test_portfolio_reset_and_analytics PASSED [ 78%]
+tests/test_virtual_trading.py::test_trading_journal_crud PASSED         [ 80%]
+tests/test_virtual_trading.py::test_ai_chat_assistant PASSED            [ 82%]
+tests/test_virtual_trading.py::test_engine_metrics_endpoint PASSED      [ 84%]
+tests/test_virtual_trading.py::test_virtual_order_cancellation_and_refund PASSED [ 86%]
+tests/test_virtual_trading.py::test_virtual_order_partial_fills_and_leaves PASSED [ 88%]
+tests/test_virtual_trading.py::test_duplicate_order_rejection PASSED    [ 90%]
+tests/test_virtual_trading.py::test_zero_and_negative_order_validation PASSED [ 92%]
+tests/test_virtual_trading.py::test_persistence_across_instances PASSED  [ 94%]
+tests/test_virtual_trading.py::test_engine_throughput_and_latency_benchmark PASSED [ 96%]
+tests/test_wal.py::test_wal_append_and_recover PASSED                    [ 98%]
 tests/test_wal.py::test_wal_checksum_corruption_detection PASSED        [100%]
 
-======================== 42 passed, 1 warning in 4.73s ========================
+======================== 51 passed, 1 warning in 2.81s ========================
 ```
 
 ---

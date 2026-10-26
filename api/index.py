@@ -21,6 +21,11 @@ from pydantic import BaseModel, Field
 
 from chronosmatch.dashboard import get_dashboard_html
 from chronosmatch.engine import MatchingEngine
+from chronosmatch.engine.risk_lab import (
+    calculate_position_size,
+    run_backtest,
+    run_scenario_stress_test,
+)
 from chronosmatch.marketdata.service import market_data_service
 from chronosmatch.persistence.db import db
 from chronosmatch.protocol import (
@@ -173,6 +178,38 @@ class AIChatRequest(BaseModel):
     message: str = Field(..., description="User question or educational query")
     email: Optional[str] = Field(default=None, description="Optional user email for personalized portfolio insights")
     context: Optional[Dict[str, Any]] = Field(default=None, description="Optional current active symbol / portfolio data")
+
+
+class RiskCalculateRequest(BaseModel):
+    account_balance: float = Field(..., gt=0, description="Virtual account balance or equity in INR")
+    entry_price: float = Field(..., gt=0, description="Planned entry price per share")
+    stop_loss_price: float = Field(..., gt=0, description="Stop-loss price level")
+    risk_pct: float = Field(default=2.0, gt=0, le=100, description="Percentage of balance to risk (e.g. 2.0%)")
+    target_price: Optional[float] = Field(default=None, description="Optional take-profit target price")
+    fee_pct: float = Field(default=0.05, ge=0, description="Estimated one-way fee percentage (e.g. 0.05%)")
+
+
+class BacktestRunRequest(BaseModel):
+    symbol: Optional[str] = Field(default="RELIANCE", description="Symbol to backtest")
+    period: Optional[str] = Field(default="1M", description="Timeframe period: 1M, 3M, 6M, 1Y")
+    prices: Optional[List[float]] = Field(default=None, description="Optional custom chronological price series")
+    timestamps: Optional[List[str]] = Field(default=None, description="Optional custom timestamp series")
+    strategy: str = Field(default="SMA_CROSSOVER", description="Strategy: SMA_CROSSOVER, EMA_MOMENTUM, RSI_MEAN_REVERSION, BREAKOUT")
+    initial_capital: float = Field(default=100000.0, gt=0, description="Starting virtual capital in INR")
+    fast_period: int = Field(default=9, ge=2, description="Fast indicator period (e.g. 9)")
+    slow_period: int = Field(default=21, ge=3, description="Slow indicator period (e.g. 21)")
+    fee_pct: float = Field(default=0.05, ge=0, description="One-way fee percentage (e.g. 0.05%)")
+    stop_loss_pct: float = Field(default=0.0, ge=0, description="Optional percentage stop loss (e.g. 3.0)")
+    take_profit_pct: float = Field(default=0.0, ge=0, description="Optional percentage take profit (e.g. 6.0)")
+
+
+class StressTestRequest(BaseModel):
+    portfolio_cash: float = Field(default=100000.0, ge=0, description="Available virtual cash in INR")
+    holdings: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Holdings dictionary: symbol -> {quantity, current_price, avg_buy_price}")
+    price_shock_pct: float = Field(default=-10.0, description="Market price shock percentage (e.g. -10.0 for -10%)")
+    volatility_shock_multiplier: float = Field(default=1.0, ge=0.5, description="Volatility multiplier for slippage")
+    fee_hike_pct: float = Field(default=0.0, ge=0, description="Fee hike percentage to model")
+    correlated_drop: bool = Field(default=True, description="Whether all risky assets decline together")
 
 
 # ==========================================================================
@@ -481,6 +518,88 @@ def ai_chat_assistant(req: AIChatRequest):
         "model": "Chronos Educational Rule-Based Engine (Built-in)",
         "timestamp": time.time(),
     }
+
+
+# ==========================================================================
+# RISK MANAGEMENT & STRATEGY BACKTESTING LAB API
+# ==========================================================================
+@app.post("/api/risk/calculate")
+def api_calculate_risk(req: RiskCalculateRequest):
+    """Calculate recommended position size, risk-reward ratio, and break-even price."""
+    try:
+        return calculate_position_size(
+            account_balance=req.account_balance,
+            entry_price=req.entry_price,
+            stop_loss_price=req.stop_loss_price,
+            risk_pct=req.risk_pct,
+            target_price=req.target_price,
+            fee_pct=req.fee_pct,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Risk calculation error: {str(e)}")
+
+
+@app.post("/api/backtest/run")
+def api_run_backtest(req: BacktestRunRequest):
+    """Run sequential bar-by-bar backtest without lookahead bias and compute performance metrics."""
+    try:
+        prices = req.prices
+        timestamps = req.timestamps
+
+        # If custom prices not supplied, pull historical chart series for symbol
+        if not prices or len(prices) < 5:
+            sym = (req.symbol or "RELIANCE").upper()
+            hist = market_data_service.get_history(sym, period=req.period or "1M")
+            pts = hist.get("points", [])
+            if not pts or len(pts) < 10:
+                base_p = market_data_service.fetch_live_quote(sym).get("price", 1000.0)
+                pts = [
+                    {"time": f"Day {i+1}", "price": round(base_p * (1.0 + (i * 0.006) - (0.015 if i % 3 == 0 else 0)), 2)}
+                    for i in range(40)
+                ]
+            prices = [p["price"] for p in pts]
+            import datetime
+            timestamps = []
+            for p in pts:
+                t = p.get("time")
+                if isinstance(t, (int, float)):
+                    timestamps.append(datetime.datetime.fromtimestamp(t).strftime("%d %b"))
+                else:
+                    timestamps.append(str(t))
+
+        return run_backtest(
+            prices=prices,
+            timestamps=timestamps,
+            strategy=req.strategy,
+            initial_capital=req.initial_capital,
+            fast_period=req.fast_period,
+            slow_period=req.slow_period,
+            fee_pct=req.fee_pct,
+            stop_loss_pct=req.stop_loss_pct,
+            take_profit_pct=req.take_profit_pct,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Backtest error: {str(e)}")
+
+
+@app.post("/api/risk/stress-test")
+def api_stress_test(req: StressTestRequest):
+    """Run hypothetical stress test scenario modeling market crash, volatility expansion, and slippage."""
+    try:
+        return run_scenario_stress_test(
+            portfolio_cash=req.portfolio_cash,
+            holdings=req.holdings,
+            price_shock_pct=req.price_shock_pct,
+            volatility_shock_multiplier=req.volatility_shock_multiplier,
+            fee_hike_pct=req.fee_hike_pct,
+            correlated_drop=req.correlated_drop,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Stress test error: {str(e)}")
 
 
 # ==========================================================================
