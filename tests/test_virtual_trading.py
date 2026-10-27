@@ -5,7 +5,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.index import app
-from chronosmatch.persistence.db import db
 
 
 @pytest.fixture

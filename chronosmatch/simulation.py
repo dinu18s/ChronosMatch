@@ -1,6 +1,5 @@
 """Interactive real-time market simulation demonstrating order book depth and live trades."""
 
-import os
 from pathlib import Path
 import random
 import sys

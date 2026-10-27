@@ -10,7 +10,6 @@ from chronosmatch.protocol import (
     RejectCode,
     Side,
     TimeInForce,
-    fixed_to_price,
     price_to_fixed,
 )
 

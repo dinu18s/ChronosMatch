@@ -1,10 +1,9 @@
 """Zero-Copy Single-Producer Single-Consumer (SPSC) Circular Ring Buffer using Shared Memory."""
 
-import ctypes
 import math
 import struct
 from multiprocessing import shared_memory
-from typing import Optional, Union
+from typing import Optional
 
 # Cache-line alignment padding (64 bytes) to avoid CPU false sharing
 CACHE_LINE_SIZE = 64

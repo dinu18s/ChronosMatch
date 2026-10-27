@@ -1,16 +1,14 @@
 """High-speed binary Write-Ahead Log (WAL) for auditability and deterministic replay."""
 
-import ctypes
 import os
 import struct
-from typing import Iterator, Optional, Tuple, Union
+from typing import Iterator, Tuple, Union
 
 from chronosmatch.protocol.messages import (
     CancelOrderMsg,
     ExecutionReportMsg,
     NewOrderMsg,
 )
-from chronosmatch.protocol.types import MsgType
 
 WAL_MAGIC = 0x57414C31  # "WAL1"
 RECORD_HEADER_STRUCT = struct.Struct("<IBBHI")  # magic (4), msg_type (1), pad (1), length (2), seq_no (4)

@@ -1,7 +1,5 @@
 """Single serverless function entry point for Vercel, local dev, and Virtual Paper Trading API."""
 
-import json
-import os
 import sys
 import time
 from pathlib import Path
@@ -38,8 +36,6 @@ from chronosmatch.protocol import (
     Side,
     TimeInForce,
     fixed_to_price,
-    price_to_fixed,
-    symbol_to_int,
 )
 
 app = FastAPI(

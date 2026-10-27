@@ -9,7 +9,6 @@ from chronosmatch.protocol.messages import (
     CancelOrderMsg,
     ExecutionReportMsg,
     NewOrderMsg,
-    int_to_symbol,
     symbol_to_int,
 )
 from chronosmatch.protocol.types import (

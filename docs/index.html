@@ -3969,14 +3969,12 @@
 
             const candleCount = candleDataPoints.length;
             const slotW = (w - 20) / candleCount;
-            // Professional lightweight financial chart: thin 1-2px candle body
-            const candleW = 2;
+            const candleW = Math.max(2, slotW * 0.7);
 
             if (currentChartType === 'candle') {
-                // Candlestick Rendering with thin 1-2px body and thin 1px wicks
+                // Candlestick Rendering
                 candleDataPoints.forEach((c, idx) => {
                     const x = 10 + idx * slotW + slotW / 2;
-                    const wickX = Math.round(x);
                     const yOpen = h - ((c.open - minP) / range) * (h - 40) - 20;
                     const yClose = h - ((c.close - minP) / range) * (h - 40) - 20;
                     const yHigh = h - ((c.high - minP) / range) * (h - 40) - 20;
@@ -3985,19 +3983,19 @@
                     const isGreen = c.close >= c.open;
                     const color = isGreen ? '#10b981' : '#f43f5e';
 
-                    // Thin 1-pixel vertical wick (High to Low)
+                    // High/Low Wick
                     ctx.strokeStyle = color;
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 1.2;
                     ctx.beginPath();
-                    ctx.moveTo(wickX, Math.round(yHigh));
-                    ctx.lineTo(wickX, Math.round(yLow));
+                    ctx.moveTo(x, yHigh);
+                    ctx.lineTo(x, yLow);
                     ctx.stroke();
 
-                    // Thin 1-2 pixel candlestick body
-                    const bodyTop = Math.round(Math.min(yOpen, yClose));
-                    const bodyH = Math.max(2, Math.round(Math.abs(yClose - yOpen)));
+                    // Body
+                    const bodyTop = Math.min(yOpen, yClose);
+                    const bodyH = Math.max(2, Math.abs(yClose - yOpen));
                     ctx.fillStyle = color;
-                    ctx.fillRect(wickX - Math.floor(candleW / 2), bodyTop, candleW, bodyH);
+                    ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
                 });
             } else {
                 // Smooth Line Chart
@@ -6030,7 +6028,7 @@
             const positionImpacts = [];
 
             const syms = Object.keys(userState.holdings);
-            syms.forEach(sym => {
+            syms.forEach((sym, idx) => {
                 const h = userState.holdings[sym];
                 const qty = h.quantity || 0;
                 if (qty <= 0) return;
@@ -6041,7 +6039,8 @@
 
                 // Slippage deduction expands with volatility
                 const slippageDeduction = 0.002 * volMultiplier;
-                const shock = (priceShockPct / 100.0) - slippageDeduction - (feeHike / 100.0);
+                const assetFactor = isCorrelated ? 1.0 : (idx === 0 ? 1.0 : 0.4);
+                const shock = ((priceShockPct / 100.0) * assetFactor) - slippageDeduction - (feeHike / 100.0);
                 const stressedP = Math.max(0.01, Math.round(baseP * (1.0 + shock) * 100) / 100);
                 const stressedVal = Math.round(qty * stressedP * 100) / 100;
                 stressedHoldingsVal += stressedVal;
@@ -6063,10 +6062,11 @@
                     { sym: 'TCS', qty: 15, price: quotesMap['TCS']?.price || 2506.90 },
                     { sym: 'INFY', qty: 20, price: quotesMap['INFY']?.price || 1153.35 }
                 ];
-                sampleSyms.forEach(s => {
+                sampleSyms.forEach((s, idx) => {
                     const val = s.qty * s.price;
                     baselineHoldingsVal += val;
-                    const shock = (priceShockPct / 100.0) - (0.002 * volMultiplier) - (feeHike / 100.0);
+                    const assetFactor = isCorrelated ? 1.0 : (idx === 0 ? 1.0 : 0.4);
+                    const shock = ((priceShockPct / 100.0) * assetFactor) - (0.002 * volMultiplier) - (feeHike / 100.0);
                     const stressedP = Math.max(0.01, Math.round(s.price * (1.0 + shock) * 100) / 100);
                     const stressedVal = Math.round(s.qty * stressedP * 100) / 100;
                     stressedHoldingsVal += stressedVal;

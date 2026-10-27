@@ -2,7 +2,6 @@
 
 import os
 import tempfile
-import pytest
 from chronosmatch.persistence import WriteAheadLog
 from chronosmatch.protocol import (
     NewOrderMsg,

@@ -1,7 +1,6 @@
 """Unit tests for binary wire protocol and zero-copy buffer casting."""
 
 import ctypes
-import pytest
 from chronosmatch.protocol import (
     Side,
     OrderType,
@@ -9,12 +8,9 @@ from chronosmatch.protocol import (
     MsgType,
     ExecType,
     MatchStatus,
-    RejectCode,
     NewOrderMsg,
     CancelOrderMsg,
     ExecutionReportMsg,
-    BBOUpdateMsg,
-    TradeTickMsg,
     symbol_to_int,
     int_to_symbol,
     price_to_fixed,

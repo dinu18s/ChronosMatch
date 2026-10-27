@@ -9,7 +9,7 @@ Provides pure mathematical calculations for:
 """
 
 import math
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 
 def calculate_position_size(
@@ -513,7 +513,7 @@ def run_scenario_stress_test(
     stressed_holdings_val = 0.0
     position_impacts = []
 
-    for sym, h in holdings.items():
+    for idx, (sym, h) in enumerate(holdings.items()):
         qty = h.get("quantity", 0.0)
         if qty <= 0:
             continue
@@ -521,9 +521,10 @@ def run_scenario_stress_test(
         val = qty * p
         baseline_holdings_val += val
 
-        # Price decline with volatility slippage deduction
-        shock = price_shock_pct / 100.0
-        slippage_deduction = (0.002 * volatility_shock_multiplier)  # widen bid/ask spread
+        # Price decline with volatility slippage deduction and correlation factor
+        asset_factor = 1.0 if (correlated_drop or idx == 0) else 0.4
+        shock = (price_shock_pct / 100.0) * asset_factor
+        slippage_deduction = (0.002 * volatility_shock_multiplier) + (fee_hike_pct / 100.0)  # widen bid/ask spread & fee hike
         effective_shock = shock - slippage_deduction
 
         stressed_price = max(0.01, round(p * (1.0 + effective_shock), 2))

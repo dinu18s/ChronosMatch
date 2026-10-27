@@ -4,7 +4,7 @@ import datetime
 import os
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 def _find_project_root() -> Path:
     p = Path(__file__).resolve().parent
