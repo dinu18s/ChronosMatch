@@ -3969,12 +3969,14 @@
 
             const candleCount = candleDataPoints.length;
             const slotW = (w - 20) / candleCount;
-            const candleW = Math.max(2, slotW * 0.7);
+            // Professional lightweight financial chart: thin 1-2px candle body
+            const candleW = 2;
 
             if (currentChartType === 'candle') {
-                // Candlestick Rendering
+                // Candlestick Rendering with thin 1-2px body and thin 1px wicks
                 candleDataPoints.forEach((c, idx) => {
                     const x = 10 + idx * slotW + slotW / 2;
+                    const wickX = Math.round(x);
                     const yOpen = h - ((c.open - minP) / range) * (h - 40) - 20;
                     const yClose = h - ((c.close - minP) / range) * (h - 40) - 20;
                     const yHigh = h - ((c.high - minP) / range) * (h - 40) - 20;
@@ -3983,19 +3985,19 @@
                     const isGreen = c.close >= c.open;
                     const color = isGreen ? '#10b981' : '#f43f5e';
 
-                    // High/Low Wick
+                    // Thin 1-pixel vertical wick (High to Low)
                     ctx.strokeStyle = color;
-                    ctx.lineWidth = 1.2;
+                    ctx.lineWidth = 1;
                     ctx.beginPath();
-                    ctx.moveTo(x, yHigh);
-                    ctx.lineTo(x, yLow);
+                    ctx.moveTo(wickX, Math.round(yHigh));
+                    ctx.lineTo(wickX, Math.round(yLow));
                     ctx.stroke();
 
-                    // Body
-                    const bodyTop = Math.min(yOpen, yClose);
-                    const bodyH = Math.max(2, Math.abs(yClose - yOpen));
+                    // Thin 1-2 pixel candlestick body
+                    const bodyTop = Math.round(Math.min(yOpen, yClose));
+                    const bodyH = Math.max(2, Math.round(Math.abs(yClose - yOpen)));
                     ctx.fillStyle = color;
-                    ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
+                    ctx.fillRect(wickX - Math.floor(candleW / 2), bodyTop, candleW, bodyH);
                 });
             } else {
                 // Smooth Line Chart
