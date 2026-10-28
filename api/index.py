@@ -24,6 +24,10 @@ from chronosmatch.engine.risk_lab import (
     run_backtest,
     run_scenario_stress_test,
 )
+from chronosmatch.engine.observatory import (
+    run_deterministic_experiment,
+    simulate_price_impact,
+)
 from chronosmatch.marketdata.service import market_data_service
 from chronosmatch.persistence.db import db
 from chronosmatch.protocol import (
@@ -206,6 +210,21 @@ class StressTestRequest(BaseModel):
     volatility_shock_multiplier: float = Field(default=1.0, ge=0.5, description="Volatility multiplier for slippage")
     fee_hike_pct: float = Field(default=0.0, ge=0, description="Fee hike percentage to model")
     correlated_drop: bool = Field(default=True, description="Whether all risky assets decline together")
+
+
+class ObservatoryExperimentRequest(BaseModel):
+    seed: int = Field(default=42, description="Pseudorandom seed for deterministic reproducibility")
+    symbol: str = Field(default="BTCUSDT", description="Trading pair symbol")
+    num_events: int = Field(default=100, ge=10, le=1000, description="Total synthetic events to simulate")
+    arrival_rate: float = Field(default=1.0, gt=0, le=50.0, description="Order arrival rate (events per time unit)")
+    price_spread_pct: float = Field(default=0.05, gt=0, le=10.0, description="Initial order book spread percentage")
+    cancel_rate_pct: float = Field(default=20.0, ge=0, le=90.0, description="Percentage of events that are cancellations")
+
+
+class PriceImpactRequest(BaseModel):
+    depth_data: Dict[str, Any] = Field(description="Order book snapshot with 'bids' and 'asks' lists")
+    side: str = Field(default="BUY", description="'BUY' or 'SELL'")
+    quantity: int = Field(gt=0, description="Hypothetical market order quantity to execute")
 
 
 # ==========================================================================
@@ -596,6 +615,40 @@ def api_stress_test(req: StressTestRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Stress test error: {str(e)}")
+
+
+# ==========================================================================
+# ORDER-BOOK OBSERVATORY & MICROSTRUCTURE LAB ROUTES
+# ==========================================================================
+@app.post("/api/observatory/run-experiment")
+def api_observatory_run_experiment(req: ObservatoryExperimentRequest):
+    """Run a deterministic synthetic microstructure experiment with real engine benchmarks."""
+    try:
+        return run_deterministic_experiment(
+            seed=req.seed,
+            symbol=req.symbol,
+            num_events=req.num_events,
+            arrival_rate=req.arrival_rate,
+            price_spread_pct=req.price_spread_pct,
+            cancel_rate_pct=req.cancel_rate_pct,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Observatory simulation error: {str(e)}")
+
+
+@app.post("/api/observatory/price-impact")
+def api_observatory_price_impact(req: PriceImpactRequest):
+    """Calculate price impact, VWAP, slippage, and level consumption for a hypothetical order."""
+    if req.side.upper() not in ("BUY", "SELL"):
+        raise HTTPException(status_code=400, detail="Invalid side. Must be 'BUY' or 'SELL'.")
+    try:
+        return simulate_price_impact(
+            depth_data=req.depth_data,
+            side=req.side,
+            quantity=req.quantity,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Price impact calculation error: {str(e)}")
 
 
 # ==========================================================================

@@ -1643,6 +1643,190 @@
             gap: 8px;
             margin-bottom: 16px;
         }
+        /* ==========================================================================
+           ORDER-BOOK EVENT OBSERVATORY & MICROSTRUCTURE LAB STYLES
+           ========================================================================== */
+        .obs-subnav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            background: var(--bg-card);
+            overflow-x: auto;
+        }
+        .obs-subnav-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .obs-subnav-btn:hover {
+            color: var(--text-main);
+        }
+        .obs-subnav-btn.active {
+            color: var(--blue);
+            border-bottom-color: var(--blue);
+        }
+        .obs-content-area {
+            padding: 18px 20px;
+        }
+        .obs-sub-panel {
+            display: none;
+        }
+        .obs-sub-panel.active {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+        .obs-grid-2 {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 1080px) {
+            .obs-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .obs-ladder-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+        .obs-ladder-table th {
+            padding: 8px 10px;
+            color: var(--text-muted);
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+        }
+        .obs-ladder-table td {
+            padding: 6px 10px;
+            text-align: right;
+            position: relative;
+        }
+        .obs-ladder-bar-bid {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: var(--green-soft);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .obs-ladder-bar-ask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: var(--red-soft);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .obs-ladder-cell-content {
+            position: relative;
+            z-index: 2;
+        }
+        .obs-event-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .obs-badge-new {
+            background: var(--blue-soft);
+            color: var(--blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .obs-badge-trade-full {
+            background: var(--green-soft);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .obs-badge-trade-partial {
+            background: var(--yellow-soft);
+            color: var(--yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .obs-badge-cancel {
+            background: var(--red-soft);
+            color: var(--red);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .obs-timeline-ctrl-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .obs-ctrl-btn {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        .obs-ctrl-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-highlight);
+        }
+        .obs-ctrl-btn.active {
+            background: var(--blue-soft);
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+        .obs-imbalance-meter {
+            height: 14px;
+            background: var(--bg-base);
+            border-radius: 7px;
+            overflow: hidden;
+            display: flex;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .obs-imbalance-bid-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), var(--green));
+            transition: width 0.2s ease;
+        }
+        .obs-imbalance-ask-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--red), rgba(244, 63, 94, 0.4));
+            transition: width 0.2s ease;
+        }
+        .obs-event-row:hover {
+            background: var(--bg-card-hover) !important;
+            cursor: pointer;
+        }
+        .obs-event-row.selected {
+            background: var(--blue-soft) !important;
+        }
     </style>
 </head>
 <body>
@@ -1766,6 +1950,12 @@
                         <button type="button" class="nav-link-btn" id="nav-btn-lab" onclick="switchView('lab')">
                             <span class="nav-icon">🧪</span>
                             <span class="nav-text">Risk & Backtest Lab</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-observatory" onclick="switchView('observatory')">
+                            <span class="nav-icon">🔭</span>
+                            <span class="nav-text">Order-Book Observatory</span>
                         </button>
                     </li>
                 </ul>
@@ -3026,12 +3216,717 @@
                 </div>
             </div>
 
+            <!-- ==========================================================================
+                 VIEW: ORDER-BOOK EVENT OBSERVATORY & MICROSTRUCTURE LAB
+                 ========================================================================== -->
+            <div class="view-panel" id="view-observatory">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <!-- Observatory Header -->
+                    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="card-title">🔭 Order-Book Event Observatory & Microstructure Liquidity Lab</span>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">
+                                Granular event-by-event order-book tracking, liquidity flow dynamics, price impact analysis, depth imbalance, and reproducible deterministic experiments.
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge-tag" style="background: rgba(59, 130, 246, 0.12); color: var(--blue); font-size: 11px;">
+                                ⚡ Matching Engine Microstructure
+                            </span>
+                            <span class="badge-tag" style="background: rgba(16, 185, 129, 0.12); color: var(--green); font-size: 11px;" id="obs-status-badge">
+                                Deterministic Simulation Active
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Sub-Navigation Tabs -->
+                    <div class="obs-subnav">
+                        <button type="button" class="obs-subnav-btn active" id="obs-tab-stream" onclick="switchObsSubTab('stream')">
+                            <span>🔬</span> Event Stream & Book Comparator
+                        </button>
+                        <button type="button" class="obs-subnav-btn" id="obs-tab-ladder" onclick="switchObsSubTab('ladder')">
+                            <span>🌊</span> Liquidity Flow & Depth Ladder
+                        </button>
+                        <button type="button" class="obs-subnav-btn" id="obs-tab-impact" onclick="switchObsSubTab('impact')">
+                            <span>💥</span> Price Impact Laboratory
+                        </button>
+                        <button type="button" class="obs-subnav-btn" id="obs-tab-imbalance" onclick="switchObsSubTab('imbalance')">
+                            <span>⚖️</span> Market Imbalance Explorer
+                        </button>
+                        <button type="button" class="obs-subnav-btn" id="obs-tab-timeline" onclick="switchObsSubTab('timeline')">
+                            <span>⚙️</span> Deterministic Experiment & Timeline
+                        </button>
+                    </div>
+
+                    <!-- ==================================================================
+                         SUB-PANEL 1: EVENT STREAM & BOOK COMPARATOR
+                         ================================================================== -->
+                    <div class="obs-content-area obs-sub-panel active" id="obs-subpanel-stream">
+                        <!-- Top Summary Bar -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px;">
+                            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                <div>
+                                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Instrument</span>
+                                    <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--text-main);" id="obs-stream-sym">BTCUSDT</div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Best Bid</span>
+                                    <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--green);" id="obs-stream-bb">--</div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Best Ask</span>
+                                    <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--red);" id="obs-stream-ba">--</div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Mid-Price</span>
+                                    <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--text-main);" id="obs-stream-mid">--</div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Spread</span>
+                                    <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--yellow);" id="obs-stream-spread">--</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button type="button" class="obs-ctrl-btn" onclick="openBookComparatorModal(currentScrubberIndex)">
+                                    <span>🔍</span> Compare Book Before/After Selected Event
+                                </button>
+                                <button type="button" class="obs-ctrl-btn" style="background: var(--blue-soft); color: var(--blue); border-color: rgba(59, 130, 246, 0.4);" onclick="triggerObservatoryExperimentRun()">
+                                    <span>🔄</span> Re-Run Simulation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filters Row -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Filter Type:</span>
+                                <button type="button" class="obs-ctrl-btn active" id="obs-filter-all" onclick="setObsEventFilter('ALL')">All</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-filter-new" onclick="setObsEventFilter('NEW_LIMIT')">New Limits</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-filter-trade" onclick="setObsEventFilter('TRADE')">Trades</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-filter-cancel" onclick="setObsEventFilter('CANCEL')">Cancels</button>
+
+                                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-left: 10px;">Side:</span>
+                                <button type="button" class="obs-ctrl-btn active" id="obs-filter-side-all" onclick="setObsSideFilter('ALL')">All</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-filter-side-buy" onclick="setObsSideFilter('BUY')" style="color: var(--green);">Buy</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-filter-side-sell" onclick="setObsSideFilter('SELL')" style="color: var(--red);">Sell</button>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 11px; color: var(--text-sub);" id="obs-filter-count-badge">Showing 50 of 50 events</span>
+                                <button type="button" class="obs-ctrl-btn" onclick="exportObservatoryEventsCSV()">
+                                    <span>📥</span> Export Events CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Event Feed Table -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+                            <div style="max-height: 440px; overflow-y: auto;">
+                                <table class="data-table mono" style="font-size: 11px; width: 100%;">
+                                    <thead style="position: sticky; top: 0; background: var(--bg-subtle); z-index: 10;">
+                                        <tr>
+                                            <th style="width: 50px;">#</th>
+                                            <th style="width: 75px;">Time</th>
+                                            <th style="width: 120px;">Event Type</th>
+                                            <th style="width: 60px;">Side</th>
+                                            <th style="width: 90px; text-align: right;">Price</th>
+                                            <th style="width: 70px; text-align: right;">Qty</th>
+                                            <th style="width: 80px; text-align: right;">Delta</th>
+                                            <th style="width: 90px; text-align: right;">BBO After</th>
+                                            <th>Resulting Order-Book Transition</th>
+                                            <th style="width: 90px; text-align: center;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="obs-events-table-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================================================================
+                         SUB-PANEL 2: LIQUIDITY FLOW & DEPTH LADDER
+                         ================================================================== -->
+                    <div class="obs-content-area obs-sub-panel" id="obs-subpanel-ladder">
+                        <div style="display: grid; grid-template-columns: 360px 1fr; gap: 20px;">
+                            <!-- Left: Level 2 Depth Ladder -->
+                            <div>
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                            <span>📊</span> Level 2 Depth Ladder
+                                        </div>
+                                        <span class="mono" style="font-size: 11px; color: var(--text-sub);" id="obs-ladder-event-idx">Event #50</span>
+                                    </div>
+
+                                    <!-- Ladder Table -->
+                                    <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg-base);">
+                                        <!-- Ask Side (Rung 5 down to 1) -->
+                                        <table class="obs-ladder-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align: left; width: 60px;">Side</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="obs-ladder-asks-body">
+                                                <!-- Populated dynamically -->
+                                            </tbody>
+                                        </table>
+
+                                        <!-- Spread Banner -->
+                                        <div style="background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                                            <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Spread & Mid-Price</span>
+                                            <div class="mono" style="font-weight: 800;">
+                                                <span style="color: var(--text-main);" id="obs-ladder-mid-val">₹0.00</span>
+                                                <span style="color: var(--yellow); margin-left: 8px;" id="obs-ladder-spread-val">(0.00 / 0 bps)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bid Side (Rung 1 down to 5) -->
+                                        <table class="obs-ladder-table">
+                                            <tbody id="obs-ladder-bids-body">
+                                                <!-- Populated dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Liquidity Concentration Stats -->
+                                    <div style="margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Top 3 Bid Concentration</div>
+                                            <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--green); margin-top: 2px;" id="obs-conc-bids">--%</div>
+                                        </div>
+                                        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Top 3 Ask Concentration</div>
+                                            <div class="mono" style="font-size: 14px; font-weight: 800; color: var(--red); margin-top: 2px;" id="obs-conc-asks">--%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Dynamics Canvas Charts -->
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <!-- Chart 1: Mid-Price & Spread Chart -->
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                            <span>📈</span> Mid-Price Trajectory & Spread Dynamics Over Events
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 12px; font-size: 11px;">
+                                            <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--blue);">
+                                                <span style="width: 10px; height: 2px; background: var(--blue); display: inline-block;"></span> Mid-Price
+                                            </span>
+                                            <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--yellow);">
+                                                <span style="width: 10px; height: 2px; background: var(--yellow); display: inline-block;"></span> Spread (bps)
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <canvas id="obs-chart-spread" style="width: 100%; height: 200px; display: block; border-radius: 8px; background: var(--bg-base);"></canvas>
+                                </div>
+
+                                <!-- Chart 2: Cumulative Depth Chart -->
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                            <span>🌊</span> Cumulative Displayed Depth (Bid Liquidity vs. Ask Liquidity)
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 12px; font-size: 11px;">
+                                            <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--green);">
+                                                <span style="width: 10px; height: 2px; background: var(--green); display: inline-block;"></span> Total Bids
+                                            </span>
+                                            <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--red);">
+                                                <span style="width: 10px; height: 2px; background: var(--red); display: inline-block;"></span> Total Asks
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <canvas id="obs-chart-depth" style="width: 100%; height: 200px; display: block; border-radius: 8px; background: var(--bg-base);"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================================================================
+                         SUB-PANEL 3: PRICE IMPACT LABORATORY
+                         ================================================================== -->
+                    <div class="obs-content-area obs-sub-panel" id="obs-subpanel-impact">
+                        <!-- Disclaimer Banner -->
+                        <div class="risk-disclaimer-banner">
+                            <span style="font-size: 14px;">💥</span>
+                            <div>
+                                <strong>HYPOTHETICAL PRICE IMPACT EXPERIMENT — MATCHING ENGINE BOOK SIMULATION ONLY</strong><br>
+                                Models order book sweeping, non-linear slippage, and volume-weighted average price (VWAP). This experiment is fully isolated and does NOT deduct personal funds or submit live trades.
+                            </div>
+                        </div>
+
+                        <div class="obs-grid-2">
+                            <!-- Left: Order Simulation Controls -->
+                            <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 18px;">
+                                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+                                    <span>⚙️</span> Configure Market Order Sweep
+                                </div>
+
+                                <!-- Side Toggle -->
+                                <div style="margin-bottom: 16px;">
+                                    <label class="trade-label" style="margin-bottom: 6px;">Hypothetical Order Side</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                        <button type="button" class="obs-ctrl-btn active" id="obs-impact-side-buy" onclick="setImpactSide('BUY')" style="justify-content: center; font-weight: 700; color: var(--green);">
+                                            BUY (Sweeps Asks)
+                                        </button>
+                                        <button type="button" class="obs-ctrl-btn" id="obs-impact-side-sell" onclick="setImpactSide('SELL')" style="justify-content: center; font-weight: 700; color: var(--red);">
+                                            SELL (Sweeps Bids)
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Quantity Range Slider & Input -->
+                                <div class="range-slider-wrap">
+                                    <div class="range-slider-header">
+                                        <span>Order Size (Quantity)</span>
+                                        <span class="mono" style="font-weight: 800; color: var(--blue);" id="obs-impact-qty-label">50 units</span>
+                                    </div>
+                                    <input type="range" class="risk-slider" id="obs-impact-slider" min="5" max="500" step="5" value="50" oninput="onImpactSliderChange(this.value)">
+                                </div>
+
+                                <!-- Quick Size Presets -->
+                                <div style="margin-bottom: 16px;">
+                                    <label class="trade-label" style="margin-bottom: 6px;">Size Presets</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                        <button type="button" class="obs-ctrl-btn" onclick="applyImpactPreset(10)">Retail (10)</button>
+                                        <button type="button" class="obs-ctrl-btn" onclick="applyImpactPreset(50)">Medium (50)</button>
+                                        <button type="button" class="obs-ctrl-btn" onclick="applyImpactPreset(150)">Institutional (150)</button>
+                                        <button type="button" class="obs-ctrl-btn" onclick="applyImpactPreset(350)">Whale / Block (350)</button>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="buy-btn" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700;" onclick="runPriceImpactCalculation()">
+                                    💥 Calculate Price Impact & Slippage
+                                </button>
+                            </div>
+
+                            <!-- Right: Impact Calculation Outputs -->
+                            <div>
+                                <!-- Top Key Metrics Cards -->
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px;">
+                                    <div class="lab-metric-card">
+                                        <span class="lab-metric-title">Expected Initial Price</span>
+                                        <div class="lab-metric-val mono" id="obs-impact-exp-price">--</div>
+                                        <span class="lab-metric-sub">Top of order book</span>
+                                    </div>
+
+                                    <div class="lab-metric-card" style="border-left: 4px solid var(--blue);">
+                                        <span class="lab-metric-title">Execution VWAP</span>
+                                        <div class="lab-metric-val mono" style="color: var(--blue);" id="obs-impact-vwap">--</div>
+                                        <span class="lab-metric-sub">Volume-weighted average</span>
+                                    </div>
+
+                                    <div class="lab-metric-card" style="border-left: 4px solid var(--yellow);" id="obs-impact-slip-card">
+                                        <span class="lab-metric-title">Price Slippage vs Mid</span>
+                                        <div class="lab-metric-val mono" style="color: var(--yellow);" id="obs-impact-slippage">-- bps</div>
+                                        <span class="lab-metric-sub" id="obs-impact-slip-pct">--%</span>
+                                    </div>
+
+                                    <div class="lab-metric-card" style="border-left: 4px solid var(--purple);">
+                                        <span class="lab-metric-title">Levels Consumed</span>
+                                        <div class="lab-metric-val mono" style="color: var(--purple);" id="obs-impact-levels">--</div>
+                                        <span class="lab-metric-sub" id="obs-impact-status-text">Depth rungs swept</span>
+                                    </div>
+                                </div>
+
+                                <!-- Consumed Rungs Breakdown -->
+                                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>🪜 Ladder Liquidity Swept by Level</span>
+                                        <span class="mono" style="font-size: 11px; color: var(--text-sub);" id="obs-impact-rem-liq">Remaining Liquidity: -- units</span>
+                                    </div>
+                                    <div style="max-height: 180px; overflow-y: auto;">
+                                        <table class="data-table mono" style="font-size: 11px; width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Level #</th>
+                                                    <th>Price</th>
+                                                    <th style="text-align: right;">Matched Qty</th>
+                                                    <th style="text-align: right;">Initial Depth</th>
+                                                    <th style="text-align: right;">Residual Depth</th>
+                                                    <th style="text-align: right;">Cumulative Cost</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="obs-impact-ladder-body">
+                                                <!-- Populated dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Small vs. Large Order Comparison Table -->
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">
+                                        ⚖️ Order Size vs. Slippage Escalation (Non-Linear Impact Analysis)
+                                    </div>
+                                    <table class="data-table mono" style="font-size: 11px; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Tier</th>
+                                                <th>Size</th>
+                                                <th style="text-align: right;">VWAP</th>
+                                                <th style="text-align: right;">Slippage (bps)</th>
+                                                <th style="text-align: right;">Levels Swept</th>
+                                                <th>Execution Quality</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="obs-impact-comp-body">
+                                            <!-- Populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================================================================
+                         SUB-PANEL 4: MARKET IMBALANCE EXPLORER
+                         ================================================================== -->
+                    <div class="obs-content-area obs-sub-panel" id="obs-subpanel-imbalance">
+                        <div style="display: grid; grid-template-columns: 360px 1fr; gap: 20px;">
+                            <!-- Left: Imbalance Controls & Live Gauge -->
+                            <div>
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+                                        <span>⚖️</span> Select Depth Horizon (K)
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px;">
+                                        <button type="button" class="obs-ctrl-btn active" id="obs-imb-k-1" onclick="setImbalanceDepth(1)" style="justify-content: center;">K = 1</button>
+                                        <button type="button" class="obs-ctrl-btn" id="obs-imb-k-3" onclick="setImbalanceDepth(3)" style="justify-content: center;">K = 3</button>
+                                        <button type="button" class="obs-ctrl-btn" id="obs-imb-k-5" onclick="setImbalanceDepth(5)" style="justify-content: center;">K = 5</button>
+                                        <button type="button" class="obs-ctrl-btn" id="obs-imb-k-10" onclick="setImbalanceDepth(10)" style="justify-content: center;">K = 10</button>
+                                    </div>
+
+                                    <!-- Imbalance Meter Display -->
+                                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Normalized Imbalance</span>
+                                            <span class="mono" style="font-size: 16px; font-weight: 800;" id="obs-imb-val-text">+0.000</span>
+                                        </div>
+
+                                        <div class="obs-imbalance-meter" style="margin-bottom: 8px;">
+                                            <div class="obs-imbalance-bid-fill" id="obs-imb-meter-bid" style="width: 50%;"></div>
+                                            <div class="obs-imbalance-ask-fill" id="obs-imb-meter-ask" style="width: 50%;"></div>
+                                        </div>
+
+                                        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700;" class="mono">
+                                            <span style="color: var(--green);" id="obs-imb-bids-sum">Bids: 0 units</span>
+                                            <span style="color: var(--red);" id="obs-imb-asks-sum">Asks: 0 units</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Directional Status Banner -->
+                                    <div id="obs-imb-status-banner" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green); border-radius: 8px; padding: 12px; font-size: 12px;">
+                                        <div style="font-weight: 800;" id="obs-imb-bias-title">BALANCED ORDER BOOK</div>
+                                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;" id="obs-imb-bias-desc">
+                                            Bid and ask liquidity at depth K are approximately equal.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mathematical Formula Box -->
+                                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
+                                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                                        Mathematical Definition
+                                    </div>
+                                    <div class="mono" style="font-size: 11px; color: var(--blue); margin-bottom: 8px; background: var(--bg-subtle); padding: 8px; border-radius: 6px;">
+                                        I(K) = (Σ BidQty_K - Σ AskQty_K) / (Σ BidQty_K + Σ AskQty_K)
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-sub); line-height: 1.4;">
+                                        Bounded in [-1.0, +1.0]. A value of +1.0 means zero asks; -1.0 means zero bids.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Time-Series Canvas Chart & Educational Note -->
+                            <div>
+                                <!-- Imbalance Time Series Chart -->
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                            <span>📊</span> Order-Book Imbalance Over Time Series
+                                        </div>
+                                        <div style="font-size: 11px; color: var(--text-sub);" id="obs-imb-chart-depth-badge">Depth: K=5</div>
+                                    </div>
+                                    <canvas id="obs-chart-imbalance" style="width: 100%; height: 230px; display: block; border-radius: 8px; background: var(--bg-base);"></canvas>
+                                </div>
+
+                                <!-- Critical Educational Callout -->
+                                <div style="background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 10px; padding: 16px;">
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--yellow); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                        <span>⚠️</span> Market Microstructure Truth: Why Imbalance Is NOT a Standalone Trend Predictor
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--text-sub); line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
+                                        <div>
+                                            <strong style="color: var(--text-main);">1. Fleeting Liquidity & Cancellations:</strong> Large resting bids can be cancelled milliseconds before an aggressive sell market order hits (commonly seen in algorithmic spoofing).
+                                        </div>
+                                        <div>
+                                            <strong style="color: var(--text-main);">2. Hidden & Iceberg Orders:</strong> Institutional buyers often place iceberg limit orders that show only 10 shares displayed while hiding 5,000 shares behind the scenes.
+                                        </div>
+                                        <div>
+                                            <strong style="color: var(--text-main);">3. Mean Reversion vs. Momentum:</strong> High positive imbalance can attract predatory aggressive selling or trigger rapid exhaustion rather than directional upward continuation.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================================================================
+                         SUB-PANEL 5: DETERMINISTIC EXPERIMENT & TIMELINE
+                         ================================================================== -->
+                    <div class="obs-content-area obs-sub-panel" id="obs-subpanel-timeline">
+                        <!-- Setup Controls Bar -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                                <span>⚙️ Reproducible Synthetic Microstructure Parameters</span>
+                                <span class="badge-tag" style="background: var(--blue-soft); color: var(--blue); font-size: 10px;">Deterministic PRNG</span>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: end;">
+                                <div class="trade-field">
+                                    <label class="trade-label" for="obs-param-seed">Random Seed</label>
+                                    <div style="display: flex; gap: 4px;">
+                                        <input type="number" class="trade-input mono" id="obs-param-seed" value="42" style="padding: 7px 10px;">
+                                        <button type="button" class="obs-ctrl-btn" title="Random Seed" onclick="randomizeObsSeed()">🎲</button>
+                                    </div>
+                                </div>
+
+                                <div class="trade-field">
+                                    <label class="trade-label" for="obs-param-sym">Instrument</label>
+                                    <select class="trade-input" id="obs-param-sym">
+                                        <option value="BTCUSDT" selected>BTCUSDT (Crypto)</option>
+                                        <option value="ETHUSDT">ETHUSDT (Crypto)</option>
+                                        <option value="RELIANCE">RELIANCE (NSE)</option>
+                                        <option value="TCS">TCS (NSE)</option>
+                                        <option value="AAPL">AAPL (US Equities)</option>
+                                    </select>
+                                </div>
+
+                                <div class="trade-field">
+                                    <label class="trade-label" for="obs-param-events">Event Count</label>
+                                    <select class="trade-input mono" id="obs-param-events">
+                                        <option value="30">30 Events</option>
+                                        <option value="50" selected>50 Events</option>
+                                        <option value="100">100 Events</option>
+                                        <option value="200">200 Events</option>
+                                    </select>
+                                </div>
+
+                                <div class="trade-field">
+                                    <label class="trade-label" for="obs-param-cancel">Cancellation %</label>
+                                    <select class="trade-input mono" id="obs-param-cancel">
+                                        <option value="10">10% Low</option>
+                                        <option value="20" selected>20% Normal</option>
+                                        <option value="35">35% High</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <button type="button" class="buy-btn" style="width: 100%; padding: 9px; font-size: 12px; font-weight: 700;" onclick="triggerObservatoryExperimentRun()">
+                                        🚀 Run Experiment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Scrubber & Playback Controls Bar -->
+                        <div class="obs-timeline-ctrl-bar">
+                            <!-- Play / Pause / Step Buttons -->
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <button type="button" class="obs-ctrl-btn" id="obs-btn-play" onclick="toggleTimelinePlay()">
+                                    <span id="obs-play-icon">▶</span> Play
+                                </button>
+                                <button type="button" class="obs-ctrl-btn" onclick="timelineStep(-1)" title="Step Backward">⏮</button>
+                                <button type="button" class="obs-ctrl-btn" onclick="timelineStep(1)" title="Step Forward">⏭</button>
+                                <button type="button" class="obs-ctrl-btn" onclick="timelineReset()" title="Reset to Start">↺ Reset</button>
+                            </div>
+
+                            <!-- Speed Selector -->
+                            <div style="display: flex; align-items: center; gap: 4px; border-left: 1px solid var(--border); padding-left: 10px;">
+                                <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Speed:</span>
+                                <button type="button" class="obs-ctrl-btn active" id="obs-spd-1" onclick="setTimelineSpeed(1)">1x</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-spd-2" onclick="setTimelineSpeed(2)">2x</button>
+                                <button type="button" class="obs-ctrl-btn" id="obs-spd-5" onclick="setTimelineSpeed(5)">5x</button>
+                            </div>
+
+                            <!-- Scrubber Range Slider -->
+                            <div style="flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px;">
+                                <input type="range" class="risk-slider" id="obs-timeline-scrubber" min="0" max="49" value="49" oninput="onTimelineScrub(parseInt(this.value))">
+                                <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap;" id="obs-scrubber-counter">50 / 50</span>
+                            </div>
+                        </div>
+
+                        <!-- Active Scrubber Event Description Card -->
+                        <div id="obs-active-event-card" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="obs-event-badge obs-badge-new" id="obs-active-ev-badge">NEW_LIMIT</span>
+                                    <span class="mono" style="font-size: 13px; font-weight: 800; color: var(--text-main);" id="obs-active-ev-title">Event #50</span>
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-sub); margin-top: 4px;" id="obs-active-ev-desc">
+                                    Processed event in matching engine.
+                                </div>
+                            </div>
+                            <button type="button" class="obs-ctrl-btn" onclick="openBookComparatorModal(currentScrubberIndex)">
+                                <span>🔍</span> View Side-by-Side Snapshot
+                            </button>
+                        </div>
+
+                        <!-- Microstructure Research Report -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 18px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <div style="font-size: 14px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                        <span>📊</span> Microstructure Research & Engine Benchmark Report
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="obs-report-subtitle">
+                                        Empirical statistics derived from deterministic matching engine execution.
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="obs-ctrl-btn" onclick="exportResearchReportCSV()">
+                                        <span>📊</span> Export Research Report CSV
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Summary Metrics Cards Grid -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 16px;">
+                                <div class="lab-metric-card">
+                                    <span class="lab-metric-title">Orders Submitted</span>
+                                    <div class="lab-metric-val mono" id="obs-rep-orders">--</div>
+                                    <span class="lab-metric-sub" id="obs-rep-submitted-qty">-- units total</span>
+                                </div>
+
+                                <div class="lab-metric-card" style="border-left: 4px solid var(--green);">
+                                    <span class="lab-metric-title">Fill Rate %</span>
+                                    <div class="lab-metric-val mono" style="color: var(--green);" id="obs-rep-fillrate">--%</div>
+                                    <span class="lab-metric-sub" id="obs-rep-exec-qty">-- shares filled</span>
+                                </div>
+
+                                <div class="lab-metric-card" style="border-left: 4px solid var(--red);">
+                                    <span class="lab-metric-title">Cancelled Quantity</span>
+                                    <div class="lab-metric-val mono" style="color: var(--red);" id="obs-rep-cancel-qty">--</div>
+                                    <span class="lab-metric-sub">Passive orders revoked</span>
+                                </div>
+
+                                <div class="lab-metric-card" style="border-left: 4px solid var(--yellow);">
+                                    <span class="lab-metric-title">Mean Execution Slippage</span>
+                                    <div class="lab-metric-val mono" style="color: var(--yellow);" id="obs-rep-slippage">-- bps</div>
+                                    <span class="lab-metric-sub">Mean bps vs. mid</span>
+                                </div>
+
+                                <div class="lab-metric-card" style="border-left: 4px solid var(--blue);">
+                                    <span class="lab-metric-title">Spread Distribution</span>
+                                    <div class="lab-metric-val mono" style="font-size: 15px;" id="obs-rep-spread-mean">--</div>
+                                    <span class="lab-metric-sub" id="obs-rep-spread-range">Min: -- | Max: --</span>
+                                </div>
+
+                                <div class="lab-metric-card" style="border-left: 4px solid var(--purple);">
+                                    <span class="lab-metric-title">Engine Throughput</span>
+                                    <div class="lab-metric-val mono" style="color: var(--purple);" id="obs-rep-throughput">-- ops/s</div>
+                                    <span class="lab-metric-sub" id="obs-rep-latency">Latency: -- μs</span>
+                                </div>
+                            </div>
+
+                            <!-- Explanations Guide -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 11px; color: var(--text-sub); line-height: 1.5;">
+                                <strong style="color: var(--text-main);">Microstructure Metric Methodology:</strong>
+                                Throughput and latency reflect actual high-resolution monotonic timer measurements during state transitions in the in-memory engine. Liquidity additions represent passive resting limits; liquidity consumption reflects aggressive crossing orders.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <!-- ==========================================================================
          ORDER CONFIRMATION MODAL
          ========================================================================== -->
+    <!-- ==========================================================================
+         ORDER-BOOK BEFORE VS. AFTER COMPARATOR MODAL
+         ========================================================================== -->
+    <div class="modal-overlay" id="obs-comparator-modal" style="display: none;">
+        <div class="modal-card" style="max-width: 850px; width: 95%;">
+            <div class="modal-card-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="modal-title">🔍 Order Book State Transition Comparator</span>
+                    <span class="badge-tag mono" style="background: var(--blue-soft); color: var(--blue);" id="obs-comp-modal-event-id">Event #1</span>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeBookComparatorModal()">✕</button>
+            </div>
+
+            <div class="modal-body" style="padding: 18px 20px;">
+                <!-- Event Narrative Banner -->
+                <div id="obs-comp-modal-banner" style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                    <div style="font-size: 12px; font-weight: 800; color: var(--text-main);" id="obs-comp-modal-desc">
+                        Limit order placed.
+                    </div>
+                    <div class="mono" style="font-size: 11px; color: var(--text-sub); margin-top: 4px;" id="obs-comp-modal-delta">
+                        Net Liquidity Delta: +0 units
+                    </div>
+                </div>
+
+                <!-- Side by Side Book Comparator -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <!-- Book BEFORE -->
+                    <div style="background: var(--bg-base); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+                        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between;">
+                            <span>BEFORE EVENT</span>
+                            <span class="mono" id="obs-comp-before-bbo">BBO: -- / --</span>
+                        </div>
+                        <table class="obs-ladder-table" style="font-size: 10px;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left;">Side</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="obs-comp-before-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Book AFTER -->
+                    <div style="background: var(--bg-base); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+                        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: var(--blue);">AFTER EVENT</span>
+                            <span class="mono" id="obs-comp-after-bbo">BBO: -- / --</span>
+                        </div>
+                        <table class="obs-ladder-table" style="font-size: 10px;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left;">Side</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="obs-comp-after-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
+                <button type="button" class="obs-ctrl-btn" onclick="closeBookComparatorModal()">Close Comparator</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="confirm-order-modal">
         <div class="modal-card">
             <div class="modal-card-header">
@@ -3325,6 +4220,8 @@
                 renderJournalView();
             } else if (viewName === 'lab') {
                 initRiskLabView();
+            } else if (viewName === 'observatory') {
+                initObservatoryView();
             }
         }
 
@@ -6325,6 +7222,1424 @@
         }
 
         // ==========================================================================
+        // 15B. ORDER-BOOK EVENT OBSERVATORY & MICROSTRUCTURE LAB CONTROLLER
+        // ==========================================================================
+        let currentObsSeed = 42;
+        let currentObsSymbol = 'BTCUSDT';
+        let currentObsEvents = [];
+        let currentObsTimeline = [];
+        let currentObsReport = null;
+        let currentObsFinalBook = null;
+        let currentScrubberIndex = 0;
+        let currentObsFilter = 'ALL';
+        let currentObsSideFilter = 'ALL';
+        let obsTimelineInterval = null;
+        let obsTimelinePlaying = false;
+        let obsTimelineSpeed = 1;
+        let currentImbalanceDepth = 5;
+        let currentImpactSide = 'BUY';
+        let obsInitCompleted = false;
+
+        function obsMulberry32(seed) {
+            let s = seed >>> 0;
+            return function() {
+                s = (s + 0x6D2B79F5) >>> 0;
+                let t = Math.imul(s ^ (s >>> 15), 1 | s);
+                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function runDeterministicExperimentClient(seed, sym, numEvents, arrivalRate, cancelRatePct) {
+            const t0 = performance.now();
+            const rng = obsMulberry32(seed);
+
+            const basePrices = {
+                'BTCUSDT': 60000.0,
+                'ETHUSDT': 3200.0,
+                'RELIANCE': 2850.0,
+                'TCS': 3850.0,
+                'AAPL': 185.0,
+            };
+            const baseP = basePrices[sym] || 100.0;
+            const spreadStep = sym === 'BTCUSDT' ? 5.0 : (sym === 'ETHUSDT' ? 0.5 : 0.25);
+
+            let bids = [];
+            let asks = [];
+            for (let i = 1; i <= 6; i++) {
+                bids.push({ price: Math.round((baseP - i * spreadStep) * 100) / 100, quantity: 10 + i * 5, order_id: 100 + i });
+                asks.push({ price: Math.round((baseP + i * spreadStep) * 100) / 100, quantity: 10 + i * 5, order_id: 200 + i });
+            }
+
+            function getBBO(b, a) {
+                const topBid = b.length > 0 ? b[0] : null;
+                const topAsk = a.length > 0 ? a[0] : null;
+                const best_bid = topBid ? topBid.price : null;
+                const best_bid_qty = topBid ? topBid.quantity : 0;
+                const best_ask = topAsk ? topAsk.price : null;
+                const best_ask_qty = topAsk ? topAsk.quantity : 0;
+                let spread = null;
+                let spread_bps = 0.0;
+                let mid_price = baseP;
+                if (best_bid !== null && best_ask !== null) {
+                    spread = Math.round((best_ask - best_bid) * 100) / 100;
+                    mid_price = Math.round(((best_bid + best_ask) / 2.0) * 100) / 100;
+                    spread_bps = mid_price > 0 ? Math.round((spread / mid_price) * 1000000) / 100 : 0.0;
+                } else if (best_bid !== null) {
+                    mid_price = best_bid;
+                } else if (best_ask !== null) {
+                    mid_price = best_ask;
+                }
+
+                const qB1 = best_bid_qty;
+                const qA1 = best_ask_qty;
+                const imb1 = (qB1 + qA1) > 0 ? Math.round(((qB1 - qA1) / (qB1 + qA1)) * 10000) / 10000 : 0.0;
+
+                const totB = b.reduce((acc, x) => acc + x.quantity, 0);
+                const totA = a.reduce((acc, x) => acc + x.quantity, 0);
+                const imbDepth = (totB + totA) > 0 ? Math.round(((totB - totA) / (totB + totA)) * 10000) / 10000 : 0.0;
+
+                return {
+                    best_bid, best_bid_qty,
+                    best_ask, best_ask_qty,
+                    spread, spread_bps, mid_price,
+                    imbalance_1: imb1,
+                    imbalance_depth: imbDepth,
+                    total_bid_depth: totB,
+                    total_ask_depth: totA,
+                    order_count: b.length + a.length,
+                };
+            }
+
+            function cloneDepth(b, a) {
+                return {
+                    bids: b.slice(0, 10).map(x => ({ price: x.price, quantity: x.quantity, order_id: x.order_id })),
+                    asks: a.slice(0, 10).map(x => ({ price: x.price, quantity: x.quantity, order_id: x.order_id }))
+                };
+            }
+
+            const events = [];
+            const timeline_series = [];
+            let submittedOrdersCount = 0;
+            let totalSubmittedQty = 0;
+            let totalExecutedQty = 0;
+            let totalCancelledQty = 0;
+            let liquidityAddedQty = 0;
+            let liquidityConsumedQty = 0;
+            const spreadHistory = [];
+            const depthHistory = [];
+            let orderIdSeq = 1000;
+
+            for (let evIdx = 1; evIdx <= numEvents; evIdx++) {
+                const bboBefore = getBBO(bids, asks);
+                const depthBefore = cloneDepth(bids, asks);
+                const isCancel = rng() < (cancelRatePct / 100.0) && (bids.length > 0 || asks.length > 0);
+
+                if (isCancel) {
+                    const cancelBids = rng() < 0.5 ? (bids.length > 0) : !(asks.length > 0);
+                    let pool = cancelBids ? bids : asks;
+                    if (pool.length === 0) pool = cancelBids ? asks : bids;
+                    const targetIdx = Math.floor(rng() * pool.length);
+                    const targetOrder = pool.splice(targetIdx, 1)[0];
+                    const cSide = cancelBids ? 'BUY' : 'SELL';
+                    totalCancelledQty += targetOrder.quantity;
+                    liquidityConsumedQty += targetOrder.quantity;
+
+                    const bboAfter = getBBO(bids, asks);
+                    const depthAfter = cloneDepth(bids, asks);
+                    const desc = `Cancelled resting ${cSide} Limit Order #${targetOrder.order_id}: ${targetOrder.quantity} units @ ${targetOrder.price.toFixed(2)}. Spread: ${bboAfter.spread || 'N/A'}.`;
+                    events.push({
+                        event_id: evIdx,
+                        timestamp_str: new Date(Date.now() - (numEvents - evIdx) * 1000).toTimeString().split(' ')[0],
+                        instrument: sym,
+                        event_type: 'CANCEL',
+                        side: cSide,
+                        price: targetOrder.price,
+                        quantity: targetOrder.quantity,
+                        liquidity_delta: -targetOrder.quantity,
+                        delta: {
+                            liquidity_change: -targetOrder.quantity,
+                            bid_levels_changed: bboAfter.best_bid !== bboBefore.best_bid || bboAfter.best_bid_qty !== bboBefore.best_bid_qty,
+                            ask_levels_changed: bboAfter.best_ask !== bboBefore.best_ask || bboAfter.best_ask_qty !== bboBefore.best_ask_qty,
+                            spread_change: Math.round(((bboAfter.spread || 0) - (bboBefore.spread || 0)) * 100) / 100,
+                        },
+                        order_id: targetOrder.order_id,
+                        matched_order_id: 0,
+                        resulting_change: desc,
+                        bbo_before: bboBefore,
+                        bbo_after: bboAfter,
+                        depth_before: depthBefore,
+                        depth_after: depthAfter,
+                    });
+                } else {
+                    const isBuy = rng() < 0.5;
+                    const side = isBuy ? 'BUY' : 'SELL';
+                    const qty = 5 + Math.floor(rng() * 25);
+                    submittedOrdersCount++;
+                    totalSubmittedQty += qty;
+
+                    const refP = isBuy ? (bboBefore.best_bid || baseP) : (bboBefore.best_ask || baseP);
+                    const isCrossing = rng() < 0.22;
+                    let p;
+                    if (isCrossing) {
+                        p = isBuy ? (bboBefore.best_ask || refP) : (bboBefore.best_bid || refP);
+                    } else {
+                        const shift = Math.floor(rng() * 3) * spreadStep;
+                        p = isBuy ? (refP - shift) : (refP + shift);
+                    }
+                    p = Math.round(p * 100) / 100;
+                    const curOrderId = ++orderIdSeq;
+
+                    if (isBuy && asks.length > 0 && p >= asks[0].price) {
+                        let leaves = qty;
+                        while (leaves > 0 && asks.length > 0 && p >= asks[0].price) {
+                            const topAsk = asks[0];
+                            const matchQty = Math.min(leaves, topAsk.quantity);
+                            leaves -= matchQty;
+                            topAsk.quantity -= matchQty;
+                            totalExecutedQty += matchQty;
+                            liquidityConsumedQty += matchQty;
+
+                            if (topAsk.quantity === 0) {
+                                asks.shift();
+                            }
+                        }
+                        const bboAfter = getBBO(bids, asks);
+                        const depthAfter = cloneDepth(bids, asks);
+                        const matchedTotal = qty - leaves;
+                        const isFull = leaves === 0;
+                        const evType = isFull ? 'TRADE_FULL' : 'TRADE_PARTIAL';
+                        const desc = `Execution BUY fill: ${matchedTotal} units @ ${p.toFixed(2)}. Remaining leaves: ${leaves}.`;
+                        events.push({
+                            event_id: evIdx,
+                            timestamp_str: new Date(Date.now() - (numEvents - evIdx) * 1000).toTimeString().split(' ')[0],
+                            instrument: sym,
+                            event_type: evType,
+                            side: 'BUY',
+                            price: p,
+                            quantity: matchedTotal,
+                            liquidity_delta: -matchedTotal,
+                            delta: {
+                                liquidity_change: -matchedTotal,
+                                bid_levels_changed: false,
+                                ask_levels_changed: true,
+                                spread_change: Math.round(((bboAfter.spread || 0) - (bboBefore.spread || 0)) * 100) / 100,
+                            },
+                            order_id: curOrderId,
+                            matched_order_id: 200,
+                            resulting_change: desc,
+                            bbo_before: bboBefore,
+                            bbo_after: bboAfter,
+                            depth_before: depthBefore,
+                            depth_after: depthAfter,
+                        });
+                        if (leaves > 0) {
+                            bids.push({ price: p, quantity: leaves, order_id: curOrderId });
+                            bids.sort((a, b) => b.price - a.price);
+                            liquidityAddedQty += leaves;
+                        }
+                    } else if (!isBuy && bids.length > 0 && p <= bids[0].price) {
+                        let leaves = qty;
+                        while (leaves > 0 && bids.length > 0 && p <= bids[0].price) {
+                            const topBid = bids[0];
+                            const matchQty = Math.min(leaves, topBid.quantity);
+                            leaves -= matchQty;
+                            topBid.quantity -= matchQty;
+                            totalExecutedQty += matchQty;
+                            liquidityConsumedQty += matchQty;
+
+                            if (topBid.quantity === 0) {
+                                bids.shift();
+                            }
+                        }
+                        const bboAfter = getBBO(bids, asks);
+                        const depthAfter = cloneDepth(bids, asks);
+                        const matchedTotal = qty - leaves;
+                        const isFull = leaves === 0;
+                        const evType = isFull ? 'TRADE_FULL' : 'TRADE_PARTIAL';
+                        const desc = `Execution SELL fill: ${matchedTotal} units @ ${p.toFixed(2)}. Remaining leaves: ${leaves}.`;
+                        events.push({
+                            event_id: evIdx,
+                            timestamp_str: new Date(Date.now() - (numEvents - evIdx) * 1000).toTimeString().split(' ')[0],
+                            instrument: sym,
+                            event_type: evType,
+                            side: 'SELL',
+                            price: p,
+                            quantity: matchedTotal,
+                            liquidity_delta: -matchedTotal,
+                            delta: {
+                                liquidity_change: -matchedTotal,
+                                bid_levels_changed: true,
+                                ask_levels_changed: false,
+                                spread_change: Math.round(((bboAfter.spread || 0) - (bboBefore.spread || 0)) * 100) / 100,
+                            },
+                            order_id: curOrderId,
+                            matched_order_id: 100,
+                            resulting_change: desc,
+                            bbo_before: bboBefore,
+                            bbo_after: bboAfter,
+                            depth_before: depthBefore,
+                            depth_after: depthAfter,
+                        });
+                        if (leaves > 0) {
+                            asks.push({ price: p, quantity: leaves, order_id: curOrderId });
+                            asks.sort((a, b) => a.price - b.price);
+                            liquidityAddedQty += leaves;
+                        }
+                    } else {
+                        if (isBuy) {
+                            bids.push({ price: p, quantity: qty, order_id: curOrderId });
+                            bids.sort((a, b) => b.price - a.price);
+                        } else {
+                            asks.push({ price: p, quantity: qty, order_id: curOrderId });
+                            asks.sort((a, b) => a.price - b.price);
+                        }
+                        liquidityAddedQty += qty;
+                        const bboAfter = getBBO(bids, asks);
+                        const depthAfter = cloneDepth(bids, asks);
+                        const desc = `New Limit ${side} rested on book: ${qty} units @ ${p.toFixed(2)}. BBO: ${bboAfter.best_bid || 'None'} / ${bboAfter.best_ask || 'None'} (Spread: ${bboAfter.spread || 'N/A'}).`;
+                        events.push({
+                            event_id: evIdx,
+                            timestamp_str: new Date(Date.now() - (numEvents - evIdx) * 1000).toTimeString().split(' ')[0],
+                            instrument: sym,
+                            event_type: 'NEW_LIMIT',
+                            side: side,
+                            price: p,
+                            quantity: qty,
+                            liquidity_delta: qty,
+                            delta: {
+                                liquidity_change: qty,
+                                bid_levels_changed: isBuy,
+                                ask_levels_changed: !isBuy,
+                                spread_change: Math.round(((bboAfter.spread || 0) - (bboBefore.spread || 0)) * 100) / 100,
+                            },
+                            order_id: curOrderId,
+                            matched_order_id: 0,
+                            resulting_change: desc,
+                            bbo_before: bboBefore,
+                            bbo_after: bboAfter,
+                            depth_before: depthBefore,
+                            depth_after: depthAfter,
+                        });
+                    }
+                }
+
+                const latestEv = events[events.length - 1];
+                const bNow = latestEv.bbo_after;
+                const sp = bNow.spread !== null ? bNow.spread : spreadStep;
+                spreadHistory.push(sp);
+                const curTotDepth = bNow.total_bid_depth + bNow.total_ask_depth;
+                depthHistory.push(curTotDepth);
+
+                timeline_series.push({
+                    event_id: latestEv.event_id,
+                    mid_price: bNow.mid_price,
+                    spread: sp,
+                    spread_bps: bNow.spread_bps,
+                    imbalance_1: bNow.imbalance_1,
+                    imbalance_5: bNow.imbalance_depth,
+                    total_bid_depth: bNow.total_bid_depth,
+                    total_ask_depth: bNow.total_ask_depth,
+                });
+            }
+
+            const elapsedMs = Math.max(0.6, performance.now() - t0);
+            const throughputOps = Math.round(numEvents / (elapsedMs / 1000.0));
+            const latencyUs = Math.round((elapsedMs / numEvents) * 1000 * 100) / 100;
+            const fillRatePct = totalSubmittedQty > 0 ? Math.round((totalExecutedQty / totalSubmittedQty) * 10000) / 100 : 0.0;
+
+            const sortedSpreads = [...spreadHistory].sort((a, b) => a - b);
+            const minSpread = sortedSpreads[0] || 0.0;
+            const maxSpread = sortedSpreads[sortedSpreads.length - 1] || 0.0;
+            const meanSpread = sortedSpreads.length > 0 ? Math.round((sortedSpreads.reduce((a, b) => a + b, 0) / sortedSpreads.length) * 100) / 100 : 0.0;
+
+            const tradeEvents = events.filter(e => e.event_type.includes('TRADE'));
+            let slippageSum = 0;
+            tradeEvents.forEach(t => {
+                const mid = t.bbo_before.mid_price;
+                if (mid > 0) {
+                    slippageSum += (Math.abs(t.price - mid) / mid) * 10000;
+                }
+            });
+            const avgSlippageBps = tradeEvents.length > 0 ? Math.round((slippageSum / tradeEvents.length) * 100) / 100 : 0.0;
+
+            const researchReport = {
+                seed: seed,
+                instrument: sym,
+                total_events_processed: events.length,
+                total_orders_submitted: submittedOrdersCount,
+                total_submitted_quantity: totalSubmittedQty,
+                total_executed_quantity: totalExecutedQty,
+                total_cancelled_quantity: totalCancelledQty,
+                fill_rate_pct: fillRatePct,
+                average_execution_slippage_bps: avgSlippageBps,
+                spread_distribution: {
+                    min_spread: minSpread,
+                    max_spread: maxSpread,
+                    mean_spread: meanSpread,
+                    median_spread: sortedSpreads[Math.floor(sortedSpreads.length / 2)] || 0.0,
+                },
+                liquidity: {
+                    total_liquidity_added: liquidityAddedQty,
+                    total_liquidity_consumed: liquidityConsumedQty,
+                    net_liquidity_change: liquidityAddedQty - liquidityConsumedQty,
+                    average_displayed_depth: depthHistory.length > 0 ? Math.round(depthHistory.reduce((a, b) => a + b, 0) / depthHistory.length) : 0,
+                    max_displayed_depth: depthHistory.length > 0 ? Math.max(...depthHistory) : 0,
+                },
+                measured_benchmark: {
+                    elapsed_ms: Math.round(elapsedMs * 100) / 100,
+                    throughput_events_per_sec: throughputOps,
+                    mean_latency_microseconds: latencyUs,
+                    benchmark_methodology: 'High-resolution monotonic timer measuring in-memory order-book processing and state transitions.',
+                },
+            };
+
+            return {
+                status: 'success',
+                parameters: { seed, instrument: sym, num_events: numEvents, arrival_rate: arrivalRate, cancel_rate_pct: cancelRatePct },
+                events,
+                timeline_series,
+                research_report: researchReport,
+                final_book: {
+                    bbo: getBBO(bids, asks),
+                    depth: cloneDepth(bids, asks),
+                },
+                data_notice: 'SYNTHETIC EXPERIMENT DATA — GENERATED BY DETERMINISTIC MATCHING ENGINE SIMULATION — NOT REAL-TIME MARKET ORDERS',
+            };
+        }
+
+        function simulatePriceImpactClient(depthData, side, quantity) {
+            const isBuy = side.toUpperCase() === 'BUY';
+            const targetLevels = (isBuy ? depthData.asks : depthData.bids) || [];
+
+            if (!targetLevels || targetLevels.length === 0) {
+                return {
+                    side: side.toUpperCase(),
+                    requested_quantity: quantity,
+                    filled_quantity: 0,
+                    unfilled_quantity: quantity,
+                    expected_price: 0.0,
+                    vwap: 0.0,
+                    mid_price: 0.0,
+                    slippage_pct: 0.0,
+                    slippage_bps: 0.0,
+                    levels_consumed: 0,
+                    remaining_liquidity: 0,
+                    remaining_book_liquidity: 0,
+                    ladder_fills: [],
+                    status: 'INSUFFICIENT_LIQUIDITY',
+                };
+            }
+
+            const topBid = (depthData.bids && depthData.bids[0]) ? depthData.bids[0].price : 0;
+            const topAsk = (depthData.asks && depthData.asks[0]) ? depthData.asks[0].price : 0;
+            const midPrice = (topBid > 0 && topAsk > 0) ? Math.round(((topBid + topAsk) / 2.0) * 10000) / 10000 : targetLevels[0].price;
+            const expectedPrice = targetLevels[0].price;
+
+            let remQty = quantity;
+            let totalCost = 0.0;
+            let filledQty = 0;
+            let levelsConsumed = 0;
+            const ladderFills = [];
+
+            for (const lvl of targetLevels) {
+                if (remQty <= 0) break;
+                const fillQty = Math.min(remQty, lvl.quantity);
+                const cost = fillQty * lvl.price;
+                totalCost += cost;
+                filledQty += fillQty;
+                remQty -= fillQty;
+                levelsConsumed++;
+
+                ladderFills.push({
+                    level: levelsConsumed,
+                    price: lvl.price,
+                    filled_quantity: fillQty,
+                    level_initial_quantity: lvl.quantity,
+                    level_remaining_quantity: lvl.quantity - fillQty,
+                    cumulative_cost: Math.round(totalCost * 100) / 100,
+                });
+            }
+
+            const vwap = filledQty > 0 ? Math.round((totalCost / filledQty) * 10000) / 10000 : 0.0;
+            const slippagePct = midPrice > 0 ? Math.round((Math.abs(vwap - midPrice) / midPrice) * 1000000) / 10000 : 0.0;
+            const slippageBps = Math.round(slippagePct * 100 * 100) / 100;
+
+            const totalAvailable = targetLevels.reduce((a, b) => a + b.quantity, 0);
+            const remLiquidity = Math.max(0, totalAvailable - filledQty);
+
+            return {
+                side: side.toUpperCase(),
+                requested_quantity: quantity,
+                filled_quantity: filledQty,
+                unfilled_quantity: remQty,
+                expected_price: expectedPrice,
+                vwap: vwap,
+                mid_price: midPrice,
+                slippage_pct: slippagePct,
+                slippage_bps: slippageBps,
+                levels_consumed: levelsConsumed,
+                remaining_liquidity: remLiquidity,
+                remaining_book_liquidity: remLiquidity,
+                ladder_fills: ladderFills,
+                status: remQty === 0 ? 'FILLED' : 'PARTIAL_FILL',
+            };
+        }
+
+        function initObservatoryView() {
+            if (!obsInitCompleted) {
+                obsInitCompleted = true;
+                triggerObservatoryExperimentRun();
+            } else {
+                renderObservatoryCharts();
+            }
+        }
+
+        function switchObsSubTab(tabName) {
+            document.querySelectorAll('.obs-subnav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.obs-sub-panel').forEach(p => p.classList.remove('active'));
+
+            const btn = document.getElementById(`obs-tab-${tabName}`);
+            const panel = document.getElementById(`obs-subpanel-${tabName}`);
+            if (btn) btn.classList.add('active');
+            if (panel) panel.classList.add('active');
+
+            setTimeout(() => {
+                renderObservatoryCharts();
+                if (tabName === 'impact') {
+                    runPriceImpactCalculation();
+                } else if (tabName === 'imbalance') {
+                    renderImbalanceExplorer();
+                }
+            }, 60);
+        }
+
+        async function triggerObservatoryExperimentRun() {
+            const seed = parseInt(document.getElementById('obs-param-seed')?.value) || 42;
+            const sym = document.getElementById('obs-param-sym')?.value || 'BTCUSDT';
+            const numEvents = parseInt(document.getElementById('obs-param-events')?.value) || 50;
+            const cancelRate = parseFloat(document.getElementById('obs-param-cancel')?.value) || 20.0;
+
+            currentObsSeed = seed;
+            currentObsSymbol = sym;
+
+            let result = null;
+            try {
+                const resp = await fetch('/api/observatory/run-experiment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        seed: seed,
+                        symbol: sym,
+                        num_events: numEvents,
+                        arrival_rate: 1.0,
+                        price_spread_pct: 0.05,
+                        cancel_rate_pct: cancelRate,
+                    }),
+                });
+                if (resp.ok) {
+                    result = await resp.json();
+                }
+            } catch (e) {
+                // Backend unavailable (offline GitHub pages)
+            }
+
+            if (!result || !result.events) {
+                result = runDeterministicExperimentClient(seed, sym, numEvents, 1.0, cancelRate);
+            }
+
+            currentObsEvents = result.events || [];
+            currentObsTimeline = result.timeline_series || [];
+            currentObsReport = result.research_report || null;
+            currentObsFinalBook = result.final_book || null;
+            currentScrubberIndex = Math.max(0, currentObsEvents.length - 1);
+
+            const scrubber = document.getElementById('obs-timeline-scrubber');
+            if (scrubber) {
+                scrubber.max = Math.max(0, currentObsEvents.length - 1);
+                scrubber.value = currentScrubberIndex;
+            }
+
+            renderObservatoryEventFeed();
+            renderObservatoryLadder();
+            renderResearchReport();
+            renderImbalanceExplorer();
+            runPriceImpactCalculation();
+            renderObservatoryCharts();
+            updateScrubberUI();
+        }
+
+        function randomizeObsSeed() {
+            const newSeed = Math.floor(Math.random() * 9000) + 1000;
+            const input = document.getElementById('obs-param-seed');
+            if (input) input.value = newSeed;
+            triggerObservatoryExperimentRun();
+        }
+
+        function setObsEventFilter(filterType) {
+            currentObsFilter = filterType;
+            ['all', 'new', 'trade', 'cancel'].forEach(f => {
+                const b = document.getElementById(`obs-filter-${f}`);
+                if (b) b.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`obs-filter-${filterType === 'ALL' ? 'all' : (filterType === 'NEW_LIMIT' ? 'new' : (filterType === 'TRADE' ? 'trade' : 'cancel'))}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            renderObservatoryEventFeed();
+        }
+
+        function setObsSideFilter(side) {
+            currentObsSideFilter = side;
+            ['all', 'buy', 'sell'].forEach(s => {
+                const b = document.getElementById(`obs-filter-side-${s}`);
+                if (b) b.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`obs-filter-side-${side.toLowerCase()}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            renderObservatoryEventFeed();
+        }
+
+        function renderObservatoryEventFeed() {
+            const tbody = document.getElementById('obs-events-table-body');
+            if (!tbody) return;
+
+            const filtered = currentObsEvents.filter(ev => {
+                if (currentObsFilter === 'NEW_LIMIT' && ev.event_type !== 'NEW_LIMIT') return false;
+                if (currentObsFilter === 'TRADE' && !ev.event_type.includes('TRADE')) return false;
+                if (currentObsFilter === 'CANCEL' && ev.event_type !== 'CANCEL') return false;
+                if (currentObsSideFilter !== 'ALL' && ev.side !== currentObsSideFilter) return false;
+                return true;
+            });
+
+            const countBadge = document.getElementById('obs-filter-count-badge');
+            if (countBadge) {
+                countBadge.innerText = `Showing ${filtered.length} of ${currentObsEvents.length} events`;
+            }
+
+            let html = '';
+            filtered.forEach(ev => {
+                const isSelected = (ev.event_id - 1) === currentScrubberIndex;
+                let badgeClass = 'obs-badge-new';
+                if (ev.event_type === 'TRADE_FULL') badgeClass = 'obs-badge-trade-full';
+                else if (ev.event_type === 'TRADE_PARTIAL') badgeClass = 'obs-badge-trade-partial';
+                else if (ev.event_type === 'CANCEL') badgeClass = 'obs-badge-cancel';
+
+                const deltaColor = ev.liquidity_delta > 0 ? 'var(--blue)' : (ev.liquidity_delta < 0 ? 'var(--red)' : 'var(--text-sub)');
+                const deltaSign = ev.liquidity_delta > 0 ? '+' : '';
+
+                const bboA = ev.bbo_after;
+                const bboStr = (bboA.best_bid !== null && bboA.best_ask !== null) ? `${bboA.best_bid.toFixed(2)} / ${bboA.best_ask.toFixed(2)}` : '--';
+
+                html += `
+                    <tr class="obs-event-row ${isSelected ? 'selected' : ''}" onclick="onTimelineScrub(${ev.event_id - 1})">
+                        <td>${ev.event_id}</td>
+                        <td style="color: var(--text-muted);">${ev.timestamp_str}</td>
+                        <td><span class="obs-event-badge ${badgeClass}">${ev.event_type}</span></td>
+                        <td style="color: ${ev.side === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight: 700;">${ev.side}</td>
+                        <td style="text-align: right; font-weight: 700;">${ev.price.toFixed(2)}</td>
+                        <td style="text-align: right;">${ev.quantity}</td>
+                        <td style="text-align: right; color: ${deltaColor}; font-weight: 700;">${deltaSign}${ev.liquidity_delta}</td>
+                        <td style="text-align: right; color: var(--text-muted);">${bboStr}</td>
+                        <td style="color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px;" title="${ev.resulting_change}">${ev.resulting_change}</td>
+                        <td style="text-align: center;">
+                            <button type="button" class="obs-ctrl-btn" style="padding: 2px 8px; font-size: 10px;" onclick="event.stopPropagation(); openBookComparatorModal(${ev.event_id - 1});">
+                                Compare
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if (filtered.length === 0) {
+                html = '<tr><td colspan="10" style="text-align: center; padding: 24px; color: var(--text-muted);">No events matching filter criteria.</td></tr>';
+            }
+
+            tbody.innerHTML = html;
+        }
+
+        function renderObservatoryLadder() {
+            if (!currentObsEvents || currentObsEvents.length === 0) return;
+            const ev = currentObsEvents[currentScrubberIndex] || currentObsEvents[currentObsEvents.length - 1];
+            if (!ev) return;
+
+            const bbo = ev.bbo_after;
+            const depth = ev.depth_after;
+
+            const sSym = document.getElementById('obs-stream-sym');
+            if (sSym) sSym.innerText = currentObsSymbol;
+            const sBb = document.getElementById('obs-stream-bb');
+            if (sBb) sBb.innerText = bbo.best_bid ? bbo.best_bid.toFixed(2) : '--';
+            const sBa = document.getElementById('obs-stream-ba');
+            if (sBa) sBa.innerText = bbo.best_ask ? bbo.best_ask.toFixed(2) : '--';
+            const sMid = document.getElementById('obs-stream-mid');
+            if (sMid) sMid.innerText = bbo.mid_price ? bbo.mid_price.toFixed(2) : '--';
+            const sSp = document.getElementById('obs-stream-spread');
+            if (sSp) sSp.innerText = bbo.spread !== null ? `${bbo.spread.toFixed(2)} (${bbo.spread_bps} bps)` : '--';
+
+            const lIdx = document.getElementById('obs-ladder-event-idx');
+            if (lIdx) lIdx.innerText = `Snapshot at Event #${ev.event_id} (${ev.event_type})`;
+            const lMid = document.getElementById('obs-ladder-mid-val');
+            if (lMid) lMid.innerText = bbo.mid_price ? `Mid: ${bbo.mid_price.toFixed(2)}` : '--';
+            const lSp = document.getElementById('obs-ladder-spread-val');
+            if (lSp) lSp.innerText = bbo.spread !== null ? `Spread: ${bbo.spread.toFixed(2)} (${bbo.spread_bps} bps)` : '';
+
+            const asksList = (depth.asks || []).slice(0, 5);
+            const asksReversed = [...asksList].reverse();
+            const maxAskQty = Math.max(1, ...asksList.map(x => x.quantity));
+
+            const asksTbody = document.getElementById('obs-ladder-asks-body');
+            if (asksTbody) {
+                let aHtml = '';
+                let cumAsk = 0;
+                asksReversed.forEach(a => {
+                    cumAsk += a.quantity;
+                    const barW = Math.min(100, Math.round((a.quantity / maxAskQty) * 100));
+                    aHtml += `
+                        <tr>
+                            <td style="text-align: left; color: var(--red); font-weight: 700;">
+                                <div class="obs-ladder-bar-ask" style="width: ${barW}%;"></div>
+                                <span class="obs-ladder-cell-content">ASK</span>
+                            </td>
+                            <td style="color: var(--red); font-weight: 700;">
+                                <span class="obs-ladder-cell-content">${a.price.toFixed(2)}</span>
+                            </td>
+                            <td><span class="obs-ladder-cell-content">${a.quantity}</span></td>
+                            <td style="color: var(--text-muted);"><span class="obs-ladder-cell-content">${cumAsk}</span></td>
+                        </tr>
+                    `;
+                });
+                if (asksReversed.length === 0) {
+                    aHtml = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 8px;">No Asks in Book</td></tr>';
+                }
+                asksTbody.innerHTML = aHtml;
+            }
+
+            const bidsList = (depth.bids || []).slice(0, 5);
+            const maxBidQty = Math.max(1, ...bidsList.map(x => x.quantity));
+            const bidsTbody = document.getElementById('obs-ladder-bids-body');
+            if (bidsTbody) {
+                let bHtml = '';
+                let cumBid = 0;
+                bidsList.forEach(b => {
+                    cumBid += b.quantity;
+                    const barW = Math.min(100, Math.round((b.quantity / maxBidQty) * 100));
+                    bHtml += `
+                        <tr>
+                            <td style="text-align: left; color: var(--green); font-weight: 700;">
+                                <div class="obs-ladder-bar-bid" style="width: ${barW}%;"></div>
+                                <span class="obs-ladder-cell-content">BID</span>
+                            </td>
+                            <td style="color: var(--green); font-weight: 700;">
+                                <span class="obs-ladder-cell-content">${b.price.toFixed(2)}</span>
+                            </td>
+                            <td><span class="obs-ladder-cell-content">${b.quantity}</span></td>
+                            <td style="color: var(--text-muted);"><span class="obs-ladder-cell-content">${cumBid}</span></td>
+                        </tr>
+                    `;
+                });
+                if (bidsList.length === 0) {
+                    bHtml = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 8px;">No Bids in Book</td></tr>';
+                }
+                bidsTbody.innerHTML = bHtml;
+            }
+
+            const totBids = (depth.bids || []).reduce((a, b) => a + b.quantity, 0);
+            const top3Bids = (depth.bids || []).slice(0, 3).reduce((a, b) => a + b.quantity, 0);
+            const concBids = totBids > 0 ? Math.round((top3Bids / totBids) * 100) : 0;
+            const cBidElem = document.getElementById('obs-conc-bids');
+            if (cBidElem) cBidElem.innerText = `${concBids}% (${top3Bids}/${totBids})`;
+
+            const totAsks = (depth.asks || []).reduce((a, b) => a + b.quantity, 0);
+            const top3Asks = (depth.asks || []).slice(0, 3).reduce((a, b) => a + b.quantity, 0);
+            const concAsks = totAsks > 0 ? Math.round((top3Asks / totAsks) * 100) : 0;
+            const cAskElem = document.getElementById('obs-conc-asks');
+            if (cAskElem) cAskElem.innerText = `${concAsks}% (${top3Asks}/${totAsks})`;
+        }
+
+        function setImpactSide(side) {
+            currentImpactSide = side;
+            const buyBtn = document.getElementById('obs-impact-side-buy');
+            const sellBtn = document.getElementById('obs-impact-side-sell');
+            if (side === 'BUY') {
+                buyBtn.classList.add('active');
+                sellBtn.classList.remove('active');
+            } else {
+                sellBtn.classList.add('active');
+                buyBtn.classList.remove('active');
+            }
+            runPriceImpactCalculation();
+        }
+
+        function onImpactSliderChange(val) {
+            const lbl = document.getElementById('obs-impact-qty-label');
+            if (lbl) lbl.innerText = `${val} units`;
+            runPriceImpactCalculation();
+        }
+
+        function applyImpactPreset(qty) {
+            const slider = document.getElementById('obs-impact-slider');
+            if (slider) slider.value = qty;
+            const lbl = document.getElementById('obs-impact-qty-label');
+            if (lbl) lbl.innerText = `${qty} units`;
+            runPriceImpactCalculation();
+        }
+
+        async function runPriceImpactCalculation() {
+            if (!currentObsEvents || currentObsEvents.length === 0) return;
+            const ev = currentObsEvents[currentScrubberIndex] || currentObsEvents[currentObsEvents.length - 1];
+            if (!ev || !ev.depth_after) return;
+
+            const slider = document.getElementById('obs-impact-slider');
+            const qty = parseInt(slider?.value) || 50;
+
+            let impact = null;
+            try {
+                const resp = await fetch('/api/observatory/price-impact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        depth_data: ev.depth_after,
+                        side: currentImpactSide,
+                        quantity: qty,
+                    }),
+                });
+                if (resp.ok) {
+                    impact = await resp.json();
+                }
+            } catch (e) {
+                // Fallback
+            }
+
+            if (!impact) {
+                impact = simulatePriceImpactClient(ev.depth_after, currentImpactSide, qty);
+            }
+
+            const expP = document.getElementById('obs-impact-exp-price');
+            if (expP) expP.innerText = impact.expected_price ? impact.expected_price.toFixed(2) : '--';
+            const vwapElem = document.getElementById('obs-impact-vwap');
+            if (vwapElem) vwapElem.innerText = impact.vwap ? impact.vwap.toFixed(2) : '--';
+            const slipElem = document.getElementById('obs-impact-slippage');
+            if (slipElem) slipElem.innerText = `${impact.slippage_bps.toFixed(1)} bps`;
+            const slipPct = document.getElementById('obs-impact-slip-pct');
+            if (slipPct) slipPct.innerText = `${impact.slippage_pct.toFixed(2)}% vs Mid`;
+            const lvlsElem = document.getElementById('obs-impact-levels');
+            if (lvlsElem) lvlsElem.innerText = `${impact.levels_consumed} level${impact.levels_consumed === 1 ? '' : 's'}`;
+            const remElem = document.getElementById('obs-impact-rem-liq');
+            if (remElem) remElem.innerText = `Remaining Book Liquidity: ${impact.remaining_liquidity} units (${impact.status})`;
+
+            const tbody = document.getElementById('obs-impact-ladder-body');
+            if (tbody) {
+                let html = '';
+                (impact.ladder_fills || []).forEach(f => {
+                    html += `
+                        <tr>
+                            <td>Level ${f.level}</td>
+                            <td style="font-weight: 700;">${f.price.toFixed(2)}</td>
+                            <td style="text-align: right; color: var(--blue); font-weight: 700;">${f.filled_quantity}</td>
+                            <td style="text-align: right; color: var(--text-muted);">${f.level_initial_quantity}</td>
+                            <td style="text-align: right;">${f.level_remaining_quantity}</td>
+                            <td style="text-align: right; font-weight: 700;">₹${f.cumulative_cost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                    `;
+                });
+                if ((impact.ladder_fills || []).length === 0) {
+                    html = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 8px;">No levels swept</td></tr>';
+                }
+                tbody.innerHTML = html;
+            }
+
+            const compTbody = document.getElementById('obs-impact-comp-body');
+            if (compTbody) {
+                const tiers = [
+                    { name: 'Retail', size: 10 },
+                    { name: 'Medium', size: 50 },
+                    { name: 'Institutional', size: 150 },
+                    { name: 'Whale / Block', size: 350 },
+                ];
+                let compHtml = '';
+                tiers.forEach(t => {
+                    const sim = simulatePriceImpactClient(ev.depth_after, currentImpactSide, t.size);
+                    const qual = sim.slippage_bps < 15 ? '<span style="color: var(--green);">Optimal</span>' : (sim.slippage_bps < 40 ? '<span style="color: var(--yellow);">Moderate</span>' : '<span style="color: var(--red);">Severe Drag</span>');
+                    compHtml += `
+                        <tr>
+                            <td><strong>${t.name}</strong></td>
+                            <td>${t.size} units</td>
+                            <td style="text-align: right; font-weight: 700;">${sim.vwap.toFixed(2)}</td>
+                            <td style="text-align: right; font-weight: 700; color: ${sim.slippage_bps > 25 ? 'var(--red)' : 'var(--yellow)'};">${sim.slippage_bps.toFixed(1)} bps</td>
+                            <td style="text-align: right;">${sim.levels_consumed}</td>
+                            <td>${qual}</td>
+                        </tr>
+                    `;
+                });
+                compTbody.innerHTML = compHtml;
+            }
+        }
+
+        function setImbalanceDepth(k) {
+            currentImbalanceDepth = k;
+            [1, 3, 5, 10].forEach(d => {
+                const b = document.getElementById(`obs-imb-k-${d}`);
+                if (b) b.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`obs-imb-k-${k}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const badge = document.getElementById('obs-imb-chart-depth-badge');
+            if (badge) badge.innerText = `Depth: K=${k}`;
+
+            renderImbalanceExplorer();
+            drawObsImbalanceChart();
+        }
+
+        function renderImbalanceExplorer() {
+            if (!currentObsEvents || currentObsEvents.length === 0) return;
+            const ev = currentObsEvents[currentScrubberIndex] || currentObsEvents[currentObsEvents.length - 1];
+            if (!ev || !ev.depth_after) return;
+
+            const bids = (ev.depth_after.bids || []).slice(0, currentImbalanceDepth);
+            const asks = (ev.depth_after.asks || []).slice(0, currentImbalanceDepth);
+
+            const sumB = bids.reduce((a, b) => a + b.quantity, 0);
+            const sumA = asks.reduce((a, b) => a + b.quantity, 0);
+            const tot = sumB + sumA;
+            const imb = tot > 0 ? (sumB - sumA) / tot : 0.0;
+
+            const valText = document.getElementById('obs-imb-val-text');
+            if (valText) {
+                const sign = imb > 0 ? '+' : '';
+                valText.innerText = `${sign}${imb.toFixed(3)}`;
+                valText.style.color = imb > 0.1 ? 'var(--green)' : (imb < -0.1 ? 'var(--red)' : 'var(--text-main)');
+            }
+
+            const bidFill = document.getElementById('obs-imb-meter-bid');
+            const askFill = document.getElementById('obs-imb-meter-ask');
+            if (bidFill && askFill) {
+                const bidPct = tot > 0 ? Math.round((sumB / tot) * 100) : 50;
+                bidFill.style.width = `${bidPct}%`;
+                askFill.style.width = `${100 - bidPct}%`;
+            }
+
+            const bSumElem = document.getElementById('obs-imb-bids-sum');
+            if (bSumElem) bSumElem.innerText = `Bids: ${sumB} units`;
+            const aSumElem = document.getElementById('obs-imb-asks-sum');
+            if (aSumElem) aSumElem.innerText = `Asks: ${sumA} units`;
+
+            const banner = document.getElementById('obs-imb-status-banner');
+            const title = document.getElementById('obs-imb-bias-title');
+            const desc = document.getElementById('obs-imb-bias-desc');
+            if (banner && title && desc) {
+                if (imb > 0.2) {
+                    banner.style.background = 'rgba(16, 185, 129, 0.12)';
+                    banner.style.borderColor = 'var(--green)';
+                    title.innerText = 'BULLISH DEPTH IMBALANCE (BUY SKEW)';
+                    title.style.color = 'var(--green)';
+                    desc.innerText = `Bids heavily outweigh asks by ${(imb * 100).toFixed(1)}%. Upward order-book pressure present, but beware of phantom liquidity cancellations.`;
+                } else if (imb < -0.2) {
+                    banner.style.background = 'rgba(244, 63, 94, 0.12)';
+                    banner.style.borderColor = 'var(--red)';
+                    title.innerText = 'BEARISH DEPTH IMBALANCE (SELL SKEW)';
+                    title.style.color = 'var(--red)';
+                    desc.innerText = `Asks heavily outweigh bids by ${(-imb * 100).toFixed(1)}%. Downward order-book pressure present. Observe whether bids absorb or collapse.`;
+                } else {
+                    banner.style.background = 'rgba(59, 130, 246, 0.08)';
+                    banner.style.borderColor = 'var(--border)';
+                    title.innerText = 'BALANCED ORDER BOOK';
+                    title.style.color = 'var(--text-main)';
+                    desc.innerText = 'Bids and asks at depth K are near equilibrium with balanced liquidity supply.';
+                }
+            }
+        }
+
+        function updateScrubberUI() {
+            const counter = document.getElementById('obs-scrubber-counter');
+            if (counter) {
+                counter.innerText = `${currentScrubberIndex + 1} / ${currentObsEvents.length}`;
+            }
+            const scrubber = document.getElementById('obs-timeline-scrubber');
+            if (scrubber) scrubber.value = currentScrubberIndex;
+
+            if (currentObsEvents.length > 0 && currentObsEvents[currentScrubberIndex]) {
+                const ev = currentObsEvents[currentScrubberIndex];
+                const badge = document.getElementById('obs-active-ev-badge');
+                if (badge) {
+                    badge.innerText = ev.event_type;
+                    badge.className = `obs-event-badge ${ev.event_type === 'NEW_LIMIT' ? 'obs-badge-new' : (ev.event_type === 'CANCEL' ? 'obs-badge-cancel' : (ev.event_type === 'TRADE_FULL' ? 'obs-badge-trade-full' : 'obs-badge-trade-partial'))}`;
+                }
+                const title = document.getElementById('obs-active-ev-title');
+                if (title) title.innerText = `Event #${ev.event_id} — ${ev.side} ${ev.quantity} @ ${ev.price.toFixed(2)}`;
+                const desc = document.getElementById('obs-active-ev-desc');
+                if (desc) desc.innerText = ev.resulting_change;
+            }
+
+            renderObservatoryEventFeed();
+            renderObservatoryLadder();
+            renderImbalanceExplorer();
+            renderObservatoryCharts();
+        }
+
+        function onTimelineScrub(idx) {
+            currentScrubberIndex = Math.max(0, Math.min(currentObsEvents.length - 1, idx));
+            updateScrubberUI();
+        }
+
+        function timelineStep(delta) {
+            if (currentObsEvents.length === 0) return;
+            currentScrubberIndex = Math.max(0, Math.min(currentObsEvents.length - 1, currentScrubberIndex + delta));
+            updateScrubberUI();
+        }
+
+        function timelineReset() {
+            timelinePause();
+            currentScrubberIndex = 0;
+            updateScrubberUI();
+        }
+
+        function toggleTimelinePlay() {
+            if (obsTimelinePlaying) {
+                timelinePause();
+            } else {
+                timelinePlay();
+            }
+        }
+
+        function timelinePlay() {
+            if (currentObsEvents.length === 0) return;
+            obsTimelinePlaying = true;
+            const btn = document.getElementById('obs-btn-play');
+            const icon = document.getElementById('obs-play-icon');
+            if (btn) btn.classList.add('active');
+            if (icon) icon.innerText = '⏸';
+
+            if (currentScrubberIndex >= currentObsEvents.length - 1) {
+                currentScrubberIndex = 0;
+            }
+
+            clearInterval(obsTimelineInterval);
+            const intervalMs = Math.max(80, Math.round(500 / obsTimelineSpeed));
+            obsTimelineInterval = setInterval(() => {
+                if (currentScrubberIndex < currentObsEvents.length - 1) {
+                    currentScrubberIndex++;
+                    updateScrubberUI();
+                } else {
+                    timelinePause();
+                }
+            }, intervalMs);
+        }
+
+        function timelinePause() {
+            obsTimelinePlaying = false;
+            clearInterval(obsTimelineInterval);
+            const btn = document.getElementById('obs-btn-play');
+            const icon = document.getElementById('obs-play-icon');
+            if (btn) btn.classList.remove('active');
+            if (icon) icon.innerText = '▶';
+        }
+
+        function setTimelineSpeed(spd) {
+            obsTimelineSpeed = spd;
+            [1, 2, 5].forEach(s => {
+                const b = document.getElementById(`obs-spd-${s}`);
+                if (b) b.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`obs-spd-${spd}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (obsTimelinePlaying) {
+                timelinePlay();
+            }
+        }
+
+        function renderResearchReport() {
+            if (!currentObsReport) return;
+            const rep = currentObsReport;
+
+            const repOrders = document.getElementById('obs-rep-orders');
+            if (repOrders) repOrders.innerText = rep.total_orders_submitted;
+            const repSubQty = document.getElementById('obs-rep-submitted-qty');
+            if (repSubQty) repSubQty.innerText = `${rep.total_submitted_quantity} units total`;
+
+            const repFill = document.getElementById('obs-rep-fillrate');
+            if (repFill) repFill.innerText = `${rep.fill_rate_pct}%`;
+            const repExecQty = document.getElementById('obs-rep-exec-qty');
+            if (repExecQty) repExecQty.innerText = `${rep.total_executed_quantity} units filled`;
+
+            const repCancel = document.getElementById('obs-rep-cancel-qty');
+            if (repCancel) repCancel.innerText = `${rep.total_cancelled_quantity} units`;
+
+            const repSlip = document.getElementById('obs-rep-slippage');
+            if (repSlip) repSlip.innerText = `${rep.average_execution_slippage_bps} bps`;
+
+            const repMeanSp = document.getElementById('obs-rep-spread-mean');
+            if (repMeanSp) repMeanSp.innerText = `Mean: ${rep.spread_distribution.mean_spread.toFixed(2)}`;
+            const repSpRange = document.getElementById('obs-rep-spread-range');
+            if (repSpRange) repSpRange.innerText = `Min: ${rep.spread_distribution.min_spread.toFixed(2)} | Max: ${rep.spread_distribution.max_spread.toFixed(2)}`;
+
+            const repThroughput = document.getElementById('obs-rep-throughput');
+            if (repThroughput) repThroughput.innerText = `${rep.measured_benchmark.throughput_events_per_sec.toLocaleString()} ops/s`;
+            const repLat = document.getElementById('obs-rep-latency');
+            if (repLat) repLat.innerText = `Latency: ${rep.measured_benchmark.mean_latency_microseconds} μs (${rep.measured_benchmark.elapsed_ms} ms total)`;
+
+            const repSub = document.getElementById('obs-report-subtitle');
+            if (repSub) repSub.innerText = `Deterministic seed ${rep.seed} on ${rep.instrument} — ${rep.total_events_processed} engine events evaluated.`;
+        }
+
+        function exportObservatoryEventsCSV() {
+            if (!currentObsEvents || currentObsEvents.length === 0) {
+                showToast('No events available to export.');
+                return;
+            }
+            const headers = ['Event_ID', 'Timestamp', 'Instrument', 'Event_Type', 'Side', 'Price', 'Quantity', 'Liquidity_Delta', 'Best_Bid', 'Best_Ask', 'Spread', 'Mid_Price', 'Resulting_Change'];
+            const rows = currentObsEvents.map(e => [
+                e.event_id,
+                `"${e.timestamp_str}"`,
+                e.instrument,
+                e.event_type,
+                e.side,
+                e.price,
+                e.quantity,
+                e.liquidity_delta,
+                e.bbo_after.best_bid || '',
+                e.bbo_after.best_ask || '',
+                e.bbo_after.spread || '',
+                e.bbo_after.mid_price || '',
+                `"${(e.resulting_change || '').replace(/"/g, '""')}"`
+            ]);
+            const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `chronos_observatory_events_${currentObsSymbol}_seed${currentObsSeed}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Observatory events exported to CSV.');
+        }
+
+        function exportResearchReportCSV() {
+            if (!currentObsReport) {
+                showToast('No research report available to export.');
+                return;
+            }
+            const r = currentObsReport;
+            const rows = [
+                ['Metric', 'Value', 'Methodology'],
+                ['Seed', r.seed, 'Pseudorandom seed'],
+                ['Instrument', r.instrument, 'Trading pair'],
+                ['Total Events Processed', r.total_events_processed, 'In-memory engine transitions'],
+                ['Total Orders Submitted', r.total_orders_submitted, 'Count of placed orders'],
+                ['Total Submitted Quantity', r.total_submitted_quantity, 'Total requested units'],
+                ['Total Executed Quantity', r.total_executed_quantity, 'Matched trade units'],
+                ['Total Cancelled Quantity', r.total_cancelled_quantity, 'Revoked passive units'],
+                ['Fill Rate Pct', `${r.fill_rate_pct}%`, 'Matched / Submitted ratio'],
+                ['Mean Execution Slippage (bps)', r.average_execution_slippage_bps, 'Mean basis points vs mid'],
+                ['Min Spread', r.spread_distribution.min_spread, 'Lowest gap'],
+                ['Mean Spread', r.spread_distribution.mean_spread, 'Average gap'],
+                ['Max Spread', r.spread_distribution.max_spread, 'Widest gap'],
+                ['Liquidity Added', r.liquidity.total_liquidity_added, 'Passive limit volume'],
+                ['Liquidity Consumed', r.liquidity.total_liquidity_consumed, 'Aggressive trade + cancel'],
+                ['Throughput (events/sec)', r.measured_benchmark.throughput_events_per_sec, 'Monotonic timer throughput'],
+                ['Mean Latency (microseconds)', r.measured_benchmark.mean_latency_microseconds, 'Per-event engine latency'],
+            ];
+            const csvContent = rows.map(r => r.map(x => `"${x}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `chronos_microstructure_report_${r.instrument}_seed${r.seed}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Microstructure Research Report exported to CSV.');
+        }
+
+        function openBookComparatorModal(eventIndex) {
+            const ev = currentObsEvents[eventIndex];
+            if (!ev) return;
+
+            const modal = document.getElementById('obs-comparator-modal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+
+            const idElem = document.getElementById('obs-comp-modal-event-id');
+            if (idElem) idElem.innerText = `Event #${ev.event_id}: ${ev.event_type} (${ev.side})`;
+
+            const descElem = document.getElementById('obs-comp-modal-desc');
+            if (descElem) descElem.innerText = ev.resulting_change;
+
+            const deltaElem = document.getElementById('obs-comp-modal-delta');
+            if (deltaElem) {
+                const sign = ev.liquidity_delta > 0 ? '+' : '';
+                deltaElem.innerText = `Net Liquidity Delta: ${sign}${ev.liquidity_delta} units | Spread Shift: ${ev.delta?.spread_change || 0.0}`;
+            }
+
+            const beforeBBO = document.getElementById('obs-comp-before-bBO') || document.getElementById('obs-comp-before-bbo');
+            if (beforeBBO) {
+                const b = ev.bbo_before;
+                beforeBBO.innerText = (b.best_bid && b.best_ask) ? `${b.best_bid.toFixed(2)} / ${b.best_ask.toFixed(2)} (Spread: ${b.spread})` : 'Empty';
+            }
+
+            const afterBBO = document.getElementById('obs-comp-after-bbo');
+            if (afterBBO) {
+                const a = ev.bbo_after;
+                afterBBO.innerText = (a.best_bid && a.best_ask) ? `${a.best_bid.toFixed(2)} / ${a.best_ask.toFixed(2)} (Spread: ${a.spread})` : 'Empty';
+            }
+
+            const bBody = document.getElementById('obs-comp-before-body');
+            if (bBody) {
+                let html = '';
+                (ev.depth_before.asks || []).slice(0, 5).reverse().forEach(a => {
+                    html += `<tr><td style="color: var(--red); font-weight: 700;">ASK</td><td style="color: var(--red);">${a.price.toFixed(2)}</td><td>${a.quantity}</td></tr>`;
+                });
+                html += '<tr style="background: var(--bg-card);"><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 4px;">--- SPREAD ---</td></tr>';
+                (ev.depth_before.bids || []).slice(0, 5).forEach(b => {
+                    html += `<tr><td style="color: var(--green); font-weight: 700;">BID</td><td style="color: var(--green);">${b.price.toFixed(2)}</td><td>${b.quantity}</td></tr>`;
+                });
+                bBody.innerHTML = html;
+            }
+
+            const aBody = document.getElementById('obs-comp-after-body');
+            if (aBody) {
+                let html = '';
+                (ev.depth_after.asks || []).slice(0, 5).reverse().forEach(a => {
+                    html += `<tr><td style="color: var(--red); font-weight: 700;">ASK</td><td style="color: var(--red);">${a.price.toFixed(2)}</td><td>${a.quantity}</td></tr>`;
+                });
+                html += '<tr style="background: var(--bg-card);"><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 4px;">--- SPREAD ---</td></tr>';
+                (ev.depth_after.bids || []).slice(0, 5).forEach(b => {
+                    html += `<tr><td style="color: var(--green); font-weight: 700;">BID</td><td style="color: var(--green);">${b.price.toFixed(2)}</td><td>${b.quantity}</td></tr>`;
+                });
+                aBody.innerHTML = html;
+            }
+        }
+
+        function closeBookComparatorModal() {
+            const modal = document.getElementById('obs-comparator-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function renderObservatoryCharts() {
+            drawObsSpreadChart();
+            drawObsDepthChart();
+            drawObsImbalanceChart();
+        }
+
+        function drawObsSpreadChart() {
+            const canvas = document.getElementById('obs-chart-spread');
+            if (!canvas || !currentObsTimeline || currentObsTimeline.length === 0) return;
+
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            const w = rect.width;
+            const h = rect.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const data = currentObsTimeline;
+            const minMid = Math.min(...data.map(d => d.mid_price));
+            const maxMid = Math.max(...data.map(d => d.mid_price));
+            const rangeMid = Math.max(1.0, maxMid - minMid);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 3; i++) {
+                const y = Math.round((h / 4) * i);
+                ctx.beginPath();
+                ctx.moveTo(40, y);
+                ctx.lineTo(w - 10, y);
+                ctx.stroke();
+            }
+
+            const padL = 50;
+            const padR = 20;
+            const padT = 20;
+            const padB = 30;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            data.forEach((d, i) => {
+                const x = padL + (i / Math.max(1, data.length - 1)) * plotW;
+                const y = padT + plotH - ((d.mid_price - minMid) / rangeMid) * plotH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            if (currentScrubberIndex < data.length) {
+                const sx = padL + (currentScrubberIndex / Math.max(1, data.length - 1)) * plotW;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(sx, padT);
+                ctx.lineTo(sx, h - padB);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                const curD = data[currentScrubberIndex];
+                const sy = padT + plotH - ((curD.mid_price - minMid) / rangeMid) * plotH;
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px JetBrains Mono, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(maxMid.toFixed(1), padL - 6, padT + 10);
+            ctx.fillText(minMid.toFixed(1), padL - 6, h - padB);
+        }
+
+        function drawObsDepthChart() {
+            const canvas = document.getElementById('obs-chart-depth');
+            if (!canvas || !currentObsTimeline || currentObsTimeline.length === 0) return;
+
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            const w = rect.width;
+            const h = rect.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const data = currentObsTimeline;
+            const maxDepth = Math.max(1, ...data.map(d => Math.max(d.total_bid_depth, d.total_ask_depth)));
+
+            const padL = 40;
+            const padR = 20;
+            const padT = 20;
+            const padB = 30;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            data.forEach((d, i) => {
+                const x = padL + (i / Math.max(1, data.length - 1)) * plotW;
+                const y = padT + plotH - (d.total_bid_depth / maxDepth) * plotH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            data.forEach((d, i) => {
+                const x = padL + (i / Math.max(1, data.length - 1)) * plotW;
+                const y = padT + plotH - (d.total_ask_depth / maxDepth) * plotH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            if (currentScrubberIndex < data.length) {
+                const sx = padL + (currentScrubberIndex / Math.max(1, data.length - 1)) * plotW;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(sx, padT);
+                ctx.lineTo(sx, h - padB);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px JetBrains Mono, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(maxDepth, padL - 6, padT + 10);
+            ctx.fillText('0', padL - 6, h - padB);
+        }
+
+        function drawObsImbalanceChart() {
+            const canvas = document.getElementById('obs-chart-imbalance');
+            if (!canvas || !currentObsTimeline || currentObsTimeline.length === 0) return;
+
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            const w = rect.width;
+            const h = rect.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const data = currentObsTimeline;
+            const padL = 40;
+            const padR = 20;
+            const padT = 20;
+            const padB = 30;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+            const zeroY = padT + plotH / 2;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padL, zeroY);
+            ctx.lineTo(w - padR, zeroY);
+            ctx.stroke();
+
+            ctx.lineWidth = 2;
+            for (let i = 0; i < data.length - 1; i++) {
+                const d1 = data[i];
+                const d2 = data[i + 1];
+                const x1 = padL + (i / Math.max(1, data.length - 1)) * plotW;
+                const y1 = zeroY - d1.imbalance_5 * (plotH / 2);
+                const x2 = padL + ((i + 1) / Math.max(1, data.length - 1)) * plotW;
+                const y2 = zeroY - d2.imbalance_5 * (plotH / 2);
+
+                ctx.strokeStyle = d2.imbalance_5 >= 0 ? '#10b981' : '#f43f5e';
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            if (currentScrubberIndex < data.length) {
+                const sx = padL + (currentScrubberIndex / Math.max(1, data.length - 1)) * plotW;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(sx, padT);
+                ctx.lineTo(sx, h - padB);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px JetBrains Mono, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('+1.0', padL - 6, padT + 10);
+            ctx.fillText('0.0', padL - 6, zeroY + 3);
+            ctx.fillText('-1.0', padL - 6, h - padB);
+        }
+
+
+        // ==========================================================================
         // 16. INITIALIZATION
         // ==========================================================================
         window.addEventListener('DOMContentLoaded', () => {
@@ -6341,6 +8656,8 @@
                 if (currentView === 'lab') {
                     drawBacktestChart();
                     drawFallacyChart();
+                } else if (currentView === 'observatory') {
+                    renderObservatoryCharts();
                 }
             });
         });
