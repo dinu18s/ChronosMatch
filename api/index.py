@@ -28,6 +28,11 @@ from chronosmatch.engine.observatory import (
     run_deterministic_experiment,
     simulate_price_impact,
 )
+from chronosmatch.engine.chaos_lab import (
+    SCENARIO_PRESETS,
+    compare_chaos_scenarios,
+    run_chaos_simulation,
+)
 from chronosmatch.marketdata.service import market_data_service
 from chronosmatch.persistence.db import db
 from chronosmatch.protocol import (
@@ -225,6 +230,30 @@ class PriceImpactRequest(BaseModel):
     depth_data: Dict[str, Any] = Field(description="Order book snapshot with 'bids' and 'asks' lists")
     side: str = Field(default="BUY", description="'BUY' or 'SELL'")
     quantity: int = Field(gt=0, description="Hypothetical market order quantity to execute")
+
+
+class ChaosSimulationRequest(BaseModel):
+    seed: int = Field(default=42, description="Pseudorandom seed for deterministic reproducibility")
+    symbol: str = Field(default="BTCUSDT", description="Trading pair symbol")
+    num_events: int = Field(default=120, ge=10, le=1000, description="Total synthetic events to simulate")
+    incoming_rate: float = Field(default=1000.0, gt=0, le=10000.0, description="Incoming order rate (orders/sec)")
+    num_participants: int = Field(default=10, ge=2, le=100, description="Number of virtual market participants")
+    cancel_rate_pct: float = Field(default=15.0, ge=0, le=100.0, description="Cancellation percentage")
+    liquidity_depth: int = Field(default=20, ge=2, le=100, description="Initial resting liquidity depth levels")
+    processing_capacity: float = Field(default=2500.0, gt=0, le=20000.0, description="Engine capacity (orders/sec)")
+    network_delay_ms: float = Field(default=5.0, ge=0, le=1000.0, description="Simulated network delay in ms")
+    queue_capacity: int = Field(default=100, ge=10, le=1000, description="Max event queue buffer capacity")
+    scenario: str = Field(default="NORMAL", description="Scenario preset (NORMAL, HIGH_LOAD, LIQUIDITY_SHOCK, NETWORK_DELAY, RECOVERY)")
+    failure_type: str = Field(default="NONE", description="Failure injection mode (NONE, TRAFFIC_SPIKE, ENGINE_PAUSE, DELAYED_PROCESSING, LIQUIDITY_DRYUP, DUPLICATE_ORDER, INVALID_PAYLOAD, FEED_DISRUPTION)")
+
+
+class ChaosComparisonRequest(BaseModel):
+    seed: int = Field(default=42, description="Seed for deterministic comparative benchmark")
+    symbol: str = Field(default="BTCUSDT", description="Trading pair symbol")
+    num_events: int = Field(default=120, ge=10, le=1000, description="Total events to simulate")
+    baseline_scenario: str = Field(default="NORMAL", description="Baseline scenario")
+    stressed_scenario: str = Field(default="HIGH_LOAD", description="Stressed scenario")
+    failure_type: str = Field(default="ENGINE_PAUSE", description="Failure mode to compare against baseline")
 
 
 # ==========================================================================
@@ -649,6 +678,53 @@ def api_observatory_price_impact(req: PriceImpactRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Price impact calculation error: {str(e)}")
+
+
+# ==========================================================================
+# CHAOS & RESILIENCE LABORATORY ROUTES
+# ==========================================================================
+@app.post("/api/chaos/run-simulation")
+def api_chaos_run_simulation(req: ChaosSimulationRequest):
+    """Run an isolated virtual exchange chaos simulation with health metrics, fault injection, and invariant checks."""
+    try:
+        return run_chaos_simulation(
+            seed=req.seed,
+            symbol=req.symbol,
+            num_events=req.num_events,
+            incoming_rate=req.incoming_rate,
+            num_participants=req.num_participants,
+            cancel_rate_pct=req.cancel_rate_pct,
+            liquidity_depth=req.liquidity_depth,
+            processing_capacity=req.processing_capacity,
+            network_delay_ms=req.network_delay_ms,
+            queue_capacity=req.queue_capacity,
+            scenario=req.scenario,
+            failure_type=req.failure_type,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chaos simulation error: {str(e)}")
+
+
+@app.post("/api/chaos/compare-scenarios")
+def api_chaos_compare_scenarios(req: ChaosComparisonRequest):
+    """Run side-by-side comparative benchmark between baseline and failure scenario using identical random seed."""
+    try:
+        return compare_chaos_scenarios(
+            seed=req.seed,
+            symbol=req.symbol,
+            num_events=req.num_events,
+            baseline_scenario=req.baseline_scenario,
+            stressed_scenario=req.stressed_scenario,
+            failure_type=req.failure_type,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Scenario comparison error: {str(e)}")
+
+
+@app.get("/api/chaos/presets")
+def api_chaos_get_presets():
+    """Return available chaos scenario presets and configuration parameters."""
+    return {"presets": SCENARIO_PRESETS}
 
 
 # ==========================================================================
