@@ -33,6 +33,12 @@ from chronosmatch.engine.chaos_lab import (
     compare_chaos_scenarios,
     run_chaos_simulation,
 )
+from chronosmatch.engine.arena import (
+    AgentType,
+    ArenaCompetition,
+    MarketCondition,
+    run_strategy_evolution_test,
+)
 from chronosmatch.marketdata.service import market_data_service
 from chronosmatch.persistence.db import db
 from chronosmatch.protocol import (
@@ -254,6 +260,28 @@ class ChaosComparisonRequest(BaseModel):
     baseline_scenario: str = Field(default="NORMAL", description="Baseline scenario")
     stressed_scenario: str = Field(default="HIGH_LOAD", description="Stressed scenario")
     failure_type: str = Field(default="ENGINE_PAUSE", description="Failure mode to compare against baseline")
+
+
+class ArenaCompetitionRequest(BaseModel):
+    seed: int = Field(default=42, description="Pseudorandom seed for deterministic market generation")
+    symbol: str = Field(default="BTCUSDT", description="Instrument symbol")
+    num_steps: int = Field(default=100, ge=10, le=500, description="Number of simulation steps")
+    initial_cash: float = Field(default=100000.0, gt=0, description="Starting virtual capital per agent")
+    condition: str = Field(default="TRENDING_BULL", description="Market condition preset")
+    selected_agents: Optional[List[str]] = Field(default=None, description="List of agent types to participate")
+    custom_params: Optional[Dict[str, Dict[str, Any]]] = Field(default=None, description="Custom parameters per agent")
+    include_human: bool = Field(default=False, description="Whether human participant joins the arena")
+
+
+class ArenaEvolutionRequest(BaseModel):
+    seed: int = Field(default=42, description="Seed for deterministic evaluation")
+    symbol: str = Field(default="BTCUSDT", description="Instrument symbol")
+    agent_type: str = Field(default="MOMENTUM", description="Agent type to evolve")
+    condition: str = Field(default="TRENDING_BULL", description="Market condition")
+    base_params: Optional[Dict[str, Any]] = Field(default=None, description="Original baseline parameters")
+    modified_params: Optional[Dict[str, Any]] = Field(default=None, description="Modified test parameters")
+    num_steps: int = Field(default=100, ge=10, le=500, description="Number of steps")
+    initial_cash: float = Field(default=100000.0, gt=0, description="Starting capital")
 
 
 # ==========================================================================
@@ -725,6 +753,99 @@ def api_chaos_compare_scenarios(req: ChaosComparisonRequest):
 def api_chaos_get_presets():
     """Return available chaos scenario presets and configuration parameters."""
     return {"presets": SCENARIO_PRESETS}
+
+
+# ==========================================================================
+# ALGORITHMIC TRADING ARENA ROUTES
+# ==========================================================================
+@app.post("/api/arena/run-competition")
+def api_arena_run_competition(req: ArenaCompetitionRequest):
+    """Run an algorithmic trading arena competition between independent algorithmic agents."""
+    try:
+        cond_enum = MarketCondition(req.condition.upper()) if req.condition.upper() in MarketCondition._value2member_map_ else MarketCondition.TRENDING_BULL
+        agents_enums = None
+        if req.selected_agents:
+            agents_enums = [
+                AgentType(a.upper()) for a in req.selected_agents if a.upper() in AgentType._value2member_map_
+            ]
+
+        comp = ArenaCompetition(
+            seed=req.seed,
+            symbol=req.symbol,
+            num_steps=req.num_steps,
+            initial_cash=req.initial_cash,
+            condition=cond_enum,
+            selected_agents=agents_enums,
+            custom_params=req.custom_params,
+            include_human=req.include_human,
+        )
+        return comp.run_full_competition()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Arena competition error: {str(e)}")
+
+
+@app.post("/api/arena/compare-strategies")
+def api_arena_compare_strategies(req: ArenaEvolutionRequest):
+    """Run a controlled Strategy Evolution Lab test comparing Original vs Modified parameters."""
+    try:
+        return run_strategy_evolution_test(
+            seed=req.seed,
+            symbol=req.symbol,
+            agent_type=req.agent_type,
+            condition=req.condition,
+            base_params=req.base_params,
+            modified_params=req.modified_params,
+            num_steps=req.num_steps,
+            initial_cash=req.initial_cash,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Strategy evolution test error: {str(e)}")
+
+
+@app.get("/api/arena/presets")
+def api_arena_get_presets():
+    """Return available arena agent definitions, descriptions, and market presets."""
+    return {
+        "agents": {
+            "MOMENTUM": {
+                "name": "Momentum Trend Agent",
+                "description": "Identifies trend direction via dual moving average crossover and rate-of-change momentum.",
+                "default_params": {"fast_period": 5, "slow_period": 20, "roc_threshold": 0.3, "position_size_pct": 25.0},
+            },
+            "MEAN_REVERSION": {
+                "name": "Mean Reversion Agent",
+                "description": "Exploits statistical price extremes using Bollinger Bands and RSI overbought/oversold levels.",
+                "default_params": {"bb_period": 20, "num_std": 2.0, "rsi_oversold": 32.0, "rsi_overbought": 68.0},
+            },
+            "MARKET_MAKER": {
+                "name": "Market Making Agent",
+                "description": "Provides two-sided liquidity, capturing the spread with dynamic inventory skew management.",
+                "default_params": {"half_spread_pct": 0.002, "max_inventory": 5.0, "quote_size": 1.0},
+            },
+            "LIQUIDITY_HUNTER": {
+                "name": "Liquidity Hunter Agent",
+                "description": "Analyzes book depth and imbalance to identify breakout surges and liquidity clusters.",
+                "default_params": {"min_depth": 15, "imbalance_threshold": 0.30},
+            },
+            "CONSERVATIVE": {
+                "name": "Conservative Risk Guard",
+                "description": "Follows strict exposure caps, tight stop-loss thresholds, and high risk-reward setups.",
+                "default_params": {"stop_loss_pct": 1.2, "take_profit_pct": 2.8, "max_risk_pct": 1.0},
+            },
+            "ADAPTIVE": {
+                "name": "Adaptive Regime Agent",
+                "description": "Dynamically shifts between trend-following and range-bound mean-reversion based on market efficiency.",
+                "default_params": {"regime_window": 15, "trend_threshold": 0.40},
+            },
+        },
+        "conditions": {
+            "TRENDING_BULL": "Sustained upward drift with positive momentum shocks and shallow pullbacks.",
+            "TRENDING_BEAR": "Downward pressure with negative cascades and aggressive selling.",
+            "MEAN_REVERTING": "Oscillating range-bound market between clear support and resistance levels.",
+            "HIGH_VOLATILITY": "Turbulent swings, wide standard deviations, and sudden jump events.",
+            "LIQUIDITY_SQUEEZE": "Thin order book depth, wide spreads, and rapid slippage.",
+        },
+    }
 
 
 # ==========================================================================

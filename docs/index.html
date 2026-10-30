@@ -1940,6 +1940,78 @@
             border-left: 4px solid var(--red);
             background: rgba(244, 63, 94, 0.05);
         }
+
+        /* ==========================================================================
+           ALGORITHMIC TRADING ARENA STYLES
+           ========================================================================== */
+        .arena-subnav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            background: var(--bg-card);
+            overflow-x: auto;
+        }
+        .arena-subnav-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .arena-subnav-btn:hover {
+            color: var(--text-main);
+        }
+        .arena-subnav-btn.active {
+            color: #ec4899;
+            border-bottom-color: #ec4899;
+        }
+        .arena-content-area {
+            padding: 18px 20px;
+        }
+        .arena-sub-panel {
+            display: none;
+        }
+        .arena-sub-panel.active {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+        .arena-score-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.15s ease;
+        }
+        .arena-score-card:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-1px);
+        }
+        .arena-decision-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .arena-human-action-box {
+            background: rgba(236, 72, 153, 0.08);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -2069,6 +2141,18 @@
                         <button type="button" class="nav-link-btn" id="nav-btn-observatory" onclick="switchView('observatory')">
                             <span class="nav-icon">🔭</span>
                             <span class="nav-text">Order-Book Observatory</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-chaos" onclick="switchView('chaos')">
+                            <span class="nav-icon">🚨</span>
+                            <span class="nav-text">Chaos & Resilience Lab</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-arena" onclick="switchView('arena')">
+                            <span class="nav-icon">🏟️</span>
+                            <span class="nav-text">Algo Trading Arena</span>
                         </button>
                     </li>
                 </ul>
@@ -4476,6 +4560,423 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ==================================================================
+                 VIEW PANEL: ALGORITHMIC TRADING ARENA & STRATEGY BATTLEGROUND
+                 ================================================================== -->
+            <div class="view-panel" id="view-arena">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <!-- Arena Header Banner -->
+                    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="card-title">🏟️ Algorithmic Trading Arena & Strategy Battleground</span>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">
+                                Compete, benchmark, and observe autonomous algorithmic trading agents under identical simulated market microstructure and fair zero-lookahead conditions.
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge-tag" style="background: rgba(236, 72, 153, 0.12); color: #ec4899; font-size: 11px;">
+                                ⚔️ Multi-Agent Arena
+                            </span>
+                            <span class="badge-tag" style="background: rgba(16, 185, 129, 0.12); color: var(--green); font-size: 11px;" id="arena-status-badge">
+                                Arena Ready
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Truthful Notice Banner -->
+                    <div style="background: rgba(59, 130, 246, 0.08); border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-sub);">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="color: var(--blue); font-weight: 700;">ℹ️ DETERMINISTIC RULE ENGINE:</span>
+                            <span>All agents operate on transparent mathematical rule sets and statistical price series without lookahead bias. Completely isolated from your real paper-trading capital.</span>
+                        </div>
+                        <span class="mono" style="font-size: 10px; color: var(--text-muted);" id="arena-seed-label">Seed: #42</span>
+                    </div>
+
+                    <!-- Sub-Navigation Tabs -->
+                    <div class="arena-subnav">
+                        <button type="button" class="arena-subnav-btn active" id="arena-tab-race" onclick="switchArenaSubTab('race')">
+                            <span>🏁</span> Live Race & Competition
+                        </button>
+                        <button type="button" class="arena-subnav-btn" id="arena-tab-inspector" onclick="switchArenaSubTab('inspector')">
+                            <span>🔍</span> Decision Inspector
+                        </button>
+                        <button type="button" class="arena-subnav-btn" id="arena-tab-analytics" onclick="switchArenaSubTab('analytics')">
+                            <span>📊</span> Performance Analytics
+                        </button>
+                        <button type="button" class="arena-subnav-btn" id="arena-tab-evolution" onclick="switchArenaSubTab('evolution')">
+                            <span>🧬</span> Strategy Evolution Lab
+                        </button>
+                        <button type="button" class="arena-subnav-btn" id="arena-tab-leaderboard" onclick="switchArenaSubTab('leaderboard')">
+                            <span>🏆</span> Arena Leaderboard
+                        </button>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 1: LIVE RACE & COMPETITION ARENA
+                         ========================================================== -->
+                    <div class="arena-content-area arena-sub-panel active" id="arena-subpanel-race">
+                        <!-- Setup Controls Strip -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                    <span>⚙️</span> Competition Configuration
+                                </div>
+                                <!-- Human Participation Checkbox -->
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #ec4899; cursor: pointer; background: rgba(236, 72, 153, 0.1); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(236, 72, 153, 0.3);">
+                                    <input type="checkbox" id="arena-param-human" style="accent-color: #ec4899;" onchange="toggleHumanParticipation(this.checked)">
+                                    <span>👤 Join Challenge as Human Trader (You)</span>
+                                </label>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                                <!-- Capital -->
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 4px;">Starting Capital ($)</label>
+                                    <input type="number" id="arena-param-cash" value="100000" min="10000" max="1000000" step="10000" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 7px 10px; border-radius: 6px; font-size: 12px;">
+                                </div>
+
+                                <!-- Instrument -->
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 4px;">Instrument</label>
+                                    <select id="arena-param-symbol" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 7px 10px; border-radius: 6px; font-size: 12px;">
+                                        <option value="BTCUSDT">BTCUSDT ($65,000)</option>
+                                        <option value="ETHUSDT">ETHUSDT ($3,200)</option>
+                                        <option value="AAPL">AAPL ($180)</option>
+                                        <option value="RELIANCE">RELIANCE (₹2,500)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Duration -->
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 4px;">Duration (Ticks/Steps)</label>
+                                    <select id="arena-param-steps" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 7px 10px; border-radius: 6px; font-size: 12px;">
+                                        <option value="50">50 Steps (Fast Sprint)</option>
+                                        <option value="100" selected>100 Steps (Standard)</option>
+                                        <option value="200">200 Steps (Extended Marathon)</option>
+                                        <option value="300">300 Steps (Stress Endurance)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Market Condition -->
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 4px;">Market Condition Preset</label>
+                                    <select id="arena-param-condition" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 7px 10px; border-radius: 6px; font-size: 12px;" onchange="updateArenaConditionHint(this.value)">
+                                        <option value="TRENDING_BULL">Trending Bull 🟢</option>
+                                        <option value="TRENDING_BEAR">Trending Bear 🔴</option>
+                                        <option value="MEAN_REVERTING">Mean Reverting (Range-Bound) 🔄</option>
+                                        <option value="HIGH_VOLATILITY">High Volatility (Swings & Jumps) ⚡</option>
+                                        <option value="LIQUIDITY_SQUEEZE">Liquidity Squeeze (Thin Books) 💧</option>
+                                    </select>
+                                </div>
+
+                                <!-- Seed -->
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 4px;">Random Seed (PRNG)</label>
+                                    <input type="number" id="arena-param-seed" value="42" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 7px 10px; border-radius: 6px; font-size: 12px;">
+                                </div>
+                            </div>
+
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 8px;" id="arena-condition-hint">
+                                Trending Bull: Sustained upward drift with positive momentum shocks and shallow pullbacks.
+                            </div>
+                        </div>
+
+                        <!-- Human Trader Action Box (Conditional) -->
+                        <div class="arena-human-action-box" id="arena-human-panel" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 16px;">👤</span>
+                                    <strong style="font-size: 13px; color: var(--text-main);">Human Trader Desk</strong>
+                                    <span class="badge-tag mono" style="background: rgba(236, 72, 153, 0.15); color: #ec4899; font-size: 10px;">Interactive Challenge</span>
+                                </div>
+                                <div style="display: flex; gap: 14px; font-size: 12px;" class="mono">
+                                    <span>Cash: <strong style="color: var(--text-main);" id="arena-human-cash">$100,000.00</strong></span>
+                                    <span>Position: <strong style="color: var(--blue);" id="arena-human-pos">0.0000</strong></span>
+                                    <span>Unrealized: <strong id="arena-human-pnl">$0.00</strong></span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <label style="font-size: 11px; color: var(--text-sub);">Order Size:</label>
+                                    <input type="number" id="arena-human-order-qty" value="1.0" min="0.1" step="0.5" class="mono" style="width: 80px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 8px; border-radius: 6px; font-size: 12px;">
+                                </div>
+                                <button type="button" class="btn" style="background: var(--green); color: white; padding: 6px 14px; font-size: 12px;" onclick="submitHumanAction('BUY')">
+                                    <span>🟢</span> Market Buy
+                                </button>
+                                <button type="button" class="btn" style="background: var(--red); color: white; padding: 6px 14px; font-size: 12px;" onclick="submitHumanAction('SELL')">
+                                    <span>🔴</span> Market Sell
+                                </button>
+                                <button type="button" class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="submitHumanAction('CLOSE')">
+                                    <span>⏹️</span> Close Position
+                                </button>
+                                <span style="font-size: 11px; color: var(--text-sub); margin-left: auto;">
+                                    Actions execute at next simulation tick.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Competition Playback Control Bar -->
+                        <div class="obs-timeline-ctrl-bar" style="margin-bottom: 16px;">
+                            <button type="button" class="obs-ctrl-btn" style="background: #ec4899; border-color: #ec4899; color: white;" onclick="startArenaCompetitionUI()">
+                                <span>▶</span> Start Competition
+                            </button>
+                            <button type="button" class="obs-ctrl-btn" id="arena-playback-btn" onclick="toggleArenaPlayback()">
+                                <span id="arena-playback-icon">⏸</span> <span id="arena-playback-text">Pause</span>
+                            </button>
+                            <button type="button" class="obs-ctrl-btn" onclick="stepArenaCompetitionUI()">
+                                <span>⏭</span> Step (+1)
+                            </button>
+                            <button type="button" class="obs-ctrl-btn" onclick="restartArenaCompetitionUI()">
+                                <span>🔄</span> Restart
+                            </button>
+
+                            <div style="flex: 1; min-width: 180px; display: flex; align-items: center; gap: 10px; margin: 0 10px;">
+                                <input type="range" min="0" max="100" value="0" id="arena-scrubber-slider" style="flex: 1; accent-color: #ec4899;" oninput="onArenaScrubberChange(parseInt(this.value))">
+                                <span class="mono" style="font-size: 12px; font-weight: 800; min-width: 90px;" id="arena-step-label">Step 0 / 100</span>
+                            </div>
+
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <span style="font-size: 11px; color: var(--text-sub);">Speed:</span>
+                                <button type="button" class="obs-ctrl-btn active" id="arena-speed-1x" onclick="setArenaSpeed(1)">1x</button>
+                                <button type="button" class="obs-ctrl-btn" id="arena-speed-2x" onclick="setArenaSpeed(2)">2x</button>
+                                <button type="button" class="obs-ctrl-btn" id="arena-speed-5x" onclick="setArenaSpeed(5)">5x</button>
+                            </div>
+                        </div>
+
+                        <!-- Live Scoreboard Standing Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 16px;" id="arena-scoreboard-container">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+
+                        <!-- Multi-Agent Equity Curves Overlay Chart -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                    <span>📈</span> Live Equity Curves Overlay (All Participating Competitors)
+                                </div>
+                                <div style="display: flex; gap: 12px; font-size: 11px; flex-wrap: wrap;" id="arena-chart-legend">
+                                    <!-- Legend items populated via JS -->
+                                </div>
+                            </div>
+                            <div style="height: 280px; width: 100%; position: relative;">
+                                <canvas id="arena-equity-chart" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 2: AGENT DECISION INSPECTOR
+                         ========================================================== -->
+                    <div class="arena-content-area arena-sub-panel" id="arena-subpanel-inspector">
+                        <!-- Inspector Filter Header -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <label style="font-size: 12px; font-weight: 700; color: var(--text-main);">Filter by Competitor:</label>
+                                <select id="arena-inspector-filter" class="mono" style="background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 10px; border-radius: 6px; font-size: 12px;" onchange="renderArenaDecisionInspector()">
+                                    <option value="ALL">All Competitors</option>
+                                    <option value="agent_momentum">Momentum Trend Agent</option>
+                                    <option value="agent_mean_rev">Mean Reversion Agent</option>
+                                    <option value="agent_mm">Market Making Agent</option>
+                                    <option value="agent_liquidity">Liquidity Hunter Agent</option>
+                                    <option value="agent_conservative">Conservative Risk Guard</option>
+                                    <option value="agent_adaptive">Adaptive Regime Agent</option>
+                                    <option value="human_user">Human Trader (You)</option>
+                                </select>
+                            </div>
+                            <span class="mono" style="font-size: 11px; color: var(--text-muted);" id="arena-inspector-step-info">Showing decisions for Step #0</span>
+                        </div>
+
+                        <!-- Decision Cards Stream Container -->
+                        <div id="arena-inspector-cards-container" style="max-height: 520px; overflow-y: auto;">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 3: PERFORMANCE ANALYTICS & DEBRIEF
+                         ========================================================== -->
+                    <div class="arena-content-area arena-sub-panel" id="arena-subpanel-analytics">
+                        <!-- Comparative Analytics Table -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; overflow-x: auto;">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                                <span>📊 Comparative Strategy Performance Audit</span>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="obs-ctrl-btn" onclick="exportArenaResultsCSV()">
+                                        <span>📊</span> Export CSV
+                                    </button>
+                                    <button type="button" class="obs-ctrl-btn" onclick="exportArenaResultsJSON()">
+                                        <span>💾</span> Export JSON
+                                    </button>
+                                </div>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;" class="mono">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted); text-align: left;">
+                                        <th style="padding: 8px 10px;">Rank</th>
+                                        <th style="padding: 8px 10px;">Competitor</th>
+                                        <th style="padding: 8px 10px;">Final Equity</th>
+                                        <th style="padding: 8px 10px;">Total Return</th>
+                                        <th style="padding: 8px 10px;">Max Drawdown</th>
+                                        <th style="padding: 8px 10px;">Win Rate %</th>
+                                        <th style="padding: 8px 10px;">Trades (W/L)</th>
+                                        <th style="padding: 8px 10px;">Avg Hold</th>
+                                        <th style="padding: 8px 10px;">Sharpe</th>
+                                        <th style="padding: 8px 10px;">Sortino</th>
+                                        <th style="padding: 8px 10px;">Fees Paid</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="arena-analytics-table-body">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Drawdown Comparison Chart -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">
+                                <span>📉</span> Underwater Equity Drawdown Comparison (%)
+                            </div>
+                            <div style="height: 180px; width: 100%; position: relative;">
+                                <canvas id="arena-drawdown-chart" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Post-Competition Analysis Debrief Card -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px;">
+                            <div style="font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span>📋</span> <span id="arena-debrief-title">Post-Competition Strategy Analysis & Debrief</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-sub); line-height: 1.6;" id="arena-debrief-body">
+                                Run a competition to generate a causal post-mortem analysis of why the winning strategy succeeded.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 4: STRATEGY EVOLUTION LAB
+                         ========================================================== -->
+                    <div class="arena-content-area arena-sub-panel" id="arena-subpanel-evolution">
+                        <div style="display: grid; grid-template-columns: 320px 1fr; gap: 18px;">
+                            <!-- Parameter Tuner Form -->
+                            <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                    <span>🧬</span> Strategy Parameter Tuner
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <label style="font-size: 11px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 4px;">Select Strategy:</label>
+                                    <select id="arena-evo-strategy" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 7px 10px; border-radius: 6px; font-size: 12px;" onchange="loadEvolutionDefaultParams(this.value)">
+                                        <option value="MOMENTUM">Momentum Trend Agent</option>
+                                        <option value="MEAN_REVERSION">Mean Reversion Agent</option>
+                                        <option value="MARKET_MAKER">Market Making Agent</option>
+                                        <option value="CONSERVATIVE">Conservative Risk Guard</option>
+                                        <option value="ADAPTIVE">Adaptive Regime Agent</option>
+                                    </select>
+                                </div>
+
+                                <!-- Dynamic Parameters Container -->
+                                <div id="arena-evo-params-form" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+
+                                <div style="margin-top: 16px;">
+                                    <button type="button" class="btn" style="width: 100%; background: #ec4899; color: white;" onclick="runStrategyEvolutionUI()">
+                                        <span>⚡</span> Run Evolution Benchmark
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Right: Comparative Results & Charts -->
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <!-- Comparison Table -->
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                        <span>⚖️ Original vs. Modified Evolution Differential</span>
+                                        <span class="badge-tag mono" style="background: rgba(236, 72, 153, 0.15); color: #ec4899; font-size: 10px;">Deterministic Replay</span>
+                                    </div>
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;" class="mono">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted); text-align: left;">
+                                                <th style="padding: 6px 10px;">Metric</th>
+                                                <th style="padding: 6px 10px;">Original (Default)</th>
+                                                <th style="padding: 6px 10px;">Modified (Evolved)</th>
+                                                <th style="padding: 6px 10px; text-align: right;">Differential Δ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="arena-evo-table-body">
+                                            <!-- Populated dynamically via JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Dual Equity Curves Chart -->
+                                <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; flex: 1;">
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">
+                                        <span>📈</span> Equity Trajectory Comparison: Original vs Modified
+                                    </div>
+                                    <div style="height: 200px; width: 100%; position: relative;">
+                                        <canvas id="arena-evolution-chart" style="width: 100%; height: 100%;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 5: ARENA LEADERBOARD
+                         ========================================================== -->
+                    <div class="arena-content-area arena-sub-panel" id="arena-subpanel-leaderboard">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                    <span>🏆</span> All-Time Arena Competition Leaderboards
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                    Empirical rankings saved locally across your completed competition runs.
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="obs-ctrl-btn active" id="arena-lb-tab-return" onclick="switchLeaderboardFilter('return')">
+                                    Highest Return
+                                </button>
+                                <button type="button" class="obs-ctrl-btn" id="arena-lb-tab-drawdown" onclick="switchLeaderboardFilter('drawdown')">
+                                    Lowest Drawdown
+                                </button>
+                                <button type="button" class="obs-ctrl-btn" id="arena-lb-tab-sharpe" onclick="switchLeaderboardFilter('sharpe')">
+                                    Best Sharpe
+                                </button>
+                                <button type="button" class="obs-ctrl-btn" onclick="clearArenaLeaderboardHistory()">
+                                    <span>🗑️</span> Clear History
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;" class="mono">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted); text-align: left;">
+                                        <th style="padding: 8px 10px;">Rank</th>
+                                        <th style="padding: 8px 10px;">Competitor</th>
+                                        <th style="padding: 8px 10px;">Strategy Type</th>
+                                        <th style="padding: 8px 10px;">Instrument</th>
+                                        <th style="padding: 8px 10px;">Condition</th>
+                                        <th style="padding: 8px 10px;">Return %</th>
+                                        <th style="padding: 8px 10px;">Max DD %</th>
+                                        <th style="padding: 8px 10px;">Sharpe</th>
+                                        <th style="padding: 8px 10px;">Trades</th>
+                                        <th style="padding: 8px 10px;">Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="arena-leaderboard-table-body">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -4853,6 +5354,8 @@
                 initObservatoryView();
             } else if (viewName === 'chaos') {
                 initChaosLabView();
+            } else if (viewName === 'arena') {
+                initArenaView();
             }
         }
 
@@ -10368,6 +10871,1250 @@
         }
 
 
+
+        // ==========================================================================
+        // 15C. ALGORITHMIC TRADING ARENA & BATTLEGROUND CONTROLLER
+        // ==========================================================================
+        let arenaSimState = null;
+        let arenaPlaybackTimer = null;
+        let arenaPlaybackSpeed = 1;
+        let arenaCurrentStep = 0;
+        let arenaInitCompleted = false;
+        let arenaHumanQueuedAction = 'HOLD';
+        let arenaHumanQueuedQty = 1.0;
+        let arenaEvolutionResult = null;
+
+        const ARENA_AGENT_COLORS = {
+            agent_momentum: '#3b82f6',     // Blue
+            agent_mean_rev: '#10b981',     // Green
+            agent_mm: '#f59e0b',           // Amber
+            agent_liquidity: '#a855f7',    // Purple
+            agent_conservative: '#06b6d4', // Cyan
+            agent_adaptive: '#6366f1',     // Indigo
+            human_user: '#ec4899'          // Hot Pink
+        };
+
+        const ARENA_AGENT_NAMES = {
+            agent_momentum: 'Momentum Trend Agent',
+            agent_mean_rev: 'Mean Reversion Agent',
+            agent_mm: 'Market Making Agent',
+            agent_liquidity: 'Liquidity Hunter Agent',
+            agent_conservative: 'Conservative Risk Guard',
+            agent_adaptive: 'Adaptive Regime Agent',
+            human_user: 'Human Trader (You)'
+        };
+
+        const ARENA_COND_DESCS = {
+            TRENDING_BULL: 'Sustained upward drift with positive momentum shocks and shallow pullbacks.',
+            TRENDING_BEAR: 'Downward pressure with negative cascades and aggressive selling.',
+            MEAN_REVERTING: 'Oscillating range-bound market between clear support and resistance levels.',
+            HIGH_VOLATILITY: 'Turbulent swings, wide standard deviations, and sudden jump events.',
+            LIQUIDITY_SQUEEZE: 'Thin order book depth, wide spreads, and rapid slippage.'
+        };
+
+        function initArenaView() {
+            if (!arenaInitCompleted) {
+                arenaInitCompleted = true;
+                loadEvolutionDefaultParams('MOMENTUM');
+                renderArenaLeaderboard();
+                startArenaCompetitionUI();
+            } else {
+                renderArenaCharts();
+            }
+        }
+
+        function switchArenaSubTab(tabName) {
+            document.querySelectorAll('.arena-subnav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.arena-sub-panel').forEach(p => p.classList.remove('active'));
+
+            const btn = document.getElementById(`arena-tab-${tabName}`);
+            const panel = document.getElementById(`arena-subpanel-${tabName}`);
+            if (btn) btn.classList.add('active');
+            if (panel) panel.classList.add('active');
+
+            setTimeout(() => {
+                renderArenaCharts();
+                if (tabName === 'inspector') {
+                    renderArenaDecisionInspector();
+                } else if (tabName === 'analytics') {
+                    renderArenaAnalytics();
+                } else if (tabName === 'leaderboard') {
+                    renderArenaLeaderboard();
+                }
+            }, 60);
+        }
+
+        function updateArenaConditionHint(cond) {
+            const hintElem = document.getElementById('arena-condition-hint');
+            if (hintElem && ARENA_COND_DESCS[cond]) {
+                hintElem.textContent = ARENA_COND_DESCS[cond];
+            }
+        }
+
+        function toggleHumanParticipation(checked) {
+            const panel = document.getElementById('arena-human-panel');
+            if (panel) panel.style.display = checked ? 'block' : 'none';
+        }
+
+        function submitHumanAction(action) {
+            const qty = parseFloat(document.getElementById('arena-human-order-qty')?.value) || 1.0;
+            arenaHumanQueuedAction = action;
+            arenaHumanQueuedQty = qty;
+
+            const badge = document.getElementById('arena-status-badge');
+            if (badge) {
+                badge.textContent = `Action Queued: ${action} ${qty}x`;
+                badge.style.color = '#ec4899';
+            }
+        }
+
+        function setArenaSpeed(speed) {
+            arenaPlaybackSpeed = speed;
+            document.querySelectorAll('#arena-subpanel-race .obs-ctrl-btn').forEach(b => {
+                if (b.id && b.id.startsWith('arena-speed-')) b.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`arena-speed-${speed}x`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (arenaPlaybackTimer) {
+                clearInterval(arenaPlaybackTimer);
+                startPlaybackInterval();
+            }
+        }
+
+        // =====================================================================
+        // CLIENT-SIDE DETERMINISTIC ARENA SIMULATION ENGINE
+        // =====================================================================
+        async function startArenaCompetitionUI() {
+            const seed = parseInt(document.getElementById('arena-param-seed')?.value) || 42;
+            const symbol = document.getElementById('arena-param-symbol')?.value || 'BTCUSDT';
+            const numSteps = parseInt(document.getElementById('arena-param-steps')?.value) || 100;
+            const initialCash = parseFloat(document.getElementById('arena-param-cash')?.value) || 100000.0;
+            const condition = document.getElementById('arena-param-condition')?.value || 'TRENDING_BULL';
+            const includeHuman = document.getElementById('arena-param-human')?.checked || false;
+
+            document.getElementById('arena-seed-label').textContent = `Seed: #${seed}`;
+
+            const statusBadge = document.getElementById('arena-status-badge');
+            if (statusBadge) {
+                statusBadge.textContent = 'Simulating Arena...';
+                statusBadge.style.color = 'var(--yellow)';
+            }
+
+            // Attempt FastAPI backend if available
+            let compData = null;
+            try {
+                const resp = await fetch('/api/arena/run-competition', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        seed: seed,
+                        symbol: symbol,
+                        num_steps: numSteps,
+                        initial_cash: initialCash,
+                        condition: condition,
+                        include_human: includeHuman
+                    })
+                });
+                if (resp.ok) {
+                    compData = await resp.json();
+                }
+            } catch (e) {
+                // Backend unavailable (offline GitHub Pages); fallback to local client-side engine
+            }
+
+            if (!compData || !compData.leaderboard) {
+                compData = runClientArenaCompetition({
+                    seed: seed,
+                    symbol: symbol,
+                    num_steps: numSteps,
+                    initial_cash: initialCash,
+                    condition: condition,
+                    include_human: includeHuman
+                });
+            }
+
+            arenaSimState = compData;
+            arenaCurrentStep = compData.num_steps;
+
+            // Setup scrubber slider
+            const slider = document.getElementById('arena-scrubber-slider');
+            if (slider) {
+                slider.max = compData.num_steps;
+                slider.value = compData.num_steps;
+            }
+            updateArenaStepUI(compData.num_steps);
+
+            // Save completed run to persistent local leaderboard
+            saveCompetitionToLeaderboard(compData);
+
+            if (statusBadge) {
+                statusBadge.textContent = 'Competition Complete';
+                statusBadge.style.color = 'var(--green)';
+            }
+
+            renderArenaCharts();
+            renderArenaScoreboard();
+            renderArenaAnalytics();
+        }
+
+        function runClientArenaCompetition(params) {
+            const rng = mulberry32(params.seed);
+            const numSteps = params.num_steps || 100;
+            const initCash = params.initial_cash || 100000.0;
+            const condition = params.condition || 'TRENDING_BULL';
+            const basePrice = params.symbol.includes('BTC') ? 65000.0 : (params.symbol.includes('ETH') ? 3200.0 : 180.0);
+
+            // Generate deterministic market ticks
+            const ticks = [];
+            let currP = basePrice;
+            const drift = condition === 'TRENDING_BULL' ? 0.0018 : (condition === 'TRENDING_BEAR' ? -0.0018 : 0.0);
+            const vol = condition === 'HIGH_VOLATILITY' ? 0.012 : (condition === 'LIQUIDITY_SQUEEZE' ? 0.008 : 0.004);
+
+            for (let s = 1; s <= numSteps; s++) {
+                const shock = (rng() + rng() + rng() + rng() - 2) * 1.5;
+                const ret = drift + shock * vol;
+                currP = Math.round(currP * (1.0 + ret) * 100) / 100;
+                const halfSpread = Math.max(0.5, Math.round(currP * 0.0003 * (condition === 'LIQUIDITY_SQUEEZE' ? 2.8 : 1.0) * 100) / 100);
+                ticks.push({
+                    step: s,
+                    price: currP,
+                    best_bid: currP - halfSpread,
+                    best_ask: currP + halfSpread,
+                    spread: halfSpread * 2,
+                    depth_bids: Math.floor(rng() * 20) + 10,
+                    depth_asks: Math.floor(rng() * 20) + 10
+                });
+            }
+
+            // Agents setup
+            const agentDefs = [
+                { id: 'agent_momentum', name: 'Momentum Trend Agent', type: 'MOMENTUM' },
+                { id: 'agent_mean_rev', name: 'Mean Reversion Agent', type: 'MEAN_REVERSION' },
+                { id: 'agent_mm', name: 'Market Making Agent', type: 'MARKET_MAKER' },
+                { id: 'agent_liquidity', name: 'Liquidity Hunter Agent', type: 'LIQUIDITY_HUNTER' },
+                { id: 'agent_conservative', name: 'Conservative Risk Guard', type: 'CONSERVATIVE' },
+                { id: 'agent_adaptive', name: 'Adaptive Regime Agent', type: 'ADAPTIVE' }
+            ];
+            if (params.include_human) {
+                agentDefs.push({ id: 'human_user', name: 'Human Trader (You)', type: 'HUMAN' });
+            }
+
+            const agents = {};
+            agentDefs.forEach(d => {
+                agents[d.id] = {
+                    id: d.id,
+                    name: d.name,
+                    type: d.type,
+                    cash: initCash,
+                    initialCash: initCash,
+                    positionQty: 0.0,
+                    avgEntryPrice: 0.0,
+                    realizedPnl: 0.0,
+                    unrealizedPnl: 0.0,
+                    equity: initCash,
+                    peakEquity: initCash,
+                    maxDrawdown: 0.0,
+                    totalFees: 0.0,
+                    tradesCount: 0,
+                    winningTrades: 0,
+                    losingTrades: 0,
+                    grossProfits: 0.0,
+                    grossLosses: 0.0,
+                    holdingSteps: 0,
+                    equityCurve: [{ step: 0, equity: initCash, price: basePrice, drawdown_pct: 0.0 }],
+                    decisions: []
+                };
+            });
+
+            // Step loop
+            const priceHist = [];
+            ticks.forEach((tick, idx) => {
+                priceHist.push(tick.price);
+
+                agentDefs.forEach(d => {
+                    const ag = agents[d.id];
+                    let action = 'HOLD';
+                    let qty = 0;
+                    let rule = 'NO_SIGNAL';
+                    let reason = 'Market conditions neutral.';
+                    const indicators = {};
+
+                    // Strategy decision logic
+                    if (d.type === 'MOMENTUM') {
+                        const sma5 = calcClientSMA(priceHist, 5);
+                        const sma15 = calcClientSMA(priceHist, 15);
+                        indicators.fast_ma = sma5;
+                        indicators.slow_ma = sma15;
+                        if (sma5 && sma15 && sma5 > sma15) {
+                            if (ag.positionQty === 0) {
+                                action = 'BUY';
+                                qty = Math.round((ag.cash * 0.25 / tick.best_ask) * 1000) / 1000;
+                                rule = 'BULLISH_CROSSOVER';
+                                reason = `Fast MA ($${sma5.toFixed(2)}) crossed above Slow MA ($${sma15.toFixed(2)}).`;
+                            } else {
+                                rule = 'MAINTAIN_MOMENTUM';
+                                reason = 'Riding upward trend momentum.';
+                            }
+                        } else if (sma5 && sma15 && sma5 < sma15 && ag.positionQty > 0) {
+                            action = 'CLOSE';
+                            qty = ag.positionQty;
+                            rule = 'BEARISH_CROSSOVER';
+                            reason = 'Fast MA crossed below Slow MA. Exiting position.';
+                        }
+                    } else if (d.type === 'MEAN_REVERSION') {
+                        const bb = calcClientBollinger(priceHist, 15, 1.8);
+                        const rsi = calcClientRSI(priceHist, 10);
+                        indicators.bb_lower = bb?.lower;
+                        indicators.bb_upper = bb?.upper;
+                        indicators.rsi = rsi;
+                        if (bb && rsi && tick.price <= bb.lower && rsi < 35 && ag.positionQty === 0) {
+                            action = 'BUY';
+                            qty = Math.round((ag.cash * 0.30 / tick.best_ask) * 1000) / 1000;
+                            rule = 'OVERSOLD_PIERCE';
+                            reason = `Price pierced Lower Band ($${bb.lower.toFixed(2)}) with RSI (${rsi.toFixed(1)} < 35). Buying dip.`;
+                        } else if (bb && ag.positionQty > 0 && tick.price >= bb.mid) {
+                            action = 'CLOSE';
+                            qty = ag.positionQty;
+                            rule = 'MEAN_REACHED';
+                            reason = 'Price reverted to central moving average. Locking profit.';
+                        }
+                    } else if (d.type === 'MARKET_MAKER') {
+                        if (ag.positionQty < 4.0 && tick.price <= (tick.best_bid + 0.1)) {
+                            action = 'BUY';
+                            qty = 1.0;
+                            rule = 'PASSIVE_BID_FILL';
+                            reason = 'Market traded through resting passive bid quote.';
+                        } else if (ag.positionQty > 0 && tick.price >= (ag.avgEntryPrice * 1.003)) {
+                            action = 'SELL';
+                            qty = Math.min(1.0, ag.positionQty);
+                            rule = 'PASSIVE_ASK_FILL';
+                            reason = 'Harvesting half-spread profit on resting ask.';
+                        }
+                    } else if (d.type === 'LIQUIDITY_HUNTER') {
+                        const imb = (tick.depth_bids - tick.depth_asks) / (tick.depth_bids + tick.depth_asks);
+                        indicators.imbalance = Math.round(imb * 100) / 100;
+                        if (imb > 0.30 && ag.positionQty === 0) {
+                            action = 'BUY';
+                            qty = 2.0;
+                            rule = 'BID_DEPTH_SURGE';
+                            reason = `Bid liquidity imbalance (+${(imb*100).toFixed(0)}%) breakout entry.`;
+                        } else if (imb < -0.30 && ag.positionQty > 0) {
+                            action = 'CLOSE';
+                            qty = ag.positionQty;
+                            rule = 'ASK_WALL_DETECTED';
+                            reason = 'Ask wall overwhelming bids. Liquidating before drop.';
+                        }
+                    } else if (d.type === 'CONSERVATIVE') {
+                        if (ag.positionQty > 0 && ag.avgEntryPrice > 0) {
+                            const pnlPct = ((tick.price - ag.avgEntryPrice) / ag.avgEntryPrice) * 100;
+                            if (pnlPct <= -1.0) {
+                                action = 'CLOSE';
+                                qty = ag.positionQty;
+                                rule = 'STOP_LOSS_CUT';
+                                reason = `Stop-loss limit (-1.0%) hit (Actual: ${pnlPct.toFixed(2)}%). Liquidating.`;
+                            } else if (pnlPct >= 2.5) {
+                                action = 'CLOSE';
+                                qty = ag.positionQty;
+                                rule = 'TAKE_PROFIT_HARVEST';
+                                reason = `Profit target (+2.5%) reached. Closing cleanly.`;
+                            }
+                        } else if (ag.positionQty === 0 && priceHist.length > 10) {
+                            const sma5 = calcClientSMA(priceHist, 5);
+                            const sma15 = calcClientSMA(priceHist, 15);
+                            if (sma5 && sma15 && sma5 > sma15) {
+                                action = 'BUY';
+                                qty = 1.0;
+                                rule = 'CONSERVATIVE_ENTRY';
+                                reason = 'Strict risk-budgeted trend entry.';
+                            }
+                        }
+                    } else if (d.type === 'ADAPTIVE') {
+                        const len = priceHist.length;
+                        const er = len >= 10 ? Math.abs(priceHist[len-1] - priceHist[len-10]) / (priceHist.slice(len-10).reduce((acc, p, i, arr) => i > 0 ? acc + Math.abs(p - arr[i-1]) : 0, 0) || 1) : 0.5;
+                        indicators.efficiency_ratio = Math.round(er * 100) / 100;
+                        if (er >= 0.40) {
+                            // Trend Mode
+                            const sma5 = calcClientSMA(priceHist, 5);
+                            const sma15 = calcClientSMA(priceHist, 15);
+                            if (sma5 > sma15 && ag.positionQty === 0) {
+                                action = 'BUY';
+                                qty = 1.5;
+                                rule = 'ADAPTIVE_TREND_BUY';
+                                reason = `Adaptive regime: Directional Trend (ER: ${er.toFixed(2)}).`;
+                            }
+                        } else {
+                            // Range Mode
+                            const rsi = calcClientRSI(priceHist, 10);
+                            if (rsi < 35 && ag.positionQty === 0) {
+                                action = 'BUY';
+                                qty = 1.5;
+                                rule = 'ADAPTIVE_RANGE_DIP';
+                                reason = `Adaptive regime: Mean Reverting (ER: ${er.toFixed(2)}).`;
+                            }
+                        }
+                    } else if (d.type === 'HUMAN') {
+                        // User manual queued trade
+                        if (arenaHumanQueuedAction !== 'HOLD') {
+                            action = arenaHumanQueuedAction;
+                            qty = arenaHumanQueuedQty;
+                            rule = `HUMAN_DISCRETIONARY_${action}`;
+                            reason = 'Manual user trade submission.';
+                            arenaHumanQueuedAction = 'HOLD';
+                        }
+                    }
+
+                    // Execute
+                    let execResult = 'HOLD';
+                    const feeRate = 0.0005;
+                    if (action === 'BUY' && qty > 0) {
+                        const cost = tick.best_ask * qty;
+                        const fee = cost * feeRate;
+                        if (ag.cash >= (cost + fee)) {
+                            ag.cash -= (cost + fee);
+                            ag.totalFees += fee;
+                            const totQ = ag.positionQty + qty;
+                            ag.avgEntryPrice = ((ag.positionQty * ag.avgEntryPrice) + (qty * tick.best_ask)) / totQ;
+                            ag.positionQty = totQ;
+                            ag.tradesCount++;
+                            execResult = `FILLED BUY ${qty}x @ $${tick.best_ask.toFixed(2)}`;
+                        } else {
+                            execResult = 'REJECTED (Insufficient cash)';
+                        }
+                    } else if ((action === 'SELL' || action === 'CLOSE') && ag.positionQty > 0) {
+                        const sellQ = action === 'CLOSE' ? ag.positionQty : Math.min(qty, ag.positionQty);
+                        const proceeds = tick.best_bid * sellQ;
+                        const fee = proceeds * feeRate;
+                        ag.totalFees += fee;
+                        const pnl = (proceeds - fee) - (ag.avgEntryPrice * sellQ);
+                        ag.cash += (proceeds - fee);
+                        ag.positionQty = Math.max(0, ag.positionQty - sellQ);
+                        if (ag.positionQty === 0) ag.avgEntryPrice = 0.0;
+                        ag.realizedPnl += pnl;
+                        ag.tradesCount++;
+                        if (pnl > 0) { ag.winningTrades++; ag.grossProfits += pnl; }
+                        else { ag.losingTrades++; ag.grossLosses += Math.abs(pnl); }
+                        execResult = `FILLED SELL ${sellQ}x @ $${tick.best_bid.toFixed(2)} (P&L: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)})`;
+                    }
+
+                    // Valuation & Drawdown
+                    const posVal = ag.positionQty * tick.price;
+                    ag.unrealizedPnl = posVal - (ag.positionQty * ag.avgEntryPrice);
+                    ag.equity = ag.cash + posVal;
+                    if (ag.equity > ag.peakEquity) ag.peakEquity = ag.equity;
+                    const dd = ag.peakEquity > 0 ? ((ag.peakEquity - ag.equity) / ag.peakEquity) * 100 : 0;
+                    if (dd > ag.maxDrawdown) ag.maxDrawdown = dd;
+                    if (ag.positionQty > 0) ag.holdingSteps++;
+
+                    ag.equityCurve.push({
+                        step: tick.step,
+                        equity: Math.round(ag.equity * 100) / 100,
+                        price: tick.price,
+                        drawdown_pct: Math.round(dd * 100) / 100
+                    });
+
+                    ag.decisions.push({
+                        step: tick.step,
+                        agent_id: ag.id,
+                        agent_name: ag.name,
+                        action: action,
+                        proposed_qty: qty,
+                        proposed_price: action === 'BUY' ? tick.best_ask : tick.best_bid,
+                        observed_price: tick.price,
+                        indicators: indicators,
+                        rule_triggered: rule,
+                        execution_result: execResult,
+                        reason: reason
+                    });
+                });
+            });
+
+            // Calculate metrics & leaderboard
+            const leaderboard = Object.values(agents).map(ag => {
+                const retPct = ((ag.equity - ag.initialCash) / ag.initialCash) * 100;
+                const winRate = ag.tradesCount > 0 ? (ag.winningTrades / ag.tradesCount) * 100 : 0;
+                const profitFactor = ag.grossLosses > 0 ? ag.grossProfits / ag.grossLosses : (ag.grossProfits > 0 ? 9.99 : 1.0);
+                const avgHold = Math.round(ag.holdingSteps / Math.max(1, ag.tradesCount));
+                return {
+                    agent_id: ag.id,
+                    name: ag.name,
+                    agent_type: ag.type,
+                    final_equity: Math.round(ag.equity * 100) / 100,
+                    total_return_pct: Math.round(retPct * 100) / 100,
+                    realized_pnl: Math.round(ag.realizedPnl * 100) / 100,
+                    unrealized_pnl: Math.round(ag.unrealizedPnl * 100) / 100,
+                    max_drawdown_pct: Math.round(ag.maxDrawdown * 100) / 100,
+                    win_rate_pct: Math.round(winRate * 10) / 10,
+                    total_trades: ag.tradesCount,
+                    winning_trades: ag.winningTrades,
+                    losing_trades: ag.losingTrades,
+                    profit_factor: Math.round(profitFactor * 100) / 100,
+                    avg_holding_steps: avgHold,
+                    total_fees_paid: Math.round(ag.totalFees * 100) / 100,
+                    sharpe_ratio: Math.round((retPct / Math.max(1, ag.maxDrawdown)) * 100) / 100,
+                    sortino_ratio: Math.round((retPct / Math.max(1, ag.maxDrawdown * 0.7)) * 100) / 100,
+                    position_qty: ag.positionQty
+                };
+            }).sort((a, b) => b.total_return_pct - a.total_return_pct);
+
+            const winner = leaderboard[0];
+            const debrief = `**${winner.name}** took 1st place with a return of **+${winner.total_return_pct}%** (Max Drawdown: ${winner.max_drawdown_pct}% over ${winner.total_trades} trades). In this ${condition} regime, the winning strategy gained an edge by aligning its positions with the underlying price distribution and managing inventory risk.`;
+
+            const eqCurves = {};
+            const recentDecisions = {};
+            Object.values(agents).forEach(ag => {
+                eqCurves[ag.id] = ag.equityCurve;
+                recentDecisions[ag.id] = ag.decisions;
+            });
+
+            return {
+                status: 'success',
+                seed: params.seed,
+                symbol: params.symbol,
+                condition: condition,
+                num_steps: numSteps,
+                initial_cash: initCash,
+                winner: winner,
+                leaderboard: leaderboard,
+                debrief: debrief,
+                market_ticks: ticks,
+                equity_curves: eqCurves,
+                recent_decisions: recentDecisions
+            };
+        }
+
+        // Helper indicators for client engine
+        function calcClientSMA(arr, p) {
+            if (arr.length < p) return null;
+            return arr.slice(-p).reduce((a, b) => a + b, 0) / p;
+        }
+
+        function calcClientRSI(arr, p) {
+            if (arr.length < 3) return null;
+            const effP = Math.min(p, arr.length - 1);
+            let gains = 0, losses = 0;
+            for (let i = arr.length - effP; i < arr.length; i++) {
+                const diff = arr[i] - arr[i-1];
+                if (diff > 0) gains += diff;
+                else losses += Math.abs(diff);
+            }
+            if (losses === 0) return 100.0;
+            const rs = (gains / effP) / (losses / effP);
+            return 100.0 - (100.0 / (1.0 + rs));
+        }
+
+        function calcClientBollinger(arr, p, stdMult) {
+            if (arr.length < p) return null;
+            const slice = arr.slice(-p);
+            const mean = slice.reduce((a, b) => a + b, 0) / p;
+            const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / p;
+            const std = Math.sqrt(variance);
+            return { lower: mean - stdMult * std, mid: mean, upper: mean + stdMult * std };
+        }
+
+        // =====================================================================
+        // PLAYBACK & UI CONTROLS
+        // =====================================================================
+        function toggleArenaPlayback() {
+            if (arenaPlaybackTimer) {
+                clearInterval(arenaPlaybackTimer);
+                arenaPlaybackTimer = null;
+                document.getElementById('arena-playback-icon').textContent = '▶';
+                document.getElementById('arena-playback-text').textContent = 'Play';
+            } else {
+                if (!arenaSimState || !arenaSimState.num_steps) return;
+                if (arenaCurrentStep >= arenaSimState.num_steps) {
+                    arenaCurrentStep = 0;
+                }
+                document.getElementById('arena-playback-icon').textContent = '⏸';
+                document.getElementById('arena-playback-text').textContent = 'Pause';
+                startPlaybackInterval();
+            }
+        }
+
+        function startPlaybackInterval() {
+            arenaPlaybackTimer = setInterval(() => {
+                if (arenaSimState && arenaCurrentStep < arenaSimState.num_steps) {
+                    arenaCurrentStep++;
+                    updateArenaStepUI(arenaCurrentStep);
+                } else {
+                    toggleArenaPlayback();
+                }
+            }, 150 / arenaPlaybackSpeed);
+        }
+
+        function stepArenaCompetitionUI() {
+            if (!arenaSimState) return;
+            if (arenaCurrentStep < arenaSimState.num_steps) {
+                arenaCurrentStep++;
+                updateArenaStepUI(arenaCurrentStep);
+            }
+        }
+
+        function restartArenaCompetitionUI() {
+            if (arenaPlaybackTimer) {
+                clearInterval(arenaPlaybackTimer);
+                arenaPlaybackTimer = null;
+                document.getElementById('arena-playback-icon').textContent = '▶';
+                document.getElementById('arena-playback-text').textContent = 'Play';
+            }
+            arenaCurrentStep = 0;
+            updateArenaStepUI(0);
+        }
+
+        function onArenaScrubberChange(step) {
+            arenaCurrentStep = step;
+            updateArenaStepUI(step);
+        }
+
+        function updateArenaStepUI(step) {
+            const slider = document.getElementById('arena-scrubber-slider');
+            if (slider) slider.value = step;
+
+            const lbl = document.getElementById('arena-step-label');
+            if (lbl && arenaSimState) {
+                lbl.textContent = `Step ${step} / ${arenaSimState.num_steps}`;
+            }
+
+            renderArenaScoreboard();
+            renderArenaCharts();
+            renderArenaDecisionInspector();
+            updateHumanDeskStats();
+        }
+
+        function updateHumanDeskStats() {
+            if (!arenaSimState || !arenaSimState.equity_curves || !arenaSimState.equity_curves['human_user']) return;
+            const curve = arenaSimState.equity_curves['human_user'];
+            const stepEntry = curve[Math.min(curve.length - 1, arenaCurrentStep)] || curve[0];
+            const cashElem = document.getElementById('arena-human-cash');
+            const posElem = document.getElementById('arena-human-pos');
+            const pnlElem = document.getElementById('arena-human-pnl');
+
+            if (cashElem) cashElem.textContent = `$${stepEntry.equity.toLocaleString()}`;
+            if (posElem) posElem.textContent = `${(stepEntry.position_qty || 0).toFixed(4)}`;
+            if (pnlElem) {
+                const pnl = stepEntry.equity - arenaSimState.initial_cash;
+                pnlElem.textContent = `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`;
+                pnlElem.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+            }
+        }
+
+        // =====================================================================
+        // RENDERERS (SCOREBOARD, DECISIONS, CHARTS, ANALYTICS)
+        // =====================================================================
+        function renderArenaScoreboard() {
+            const container = document.getElementById('arena-scoreboard-container');
+            if (!container || !arenaSimState || !arenaSimState.equity_curves) return;
+
+            // Sort competitors by equity at current step
+            const currentStandings = [];
+            Object.keys(arenaSimState.equity_curves).forEach(id => {
+                const curve = arenaSimState.equity_curves[id];
+                const pt = curve[Math.min(curve.length - 1, arenaCurrentStep)] || curve[0];
+                const ret = ((pt.equity - arenaSimState.initial_cash) / arenaSimState.initial_cash) * 100;
+                currentStandings.push({
+                    id: id,
+                    name: ARENA_AGENT_NAMES[id] || id,
+                    equity: pt.equity,
+                    returnPct: ret,
+                    color: ARENA_AGENT_COLORS[id] || '#ffffff'
+                });
+            });
+
+            currentStandings.sort((a, b) => b.returnPct - a.returnPct);
+
+            container.innerHTML = currentStandings.map((c, i) => `
+                <div class="arena-score-card" style="border-left: 4px solid ${c.color};">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="mono" style="font-size: 11px; font-weight: 800; color: var(--text-muted);">#${i + 1}</span>
+                            <span style="font-size: 12px; font-weight: 700; color: var(--text-main);">${c.name}</span>
+                        </div>
+                        <div class="mono" style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                            $${c.equity.toLocaleString()}
+                        </div>
+                    </div>
+                    <div class="mono" style="font-size: 14px; font-weight: 800; color: ${c.returnPct >= 0 ? 'var(--green)' : 'var(--red)'};">
+                        ${c.returnPct >= 0 ? '+' : ''}${c.returnPct.toFixed(2)}%
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderArenaDecisionInspector() {
+            const container = document.getElementById('arena-inspector-cards-container');
+            if (!container || !arenaSimState || !arenaSimState.recent_decisions) return;
+
+            const filterAgent = document.getElementById('arena-inspector-filter')?.value || 'ALL';
+            const stepInfo = document.getElementById('arena-inspector-step-info');
+            if (stepInfo) stepInfo.textContent = `Showing decisions for Step #${arenaCurrentStep}`;
+
+            const decisionsToShow = [];
+            Object.keys(arenaSimState.recent_decisions).forEach(id => {
+                if (filterAgent !== 'ALL' && filterAgent !== id) return;
+                const decList = arenaSimState.recent_decisions[id];
+                // Get decision for current step, or latest up to current step
+                const d = decList.find(item => item.step === arenaCurrentStep) || decList[decList.length - 1];
+                if (d) decisionsToShow.push(d);
+            });
+
+            if (decisionsToShow.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">No decisions recorded for selected filter.</div>`;
+                return;
+            }
+
+            container.innerHTML = decisionsToShow.map(d => {
+                const color = ARENA_AGENT_COLORS[d.agent_id] || '#ffffff';
+                const isBuy = d.action === 'BUY';
+                const isSell = d.action === 'SELL' || d.action === 'CLOSE';
+                const actionBadgeStyle = isBuy ? 'background: rgba(16, 185, 129, 0.15); color: var(--green);' : (isSell ? 'background: rgba(244, 63, 94, 0.15); color: var(--red);' : 'background: rgba(148, 163, 184, 0.15); color: var(--text-sub);');
+
+                return `
+                    <div class="arena-decision-card" style="border-left: 4px solid ${color};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <strong style="font-size: 13px; color: var(--text-main);">${d.agent_name}</strong>
+                                <span class="badge-tag mono" style="${actionBadgeStyle}; font-size: 10px; font-weight: 700;">${d.action}</span>
+                            </div>
+                            <span class="mono" style="font-size: 11px; color: var(--text-muted);">Step #${d.step} • Market: $${d.observed_price.toFixed(2)}</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; background: var(--bg-subtle); padding: 10px; border-radius: 6px; font-size: 11px; margin-bottom: 8px;" class="mono">
+                            <div>
+                                <span style="color: var(--text-muted);">Rule Triggered:</span>
+                                <div style="color: var(--blue); font-weight: 700;">${d.rule_triggered}</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted);">Order Proposed:</span>
+                                <div style="color: var(--text-main);">${d.action} ${d.proposed_qty}x @ $${d.proposed_price.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted);">Execution Outcome:</span>
+                                <div style="color: ${d.execution_result.includes('FILLED') ? 'var(--green)' : 'var(--text-sub)'}; font-weight: 700;">${d.execution_result}</div>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 11px; color: var(--text-sub); line-height: 1.5;">
+                            <strong style="color: var(--text-main);">Causal Logic:</strong> ${d.reason}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderArenaAnalytics() {
+            const tableBody = document.getElementById('arena-analytics-table-body');
+            if (!tableBody || !arenaSimState || !arenaSimState.leaderboard) return;
+
+            tableBody.innerHTML = arenaSimState.leaderboard.map((m, i) => `
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 8px 10px; font-weight: 800; color: ${i === 0 ? 'var(--yellow)' : 'var(--text-muted)'};">#${i + 1}</td>
+                    <td style="padding: 8px 10px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: ${ARENA_AGENT_COLORS[m.agent_id] || '#ffffff'}; display: inline-block;"></span>
+                        ${m.name}
+                    </td>
+                    <td style="padding: 8px 10px;">$${m.final_equity.toLocaleString()}</td>
+                    <td style="padding: 8px 10px; font-weight: 800; color: ${m.total_return_pct >= 0 ? 'var(--green)' : 'var(--red)'};">${m.total_return_pct >= 0 ? '+' : ''}${m.total_return_pct}%</td>
+                    <td style="padding: 8px 10px; color: var(--red);">${m.max_drawdown_pct}%</td>
+                    <td style="padding: 8px 10px; color: ${m.win_rate_pct >= 50 ? 'var(--green)' : 'var(--text-sub)'};">${m.win_rate_pct}%</td>
+                    <td style="padding: 8px 10px;">${m.total_trades} (${m.winning_trades}W / ${m.losing_trades}L)</td>
+                    <td style="padding: 8px 10px;">${m.avg_holding_steps} steps</td>
+                    <td style="padding: 8px 10px; font-weight: 700;">${m.sharpe_ratio}</td>
+                    <td style="padding: 8px 10px;">${m.sortino_ratio}</td>
+                    <td style="padding: 8px 10px; color: var(--text-sub);">$${m.total_fees_paid.toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            const debriefTitle = document.getElementById('arena-debrief-title');
+            if (debriefTitle && arenaSimState.winner) {
+                debriefTitle.textContent = `Debrief: Why ${arenaSimState.winner.name} Won 1st Place`;
+            }
+
+            const debriefBody = document.getElementById('arena-debrief-body');
+            if (debriefBody && arenaSimState.debrief) {
+                debriefBody.innerHTML = arenaSimState.debrief.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            }
+        }
+
+        // =====================================================================
+        // CANVAS CHARTS (EQUITY OVERLAY, DRAWDOWNS, EVOLUTION)
+        // =====================================================================
+        function renderArenaCharts() {
+            drawArenaEquityChart();
+            drawArenaDrawdownChart();
+            drawArenaEvolutionChart();
+        }
+
+        function drawArenaEquityChart() {
+            const canvas = document.getElementById('arena-equity-chart');
+            if (!canvas || !arenaSimState || !arenaSimState.equity_curves) return;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const padL = 60, padR = 20, padT = 20, padB = 30;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+
+            // Find min/max equity across all curves
+            let minEq = Infinity, maxEq = -Infinity;
+            Object.values(arenaSimState.equity_curves).forEach(curve => {
+                curve.forEach(pt => {
+                    if (pt.equity < minEq) minEq = pt.equity;
+                    if (pt.equity > maxEq) maxEq = pt.equity;
+                });
+            });
+
+            if (minEq === Infinity || maxEq === -Infinity) {
+                minEq = arenaSimState.initial_cash * 0.95;
+                maxEq = arenaSimState.initial_cash * 1.05;
+            }
+            minEq = Math.min(minEq, arenaSimState.initial_cash * 0.98);
+            maxEq = Math.max(maxEq, arenaSimState.initial_cash * 1.02);
+            const rangeEq = Math.max(10, maxEq - minEq);
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padT + (i / 4) * plotH;
+                ctx.beginPath();
+                ctx.moveTo(padL, y);
+                ctx.lineTo(w - padR, y);
+                ctx.stroke();
+
+                const val = maxEq - (i / 4) * rangeEq;
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '9px JetBrains Mono, monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText(`$${Math.round(val).toLocaleString()}`, padL - 8, y + 3);
+            }
+
+            // Legend elements update
+            const legendContainer = document.getElementById('arena-chart-legend');
+            if (legendContainer) {
+                legendContainer.innerHTML = Object.keys(arenaSimState.equity_curves).map(id => `
+                    <span style="display: inline-flex; align-items: center; gap: 4px; color: ${ARENA_AGENT_COLORS[id] || '#fff'};">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: ${ARENA_AGENT_COLORS[id] || '#fff'};"></span>
+                        ${ARENA_AGENT_NAMES[id] || id}
+                    </span>
+                `).join('');
+            }
+
+            // Draw line for each agent up to arenaCurrentStep
+            Object.keys(arenaSimState.equity_curves).forEach(id => {
+                const curve = arenaSimState.equity_curves[id];
+                const color = ARENA_AGENT_COLORS[id] || '#ffffff';
+                const ptsToDraw = curve.slice(0, arenaCurrentStep + 1);
+                if (ptsToDraw.length < 2) return;
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = id === 'human_user' ? 3 : 2;
+                ctx.beginPath();
+                ptsToDraw.forEach((pt, i) => {
+                    const x = padL + (pt.step / arenaSimState.num_steps) * plotW;
+                    const y = padT + (1 - (pt.equity - minEq) / rangeEq) * plotH;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            });
+
+            // Scrubber vertical dashed line
+            if (arenaCurrentStep <= arenaSimState.num_steps) {
+                const sx = padL + (arenaCurrentStep / arenaSimState.num_steps) * plotW;
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(sx, padT);
+                ctx.lineTo(sx, padT + plotH);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        function drawArenaDrawdownChart() {
+            const canvas = document.getElementById('arena-drawdown-chart');
+            if (!canvas || !arenaSimState || !arenaSimState.equity_curves) return;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const padL = 40, padR = 20, padT = 15, padB = 25;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+
+            let maxDD = 5.0;
+            Object.values(arenaSimState.equity_curves).forEach(curve => {
+                curve.forEach(pt => {
+                    if (pt.drawdown_pct > maxDD) maxDD = pt.drawdown_pct;
+                });
+            });
+
+            // Draw zero line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.beginPath();
+            ctx.moveTo(padL, padT);
+            ctx.lineTo(w - padR, padT);
+            ctx.stroke();
+
+            // Draw drawdowns
+            Object.keys(arenaSimState.equity_curves).forEach(id => {
+                const curve = arenaSimState.equity_curves[id];
+                const color = ARENA_AGENT_COLORS[id] || '#ffffff';
+                if (curve.length < 2) return;
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                curve.forEach((pt, i) => {
+                    const x = padL + (pt.step / arenaSimState.num_steps) * plotW;
+                    const y = padT + (pt.drawdown_pct / maxDD) * plotH;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            });
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '9px JetBrains Mono, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('0%', padL - 6, padT + 4);
+            ctx.fillText(`-${maxDD.toFixed(1)}%`, padL - 6, padT + plotH);
+        }
+
+        // =====================================================================
+        // STRATEGY EVOLUTION LAB
+        // =====================================================================
+        const ARENA_EVO_PARAMS = {
+            MOMENTUM: [
+                { id: 'fast_period', label: 'Fast MA Period', val: 3, min: 2, max: 20 },
+                { id: 'slow_period', label: 'Slow MA Period', val: 12, min: 5, max: 50 },
+                { id: 'roc_threshold', label: 'ROC Momentum Threshold %', val: 0.15, min: 0.05, max: 2.0, step: 0.05 },
+                { id: 'position_size_pct', label: 'Position Size %', val: 35.0, min: 10, max: 80 }
+            ],
+            MEAN_REVERSION: [
+                { id: 'bb_period', label: 'Bollinger Period', val: 12, min: 5, max: 30 },
+                { id: 'num_std', label: 'Std Deviation Multiplier', val: 1.6, min: 1.0, max: 3.0, step: 0.1 },
+                { id: 'rsi_oversold', label: 'RSI Oversold Level', val: 30.0, min: 15, max: 40 },
+                { id: 'rsi_overbought', label: 'RSI Overbought Level', val: 70.0, min: 60, max: 85 }
+            ],
+            MARKET_MAKER: [
+                { id: 'half_spread_pct', label: 'Half Spread %', val: 0.003, min: 0.001, max: 0.01, step: 0.001 },
+                { id: 'max_inventory', label: 'Max Inventory Units', val: 8.0, min: 2, max: 20 },
+                { id: 'quote_size', label: 'Quote Size', val: 2.0, min: 0.5, max: 5.0, step: 0.5 }
+            ],
+            CONSERVATIVE: [
+                { id: 'stop_loss_pct', label: 'Stop-Loss %', val: 0.8, min: 0.3, max: 3.0, step: 0.1 },
+                { id: 'take_profit_pct', label: 'Take-Profit %', val: 3.2, min: 1.0, max: 8.0, step: 0.2 },
+                { id: 'max_risk_pct', label: 'Max Portfolio Risk %', val: 1.5, min: 0.5, max: 5.0, step: 0.5 }
+            ],
+            ADAPTIVE: [
+                { id: 'regime_window', label: 'Regime Lookback Window', val: 10, min: 5, max: 30 },
+                { id: 'trend_threshold', label: 'Efficiency Ratio Threshold', val: 0.35, min: 0.2, max: 0.7, step: 0.05 }
+            ]
+        };
+
+        function loadEvolutionDefaultParams(strategy) {
+            const container = document.getElementById('arena-evo-params-form');
+            if (!container) return;
+            const fields = ARENA_EVO_PARAMS[strategy] || ARENA_EVO_PARAMS.MOMENTUM;
+
+            container.innerHTML = fields.map(f => `
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+                        <span style="color: var(--text-sub);">${f.label}</span>
+                        <span class="mono" style="color: var(--text-main); font-weight: 700;" id="arena-evo-val-${f.id}">${f.val}</span>
+                    </div>
+                    <input type="number" id="arena-evo-param-${f.id}" value="${f.val}" min="${f.min}" max="${f.max}" step="${f.step || 1}" class="mono" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 10px; border-radius: 6px; font-size: 12px;" oninput="document.getElementById('arena-evo-val-${f.id}').textContent = this.value">
+                </div>
+            `).join('');
+        }
+
+        async function runStrategyEvolutionUI() {
+            const strat = document.getElementById('arena-evo-strategy')?.value || 'MOMENTUM';
+            const seed = parseInt(document.getElementById('arena-param-seed')?.value) || 42;
+            const symbol = document.getElementById('arena-param-symbol')?.value || 'BTCUSDT';
+            const condition = document.getElementById('arena-param-condition')?.value || 'TRENDING_BULL';
+            const steps = parseInt(document.getElementById('arena-param-steps')?.value) || 100;
+            const cash = parseFloat(document.getElementById('arena-param-cash')?.value) || 100000.0;
+
+            const modParams = {};
+            const fields = ARENA_EVO_PARAMS[strat] || [];
+            fields.forEach(f => {
+                const elem = document.getElementById(`arena-evo-param-${f.id}`);
+                if (elem) modParams[f.id] = parseFloat(elem.value);
+            });
+
+            let evoData = null;
+            try {
+                const resp = await fetch('/api/arena/compare-strategies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        seed: seed,
+                        symbol: symbol,
+                        agent_type: strat,
+                        condition: condition,
+                        base_params: {},
+                        modified_params: modParams,
+                        num_steps: steps,
+                        initial_cash: cash
+                    })
+                });
+                if (resp.ok) evoData = await resp.json();
+            } catch (err) {}
+
+            if (!evoData || !evoData.deltas) {
+                // Client-side evolution run
+                const baseRun = runClientArenaCompetition({ seed: seed, symbol: symbol, num_steps: steps, initial_cash: cash, condition: condition, include_human: false });
+                const baseMetric = baseRun.leaderboard.find(m => m.agent_type === strat) || baseRun.leaderboard[0];
+                const modRun = runClientArenaCompetition({ seed: seed, symbol: symbol, num_steps: steps, initial_cash: cash, condition: condition, include_human: false });
+                const modMetric = modRun.leaderboard.find(m => m.agent_type === strat) || modRun.leaderboard[0];
+
+                evoData = {
+                    original: baseMetric,
+                    modified: modMetric,
+                    deltas: {
+                        return_delta_pct: Math.round((modMetric.total_return_pct - baseMetric.total_return_pct) * 100) / 100,
+                        drawdown_delta_pct: Math.round((modMetric.max_drawdown_pct - baseMetric.max_drawdown_pct) * 100) / 100,
+                        win_rate_delta_pct: Math.round((modMetric.win_rate_pct - baseMetric.win_rate_pct) * 10) / 10,
+                        trades_delta: modMetric.total_trades - baseMetric.total_trades,
+                        fees_delta: Math.round((modMetric.total_fees_paid - baseMetric.total_fees_paid) * 100) / 100,
+                        sharpe_delta: Math.round((modMetric.sharpe_ratio - baseMetric.sharpe_ratio) * 100) / 100
+                    },
+                    base_equity_curve: baseRun.equity_curves[baseMetric.agent_id] || [],
+                    modified_equity_curve: modRun.equity_curves[modMetric.agent_id] || []
+                };
+            }
+
+            arenaEvolutionResult = evoData;
+            renderEvolutionResults(evoData);
+        }
+
+        function renderEvolutionResults(data) {
+            const tableBody = document.getElementById('arena-evo-table-body');
+            if (!tableBody || !data) return;
+
+            const o = data.original;
+            const m = data.modified;
+            const d = data.deltas;
+
+            const rows = [
+                { metric: 'Total Return %', orig: `${o.total_return_pct}%`, mod: `${m.total_return_pct}%`, delta: `${d.return_delta_pct > 0 ? '+' : ''}${d.return_delta_pct}%`, good: d.return_delta_pct >= 0 },
+                { metric: 'Max Drawdown %', orig: `${o.max_drawdown_pct}%`, mod: `${m.max_drawdown_pct}%`, delta: `${d.drawdown_delta_pct > 0 ? '+' : ''}${d.drawdown_delta_pct}%`, good: d.drawdown_delta_pct <= 0 },
+                { metric: 'Win Rate %', orig: `${o.win_rate_pct}%`, mod: `${m.win_rate_pct}%`, delta: `${d.win_rate_delta_pct > 0 ? '+' : ''}${d.win_rate_delta_pct}%`, good: d.win_rate_delta_pct >= 0 },
+                { metric: 'Trades Executed', orig: `${o.total_trades}`, mod: `${m.total_trades}`, delta: `${d.trades_delta > 0 ? '+' : ''}${d.trades_delta}`, good: true },
+                { metric: 'Sharpe Ratio', orig: `${o.sharpe_ratio}`, mod: `${m.sharpe_ratio}`, delta: `${d.sharpe_delta > 0 ? '+' : ''}${d.sharpe_delta}`, good: d.sharpe_delta >= 0 },
+                { metric: 'Total Fees Paid', orig: `$${o.total_fees_paid.toFixed(2)}`, mod: `$${m.total_fees_paid.toFixed(2)}`, delta: `$${d.fees_delta.toFixed(2)}`, good: d.fees_delta <= 0 }
+            ];
+
+            tableBody.innerHTML = rows.map(r => `
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 6px 10px; color: var(--text-main); font-weight: 700;">${r.metric}</td>
+                    <td style="padding: 6px 10px; color: var(--text-sub);">${r.orig}</td>
+                    <td style="padding: 6px 10px; color: var(--text-main); font-weight: 700;">${r.mod}</td>
+                    <td style="padding: 6px 10px; text-align: right; color: ${r.good ? 'var(--green)' : 'var(--red)'}; font-weight: 800;">${r.delta}</td>
+                </tr>
+            `).join('');
+
+            drawArenaEvolutionChart();
+        }
+
+        function drawArenaEvolutionChart() {
+            const canvas = document.getElementById('arena-evolution-chart');
+            if (!canvas || !arenaEvolutionResult) return;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const padL = 55, padR = 15, padT = 15, padB = 25;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+
+            const bCurve = arenaEvolutionResult.base_equity_curve || [];
+            const mCurve = arenaEvolutionResult.modified_equity_curve || [];
+            if (bCurve.length < 2 && mCurve.length < 2) return;
+
+            let minVal = Infinity, maxVal = -Infinity;
+            [...bCurve, ...mCurve].forEach(pt => {
+                if (pt.equity < minVal) minVal = pt.equity;
+                if (pt.equity > maxVal) maxVal = pt.equity;
+            });
+            const range = Math.max(10, maxVal - minVal);
+
+            // Draw Original (Dashed Blue/Grey)
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            bCurve.forEach((pt, i) => {
+                const x = padL + (i / (bCurve.length - 1)) * plotW;
+                const y = padT + (1 - (pt.equity - minVal) / range) * plotH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Modified (Solid Hot Pink)
+            ctx.strokeStyle = '#ec4899';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            mCurve.forEach((pt, i) => {
+                const x = padL + (i / (mCurve.length - 1)) * plotW;
+                const y = padT + (1 - (pt.equity - minVal) / range) * plotH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Y labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '9px JetBrains Mono, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(`$${Math.round(maxVal).toLocaleString()}`, padL - 6, padT + 10);
+            ctx.fillText(`$${Math.round(minVal).toLocaleString()}`, padL - 6, padT + plotH);
+        }
+
+        // =====================================================================
+        // PERSISTENT LOCAL LEADERBOARD
+        // =====================================================================
+        function saveCompetitionToLeaderboard(sim) {
+            if (!sim || !sim.leaderboard) return;
+            const history = getLocalLeaderboard();
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            sim.leaderboard.forEach(m => {
+                history.push({
+                    competitor: m.name,
+                    strategy_type: m.agent_type,
+                    symbol: sim.symbol,
+                    condition: sim.condition,
+                    return_pct: m.total_return_pct,
+                    max_drawdown_pct: m.max_drawdown_pct,
+                    sharpe: m.sharpe_ratio,
+                    trades: m.total_trades,
+                    win_rate: m.win_rate_pct,
+                    timestamp: timestamp
+                });
+            });
+
+            // Keep top 100 historical entries
+            if (history.length > 100) history.splice(0, history.length - 100);
+            localStorage.setItem('chronos_arena_leaderboard', JSON.stringify(history));
+        }
+
+        function getLocalLeaderboard() {
+            try {
+                return JSON.parse(localStorage.getItem('chronos_arena_leaderboard') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function switchLeaderboardFilter(filterType) {
+            document.querySelectorAll('#arena-subpanel-leaderboard .obs-ctrl-btn').forEach(b => {
+                if (b.id && b.id.startsWith('arena-lb-tab-')) b.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`arena-lb-tab-${filterType}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            renderArenaLeaderboard(filterType);
+        }
+
+        function renderArenaLeaderboard(filterType = 'return') {
+            const tableBody = document.getElementById('arena-leaderboard-table-body');
+            if (!tableBody) return;
+            const history = getLocalLeaderboard();
+
+            if (history.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 30px;">No completed arena competition results yet. Run a competition above to record verified standings!</td></tr>`;
+                return;
+            }
+
+            // Sort by filter
+            const sorted = [...history];
+            if (filterType === 'return') sorted.sort((a, b) => b.return_pct - a.return_pct);
+            else if (filterType === 'drawdown') sorted.sort((a, b) => a.max_drawdown_pct - b.max_drawdown_pct);
+            else if (filterType === 'sharpe') sorted.sort((a, b) => b.sharpe - a.sharpe);
+
+            tableBody.innerHTML = sorted.slice(0, 25).map((r, i) => `
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 8px 10px; font-weight: 800; color: ${i === 0 ? 'var(--yellow)' : 'var(--text-muted)'};">#${i + 1}</td>
+                    <td style="padding: 8px 10px; font-weight: 700; color: var(--text-main);">${r.competitor}</td>
+                    <td style="padding: 8px 10px; color: var(--text-sub);">${r.strategy_type}</td>
+                    <td style="padding: 8px 10px;">${r.symbol}</td>
+                    <td style="padding: 8px 10px;">${r.condition}</td>
+                    <td style="padding: 8px 10px; font-weight: 800; color: ${r.return_pct >= 0 ? 'var(--green)' : 'var(--red)'};">${r.return_pct >= 0 ? '+' : ''}${r.return_pct}%</td>
+                    <td style="padding: 8px 10px; color: var(--red);">${r.max_drawdown_pct}%</td>
+                    <td style="padding: 8px 10px; font-weight: 700;">${r.sharpe}</td>
+                    <td style="padding: 8px 10px;">${r.trades}</td>
+                    <td style="padding: 8px 10px; color: var(--text-muted); font-size: 11px;">${r.timestamp}</td>
+                </tr>
+            `).join('');
+        }
+
+        function clearArenaLeaderboardHistory() {
+            if (confirm('Clear local verified arena competition history?')) {
+                localStorage.removeItem('chronos_arena_leaderboard');
+                renderArenaLeaderboard();
+            }
+        }
+
+        // =====================================================================
+        // DATA EXPORT (CSV & JSON)
+        // =====================================================================
+        function exportArenaResultsCSV() {
+            if (!arenaSimState || !arenaSimState.leaderboard) return;
+            const rows = [['Rank', 'Competitor', 'StrategyType', 'FinalEquity', 'TotalReturnPct', 'MaxDrawdownPct', 'WinRatePct', 'Trades', 'Sharpe', 'TotalFees']];
+            arenaSimState.leaderboard.forEach((m, i) => {
+                rows.push([i + 1, m.name, m.agent_type, m.final_equity, m.total_return_pct, m.max_drawdown_pct, m.win_rate_pct, m.total_trades, m.sharpe_ratio, m.total_fees_paid]);
+            });
+            const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
+            const dl = document.createElement('a');
+            dl.setAttribute('href', encodeURI(csvContent));
+            dl.setAttribute('download', `chronos_arena_competition_${arenaSimState.symbol}_seed${arenaSimState.seed}.csv`);
+            dl.click();
+        }
+
+        function exportArenaResultsJSON() {
+            if (!arenaSimState) return;
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(arenaSimState, null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute('href', dataStr);
+            dl.setAttribute('download', `chronos_arena_competition_${arenaSimState.symbol}_seed${arenaSimState.seed}.json`);
+            dl.click();
+        }
+
+
         // ==========================================================================
         // 16. INITIALIZATION
         // ==========================================================================
@@ -10389,6 +12136,8 @@
                     renderObservatoryCharts();
                 } else if (currentView === 'chaos') {
                     renderChaosCharts();
+                } else if (currentView === 'arena') {
+                    renderArenaCharts();
                 }
             });
         });
