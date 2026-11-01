@@ -893,7 +893,6 @@
         .ob-row .ob-cell-price {
             text-align: left;
             font-weight: 600;
-            transition: color 0.2s ease;
         }
         .ob-row .ob-cell-size {
             text-align: center;
@@ -923,13 +922,7 @@
             background: rgba(239, 68, 68, 0.22);
         }
 
-        .row-flash {
-            animation: flashRow 0.45s ease-out;
-        }
-        @keyframes flashRow {
-            0% { background: rgba(255, 255, 255, 0.08); }
-            100% { background: transparent; }
-        }
+        
 
         .ob-spread-bar {
             grid-column: span 2;
@@ -989,27 +982,11 @@
             transition: width 0.3s ease;
         }
 
-        /* Live Flash Animations */
-        .price-flash-up {
-            animation: flashGreen 0.6s ease-out;
-        }
-        .price-flash-down {
-            animation: flashRed 0.6s ease-out;
-        }
-        .qty-flash {
-            animation: flashQty 0.5s ease-out;
-        }
-        @keyframes flashGreen {
-            0% { background-color: rgba(16, 185, 129, 0.45); }
-            100% { background-color: transparent; }
-        }
-        @keyframes flashRed {
-            0% { background-color: rgba(239, 68, 68, 0.45); }
-            100% { background-color: transparent; }
-        }
-        @keyframes flashQty {
-            0% { color: #38bdf8; text-shadow: 0 0 6px rgba(56, 189, 248, 0.6); }
-            100% { color: inherit; text-shadow: none; }
+        /* Steady Numerical Displays (No blinking, flashing, or color transitions) */
+        .ob-cell-price, .ob-cell-size, .ob-cell-total, .stock-price-lg, .stock-change-badge, .ob-stat-val {
+            animation: none !important;
+            transition: none !important;
+            background-color: transparent !important;
         }
 
         /* Order Entry Card (Right) */
@@ -5978,7 +5955,7 @@
                 });
             },
 
-            // Layer Two: Render Order Book & Depth Bars in-place (smooth CSS transitions)
+            // Layer Two: Render Order Book & Depth Bars steadily (No blinking/flashing, numbers update only)
             renderLayerTwoOrderBook() {
                 const bidsBox = document.getElementById('bids-list-box');
                 const asksBox = document.getElementById('asks-list-box');
@@ -5991,7 +5968,7 @@
                 const cumA = book.asks.length > 0 ? book.asks[book.asks.length - 1].total : 0;
                 const maxCum = Math.max(cumB, cumA) || 1;
 
-                // Update Bids
+                // Update Bids (Steady: update numbers only, no flash/blink)
                 for (let idx = 0; idx < 6; idx++) {
                     const row = this.bidRowsDOM[idx];
                     if (!row) continue;
@@ -6007,35 +5984,20 @@
                     }
 
                     row.price.style.color = 'var(--green)';
+                    row.price.textContent = formatINR(b.price);
+                    row.size.textContent = b.qty.toFixed(1);
+                    row.total.textContent = b.total.toFixed(1);
+
                     const widthPct = Math.min(100, Math.max(0, (b.total / maxCum * 100))).toFixed(1);
                     row.bar.style.width = `${widthPct}%`;
 
-                    // Green / Red Price Flash
-                    if (row.lastPrice !== undefined && b.price !== row.lastPrice) {
-                        row.price.classList.remove('price-flash-up', 'price-flash-down');
-                        void row.price.offsetWidth;
-                        row.price.classList.add(b.price > row.lastPrice ? 'price-flash-up' : 'price-flash-down');
-                        row.container.classList.remove('row-flash');
-                        void row.container.offsetWidth;
-                        row.container.classList.add('row-flash');
-                    }
                     row.lastPrice = b.price;
-                    row.price.textContent = formatINR(b.price);
-
-                    // Quantity subtle highlight
-                    if (row.lastQty !== undefined && Math.abs(b.qty - row.lastQty) > 0.05) {
-                        row.size.classList.remove('qty-flash');
-                        void row.size.offsetWidth;
-                        row.size.classList.add('qty-flash');
-                    }
                     row.lastQty = b.qty;
-                    row.size.textContent = b.qty.toFixed(1);
-                    row.total.textContent = b.total.toFixed(1);
 
                     row.container.onclick = () => fillPriceFromBook(b.price);
                 }
 
-                // Update Asks
+                // Update Asks (Steady: update numbers only, no flash/blink)
                 for (let idx = 0; idx < 6; idx++) {
                     const row = this.askRowsDOM[idx];
                     if (!row) continue;
@@ -6051,30 +6013,15 @@
                     }
 
                     row.price.style.color = 'var(--red)';
+                    row.price.textContent = formatINR(a.price);
+                    row.size.textContent = a.qty.toFixed(1);
+                    row.total.textContent = a.total.toFixed(1);
+
                     const widthPct = Math.min(100, Math.max(0, (a.total / maxCum * 100))).toFixed(1);
                     row.bar.style.width = `${widthPct}%`;
 
-                    // Green / Red Price Flash
-                    if (row.lastPrice !== undefined && a.price !== row.lastPrice) {
-                        row.price.classList.remove('price-flash-up', 'price-flash-down');
-                        void row.price.offsetWidth;
-                        row.price.classList.add(a.price > row.lastPrice ? 'price-flash-up' : 'price-flash-down');
-                        row.container.classList.remove('row-flash');
-                        void row.container.offsetWidth;
-                        row.container.classList.add('row-flash');
-                    }
                     row.lastPrice = a.price;
-                    row.price.textContent = formatINR(a.price);
-
-                    // Quantity subtle highlight
-                    if (row.lastQty !== undefined && Math.abs(a.qty - row.lastQty) > 0.05) {
-                        row.size.classList.remove('qty-flash');
-                        void row.size.offsetWidth;
-                        row.size.classList.add('qty-flash');
-                    }
                     row.lastQty = a.qty;
-                    row.size.textContent = a.qty.toFixed(1);
-                    row.total.textContent = a.total.toFixed(1);
 
                     row.container.onclick = () => fillPriceFromBook(a.price);
                 }
@@ -6187,7 +6134,7 @@
                 }
             },
 
-            // Update Active Stock Header, Price Badge & Timestamp
+            // Update Active Stock Header, Price Badge & Timestamp (Steady numerical updates)
             updateActiveStockUI(prevPrice, newPrice) {
                 const stock = quotesMap[currentSymbol];
                 if (!stock) return;
@@ -6195,11 +6142,6 @@
                 const priceEl = document.getElementById('active-stock-price');
                 if (priceEl) {
                     priceEl.textContent = formatINR(stock.price);
-                    if (newPrice !== prevPrice) {
-                        priceEl.classList.remove('price-flash-up', 'price-flash-down');
-                        void priceEl.offsetWidth;
-                        priceEl.classList.add(newPrice > prevPrice ? 'price-flash-up' : 'price-flash-down');
-                    }
                 }
 
                 const isPos = stock.change_pct >= 0;

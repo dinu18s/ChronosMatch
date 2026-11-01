@@ -28,6 +28,27 @@ def test_no_page_reload_calls_in_html():
     assert "location.reload" not in content, "Forbidden page reload call found in index.html"
 
 
+def test_no_numerical_blinking_or_flashing_effects():
+    """Verify that all blinking, flashing, and temporary background animations are removed."""
+    content = INDEX_HTML.read_text(encoding="utf-8")
+
+    # Verify no flash keyframes exist for numerical elements
+    assert "animation: flashGreen" not in content, "flashGreen animation must be removed"
+    assert "animation: flashRed" not in content, "flashRed animation must be removed"
+    assert "animation: flashQty" not in content, "flashQty animation must be removed"
+    assert "animation: flashRow" not in content, "flashRow animation must be removed"
+    assert "@keyframes flashGreen" not in content, "@keyframes flashGreen must be removed"
+    assert "@keyframes flashRed" not in content, "@keyframes flashRed must be removed"
+    assert "@keyframes flashQty" not in content, "@keyframes flashQty must be removed"
+    assert "@keyframes flashRow" not in content, "@keyframes flashRow must be removed"
+
+    # Verify order book cells do not have transitions on text color
+    assert "transition: color" not in content, "transition: color must be removed from order book cells"
+
+    # Verify steady numerical rule is present
+    assert ".ob-cell-price, .ob-cell-size, .ob-cell-total" in content, "Steady numerical CSS rule must be present"
+
+
 def test_order_book_depth_bar_alignment():
     """Verify that depth bars are correctly anchored to right: 0 matching visual screenshot."""
     content = INDEX_HTML.read_text(encoding="utf-8")
