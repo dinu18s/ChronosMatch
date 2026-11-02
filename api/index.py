@@ -41,6 +41,7 @@ from chronosmatch.engine.arena import (
 )
 from chronosmatch.marketdata.service import market_data_service
 from chronosmatch.persistence.db import db
+from chronosmatch.ai.mentor import mentor_engine
 from chronosmatch.protocol import (
     CancelOrderMsg,
     ExecType,
@@ -189,6 +190,8 @@ class AIChatRequest(BaseModel):
     message: str = Field(..., description="User question or educational query")
     email: Optional[str] = Field(default=None, description="Optional user email for personalized portfolio insights")
     context: Optional[Dict[str, Any]] = Field(default=None, description="Optional current active symbol / portfolio data")
+    conversation_id: Optional[str] = Field(default=None, description="Unique conversation identifier")
+    history: Optional[List[Dict[str, str]]] = Field(default=None, description="Prior conversation messages")
 
 
 class RiskCalculateRequest(BaseModel):
@@ -532,64 +535,33 @@ def delete_journal_entry(email: str, entry_id: str):
 @app.post("/api/ai/chat")
 def ai_chat_assistant(req: AIChatRequest):
     """Educational AI assistant explaining concepts, risk management, and portfolio health."""
-    query = req.message.strip().lower()
+    try:
+        portfolio_data = None
+        if req.email:
+            quotes = market_data_service.get_all_quotes()
+            prices_map = {q["symbol"]: q["price"] for q in quotes}
+            portfolio_data = db.get_portfolio(req.email, prices_map=prices_map)
+        elif req.context and "portfolio" in req.context:
+            portfolio_data = req.context.get("portfolio")
 
-    # If user provided email, fetch portfolio context
-    port_context = ""
-    if req.email:
-        quotes = market_data_service.get_all_quotes()
-        prices_map = {q["symbol"]: q["price"] for q in quotes}
-        port = db.get_portfolio(req.email, prices_map=prices_map)
-        port_context = f"User has INR {port['cash_balance']:,.2f} available cash, {len(port['holdings'])} active holdings, total portfolio value INR {port['total_portfolio_value']:,.2f}, and unrealized P&L of INR {port['unrealized_pnl']:,.2f}."
-
-    # Educational rule-based responses
-    if "spread" in query or "slippage" in query:
-        reply = (
-            "**Spread & Slippage Explained:**\n\n"
-            "- **Bid-Ask Spread**: The gap between the highest price a buyer is willing to pay (Best Bid) and the lowest price a seller is willing to accept (Best Ask). A narrower spread indicates higher liquidity and lower transaction costs.\n"
-            "- **Slippage**: The difference between the expected price of a market order and the price at which it actually executes, typically caused by low order-book depth or rapid market volatility."
+        response = mentor_engine.generate_response(
+            query=req.message,
+            email=req.email,
+            portfolio_data=portfolio_data,
+            history=req.history,
+            client_context=req.context,
         )
-    elif "stop" in query or "stop-limit" in query:
-        reply = (
-            "**Stop-Limit Orders Explained:**\n\n"
-            "A **Stop-Limit Order** combines a stop trigger and a limit price to manage downside risk:\n"
-            "1. **Stop Price**: When the market price hits this trigger, your order activates.\n"
-            "2. **Limit Price**: The activated order is entered as a Limit Order, guaranteeing your execution price will not be worse than this limit.\n\n"
-            "*Best Practice*: Always place the limit price slightly below the stop price for sells to ensure fill during sharp downward moves."
-        )
-    elif "risk" in query or "position size" in query or "diversif" in query:
-        reply = (
-            "**Position Sizing & Risk Management Rule:**\n\n"
-            "- **The 2% Rule**: Professional traders rarely risk more than 1% to 2% of their total portfolio equity on any single trade.\n"
-            "- **Calculating Position Size**: `Position Size = (Portfolio Value × Risk %) / (Entry Price - Stop Loss Price)`.\n"
-            "- **Diversification**: Spread capital across uncorrelated asset classes (e.g., Indian Equities like Reliance/TCS, Global Tech like Apple, and Crypto)."
-        )
-    elif "portfolio" in query or "my performance" in query:
-        if port_context:
-            reply = f"**Portfolio Health Check:**\n\n{port_context}\n\n*Tip*: Maintain at least 20-30% in virtual cash so you have liquidity to capitalize on market dips!"
-        else:
-            reply = "You currently have a clean paper trading account with ₹1,00,000 starting virtual balance. Place simulated trades in the Terminal to track real-time P&L!"
-    elif "why" in query and ("fill" in query or "reject" in query or "cancel" in query):
-        reply = (
-            "**Why Orders Rest or Reject:**\n\n"
-            "- **Resting in Book**: Limit orders that cannot immediately cross against an existing counterparty order remain in the book waiting for a match (FIFO priority).\n"
-            "- **Rejection**: Orders are rejected if requested cash exceeds your available virtual balance, or if selling more shares than you currently own."
-        )
-    else:
-        reply = (
-            f"**Chronos AI Educational Assistant**\n\n"
-            f"I can help you understand electronic trading, market mechanics, and risk management.\n\n"
-            f"- Ask me: *'What is an order book spread?'*\n"
-            f"- Ask me: *'How do I calculate position sizing?'*\n"
-            f"- Ask me: *'How do Stop-Limit orders protect capital?'*\n"
-            f"- Ask me: *'Analyze my current portfolio risk'*"
-        )
-
-    return {
-        "reply": reply,
-        "model": "Chronos Educational Rule-Based Engine (Built-in)",
-        "timestamp": time.time(),
-    }
+        if req.conversation_id:
+            response["conversation_id"] = req.conversation_id
+        return response
+    except Exception as e:
+        return {
+            "reply": f"⚠️ **Error generating AI response**: {str(e)}\n\nPlease try again or ask another trading question.",
+            "model": "Chronos Fallback Handler",
+            "timestamp": time.time(),
+            "sources": ["Error Handler"],
+            "conversation_id": req.conversation_id,
+        }
 
 
 # ==========================================================================

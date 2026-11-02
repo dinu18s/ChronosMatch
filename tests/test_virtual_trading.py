@@ -276,6 +276,57 @@ def test_ai_chat_assistant(client):
     assert "Bid-Ask Spread" in data["reply"]
     assert "Slippage" in data["reply"]
 
+    # Test "what is trading" - should NOT give generic fallback
+    res2 = client.post("/api/ai/chat", json={
+        "message": "what is trading",
+        "conversation_id": "test-conv-1",
+    })
+    assert res2.status_code == 200
+    data2 = res2.json()
+    assert "What is Trading?" in data2["reply"] or "Financial trading" in data2["reply"]
+    assert data2.get("conversation_id") == "test-conv-1"
+
+    # Test "time?" - should give current system/market time
+    res3 = client.post("/api/ai/chat", json={
+        "message": "time?",
+    })
+    assert res3.status_code == 200
+    data3 = res3.json()
+    assert "Time" in data3["reply"] or "Clock" in data3["reply"] or "IST" in data3["reply"]
+
+    # Test follow-up with history
+    res4 = client.post("/api/ai/chat", json={
+        "message": "give me a practical example of that",
+        "history": [
+            {"role": "user", "content": "What is a stop-limit order?"},
+            {"role": "assistant", "content": "A Stop-Limit Order combines a stop trigger with a limit price."},
+        ],
+    })
+    assert res4.status_code == 200
+    data4 = res4.json()
+    assert "Example" in data4["reply"] or "stop" in data4["reply"].lower()
+
+    # Test portfolio inquiry
+    res5 = client.post("/api/ai/chat", json={
+        "message": "Analyze my current portfolio diversification and risk",
+    })
+    assert res5.status_code == 200
+    data5 = res5.json()
+    assert "Portfolio" in data5["reply"] or "Equity" in data5["reply"]
+
+    # Test Chaos lab and Arena inquiries
+    res6 = client.post("/api/ai/chat", json={
+        "message": "How does the chaos simulation lab work?",
+    })
+    assert res6.status_code == 200
+    assert "Chaos" in res6.json()["reply"]
+
+    res7 = client.post("/api/ai/chat", json={
+        "message": "What agents are in the algorithmic trading arena?",
+    })
+    assert res7.status_code == 200
+    assert "Agent" in res7.json()["reply"] or "Arena" in res7.json()["reply"]
+
 
 def test_engine_metrics_endpoint(client):
     res = client.get("/api/engine/metrics")
