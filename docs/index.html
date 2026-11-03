@@ -6700,6 +6700,13 @@
                 const stock = quotesMap[currentSymbol];
                 if (!stock) return;
 
+                const nameEl = document.getElementById('active-stock-name');
+                const tickerEl = document.getElementById('active-stock-ticker');
+                const catEl = document.getElementById('active-stock-category');
+                if (nameEl && stock.name) nameEl.textContent = stock.name;
+                if (tickerEl && (stock.ticker || stock.symbol)) tickerEl.textContent = stock.ticker || stock.symbol;
+                if (catEl && stock.category) catEl.textContent = stock.category;
+
                 const priceEl = document.getElementById('active-stock-price');
                 if (priceEl) {
                     priceEl.textContent = formatINR(stock.price);
@@ -6998,9 +7005,13 @@
             filterWatchlist();
         }
 
-        function renderWatchlist(searchQuery = '') {
+        function renderWatchlist(searchQuery = null) {
             const container = document.getElementById('watchlist-items-container');
             if (!container) return;
+            if (searchQuery === null) {
+                const searchInp = document.getElementById('search-stock-input');
+                searchQuery = searchInp ? searchInp.value.trim().toLowerCase() : '';
+            }
             let items = Object.values(quotesMap);
 
             if (currentCategory === 'watchlist') {
@@ -7049,7 +7060,9 @@
         function selectStock(sym) {
             currentSymbol = sym;
             CentralMarketHub.selectSymbol(sym);
+            renderActiveStock();
             renderWatchlist();
+            resetToMarketPrice();
             calculateTradeTotal();
         }
 
@@ -7060,10 +7073,15 @@
             const stock = quotesMap[currentSymbol];
             if (!stock) return;
 
-            document.getElementById('active-stock-name').innerText = stock.name;
-            document.getElementById('active-stock-ticker').innerText = stock.ticker;
-            document.getElementById('active-stock-category').innerText = stock.category;
-            document.getElementById('active-stock-price').innerText = formatINR(stock.price);
+            const nameEl = document.getElementById('active-stock-name');
+            const tickerEl = document.getElementById('active-stock-ticker');
+            const catEl = document.getElementById('active-stock-category');
+            if (nameEl && stock.name) nameEl.textContent = stock.name;
+            if (tickerEl && (stock.ticker || stock.symbol)) tickerEl.textContent = stock.ticker || stock.symbol;
+            if (catEl && stock.category) catEl.textContent = stock.category;
+
+            const priceEl = document.getElementById('active-stock-price');
+            if (priceEl) priceEl.textContent = formatINR(stock.price);
 
             const isPos = stock.change_pct >= 0;
             const sign = isPos ? '+' : '';
