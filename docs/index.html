@@ -2517,17 +2517,17 @@
                 <span id="theme-icon">☀️</span> <span id="theme-text">Light</span>
             </button>
 
-            <!-- User Auth Pill -->
-            <div class="user-pill" id="user-header-pill" style="display: none;">
-                <div class="user-avatar-wrap" id="user-avatar-badge">T</div>
+            <!-- Active Trader Pill -->
+            <div class="user-pill" id="user-header-pill" style="display: flex;">
+                <div class="user-avatar-wrap" id="user-avatar-badge">P</div>
                 <div style="display: flex; flex-direction: column; line-height: 1.1;">
-                    <span style="font-weight: 700;" id="user-header-name">Trader</span>
-                    <span style="font-size: 10px; color: var(--text-sub);" class="mono" id="user-header-email">user@example.com</span>
+                    <span style="font-weight: 700;" id="user-header-name">Paper Trader</span>
+                    <span style="font-size: 10px; color: var(--text-sub);" class="mono" id="user-header-email">Virtual Trading Active</span>
                 </div>
-                <button type="button" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px 4px;" onclick="logoutUser()" title="Log Out">✕</button>
+                <button type="button" class="btn-action-tool" style="background: none; border: 1px solid var(--border); color: var(--text-sub); cursor: pointer; padding: 2px 6px; font-size: 11px; border-radius: 4px; margin-left: 4px;" onclick="resetVirtualAccount()" title="Reset Virtual Account to ₹1,00,000">↺ Reset</button>
             </div>
 
-            <button type="button" class="btn-action-tool" id="btn-header-login" onclick="openAuthModal()" style="background: var(--blue); color: white; border: none;">
+            <button type="button" class="btn-action-tool" id="btn-header-login" onclick="openAuthModal()" style="display: none; background: var(--blue); color: white; border: none;">
                 Sign In
             </button>
         </div>
@@ -5692,9 +5692,9 @@
     </div>
 
     <!-- ==========================================================================
-         AUTHENTICATION MODAL
+         AUTHENTICATION MODAL (REMOVED / DISABLED)
          ========================================================================== -->
-    <div class="modal-overlay" id="auth-overlay">
+    <div class="modal-overlay" id="auth-overlay" style="display: none !important;">
         <div class="modal-card">
             <div class="modal-card-header">
                 <div class="modal-title" id="auth-header-title">⚡ Sign In</div>
@@ -5929,34 +5929,30 @@
                 }
             } catch (e) {}
 
-            openAuthModal();
+            // Immediate paper trading access without login authentication
+            currentUser = {
+                name: 'Paper Trader',
+                email: 'trader@chronos.local',
+                color: '#3b82f6',
+                isGuest: false
+            };
+            try {
+                localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
+            } catch (e) {}
+            loadUserAccount(currentUser.email);
+            if (typeof loadAiConversations === 'function') loadAiConversations();
+            renderUserPill();
         }
 
         function openAuthModal() {
-            const emailInput = document.getElementById('auth-input-email');
-            const passInput = document.getElementById('auth-input-password');
-            const nameInput = document.getElementById('auth-input-name');
-            const errBox = document.getElementById('auth-error-msg');
-            const successBox = document.getElementById('auth-success-msg');
-
-            if (errBox) errBox.style.display = 'none';
-            if (successBox) successBox.style.display = 'none';
-
-            if (emailInput && !currentUser) emailInput.value = '';
-            if (passInput) passInput.value = '';
-            if (nameInput) nameInput.value = '';
-
-            const cancelBtn = document.getElementById('btn-auth-cancel');
-            if (cancelBtn) cancelBtn.style.display = currentUser ? 'block' : 'none';
-
-            switchAuthTab('login');
-            document.getElementById('auth-overlay').style.display = 'flex';
+            // Login authentication removed - ensure overlay remains hidden
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.style.display = 'none';
         }
 
         function closeAuthModal() {
-            if (currentUser) {
-                document.getElementById('auth-overlay').style.display = 'none';
-            }
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.style.display = 'none';
         }
 
         function switchAuthTab(mode) {
@@ -6132,39 +6128,46 @@
         }
 
         function renderUserPill() {
-            if (!currentUser) return;
-            document.getElementById('btn-header-login').style.display = 'none';
+            if (!currentUser) {
+                currentUser = {
+                    name: 'Paper Trader',
+                    email: 'trader@chronos.local',
+                    color: '#3b82f6',
+                    isGuest: false
+                };
+            }
+            const loginBtn = document.getElementById('btn-header-login');
+            if (loginBtn) loginBtn.style.display = 'none';
             const pill = document.getElementById('user-header-pill');
-            pill.style.display = 'flex';
-            document.getElementById('user-header-name').innerText = currentUser.name;
-            const isLocalDemo = currentUser.email.includes('@chronos.local') || currentUser.isGuest;
-            const emailLabel = isLocalDemo ? `${currentUser.email} • Demo (Local)` : `${currentUser.email} • Cloud Sync`;
-            document.getElementById('user-header-email').innerText = emailLabel;
-            document.getElementById('user-header-email').title = isLocalDemo
-                ? "Local demo account stored in browser localStorage. No cross-device cloud synchronization."
-                : "Authenticated user session synchronized with backend database.";
-            document.getElementById('user-avatar-badge').innerText = currentUser.name.charAt(0).toUpperCase();
+            if (pill) pill.style.display = 'flex';
+            const nameEl = document.getElementById('user-header-name');
+            if (nameEl) nameEl.innerText = currentUser.name || 'Paper Trader';
+            const emailEl = document.getElementById('user-header-email');
+            if (emailEl) {
+                emailEl.innerText = 'Virtual Trading Active';
+                emailEl.title = 'Virtual paper trading session with ₹1,00,000 capital and live market execution simulation.';
+            }
+            const badgeEl = document.getElementById('user-avatar-badge');
+            if (badgeEl) badgeEl.innerText = (currentUser.name || 'P').charAt(0).toUpperCase();
+        }
+
+        function resetVirtualAccount() {
+            if (confirm('Reset your virtual paper trading balance back to ₹1,00,000 and clear order history?')) {
+                resetInMemoryUserState();
+                userState.cash_balance = 100000.00;
+                userState.peak_equity = 100000.00;
+                saveUserAccount();
+                fetch('/api/virtual/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentUser?.email || 'trader@chronos.local', starting_balance: 100000.00 })
+                }).catch(() => {});
+                showToast('✓ Virtual account reset to ₹1,00,000 capital.');
+            }
         }
 
         function logoutUser() {
-            if (confirm('Log out from your virtual trading session?')) {
-                fetch('/api/virtual/logout', { method: 'POST' }).catch(() => {});
-                localStorage.removeItem('chronos_simple_user');
-                currentUser = null;
-
-                // Reset in-memory state cleanly without deleting saved user data in localStorage
-                resetInMemoryUserState();
-                aiConversations = [];
-                activeAiConversationId = null;
-                if (typeof renderActiveAiConversation === 'function') renderActiveAiConversation();
-                if (typeof renderAiHistoryList === 'function') renderAiHistoryList();
-                if (typeof updateAiHistoryCountBadge === 'function') updateAiHistoryCountBadge();
-
-                document.getElementById('user-header-pill').style.display = 'none';
-                document.getElementById('btn-header-login').style.display = 'block';
-                openAuthModal();
-                showToast('ℹ️ Logged out successfully.');
-            }
+            resetVirtualAccount();
         }
 
         // ==========================================================================
@@ -7441,8 +7444,12 @@
 
         function openOrderConfirmModal() {
             if (!currentUser) {
-                openAuthModal();
-                return;
+                currentUser = {
+                    name: 'Paper Trader',
+                    email: 'trader@chronos.local',
+                    color: '#3b82f6',
+                    isGuest: false
+                };
             }
 
             const stock = quotesMap[currentSymbol];
