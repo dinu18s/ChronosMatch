@@ -5707,7 +5707,8 @@
             </div>
 
             <form class="modal-body" id="auth-form" onsubmit="handleAuthSubmit(event)">
-                <div id="auth-error-msg" style="display: none; background: var(--red-soft); border: 1px solid rgba(244, 63, 94, 0.3); color: #fecdd3; font-size: 12px; padding: 10px; border-radius: 8px;"></div>
+                <div id="auth-error-msg" style="display: none; background: var(--red-soft); border: 1px solid rgba(244, 63, 94, 0.3); color: #fecdd3; font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 8px;"></div>
+                <div id="auth-success-msg" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 8px;"></div>
 
                 <div class="input-group" id="field-group-name" style="display: none;">
                     <label class="input-label-row"><span>Full Name</span></label>
@@ -5893,6 +5894,26 @@
         // ==========================================================================
         let authMode = 'login';
 
+        function showAuthError(msg) {
+            const errBox = document.getElementById('auth-error-msg');
+            const successBox = document.getElementById('auth-success-msg');
+            if (successBox) successBox.style.display = 'none';
+            if (errBox) {
+                errBox.innerText = msg;
+                errBox.style.display = 'block';
+            }
+        }
+
+        function showAuthSuccess(msg) {
+            const errBox = document.getElementById('auth-error-msg');
+            const successBox = document.getElementById('auth-success-msg');
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) {
+                successBox.innerText = msg;
+                successBox.style.display = 'block';
+            }
+        }
+
         function checkUserAuth() {
             try {
                 const savedUser = localStorage.getItem('chronos_simple_user');
@@ -5901,6 +5922,7 @@
                     if (parsed && parsed.email) {
                         currentUser = parsed;
                         loadUserAccount(parsed.email);
+                        if (typeof loadAiConversations === 'function') loadAiConversations();
                         renderUserPill();
                         return;
                     }
@@ -5914,8 +5936,13 @@
             const emailInput = document.getElementById('auth-input-email');
             const passInput = document.getElementById('auth-input-password');
             const nameInput = document.getElementById('auth-input-name');
+            const errBox = document.getElementById('auth-error-msg');
+            const successBox = document.getElementById('auth-success-msg');
 
-            if (emailInput) emailInput.value = '';
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) successBox.style.display = 'none';
+
+            if (emailInput && !currentUser) emailInput.value = '';
             if (passInput) passInput.value = '';
             if (nameInput) nameInput.value = '';
 
@@ -5939,7 +5966,8 @@
             const nameGroup = document.getElementById('field-group-name');
             const submitBtn = document.getElementById('btn-auth-submit-action');
             const titleEl = document.getElementById('auth-header-title');
-            document.getElementById('auth-error-msg').style.display = 'none';
+            const errBox = document.getElementById('auth-error-msg');
+            if (errBox) errBox.style.display = 'none';
 
             if (mode === 'login') {
                 tabLogin.classList.add('active');
@@ -5953,55 +5981,154 @@
                 nameGroup.style.display = 'flex';
                 submitBtn.innerText = 'Create Account';
                 titleEl.innerText = '⚡ Create Account';
+                const successBox = document.getElementById('auth-success-msg');
+                if (successBox) successBox.style.display = 'none';
             }
         }
 
         async function handleAuthSubmit(e) {
             e.preventDefault();
             const errBox = document.getElementById('auth-error-msg');
-            errBox.style.display = 'none';
+            const successBox = document.getElementById('auth-success-msg');
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) successBox.style.display = 'none';
 
-            const email = document.getElementById('auth-input-email').value.trim().toLowerCase();
-            const password = document.getElementById('auth-input-password').value.trim();
-            const name = document.getElementById('auth-input-name').value.trim() || email.split('@')[0];
+            const emailInput = document.getElementById('auth-input-email');
+            const passInput = document.getElementById('auth-input-password');
+            const nameInput = document.getElementById('auth-input-name');
 
-            if (!email || !email.includes('@')) {
-                errBox.innerText = 'Please enter a valid email address.';
-                errBox.style.display = 'block';
+            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+            const password = passInput ? passInput.value : '';
+            const name = nameInput ? nameInput.value.trim() : '';
+
+            // 1. Accept a valid email address and password; validate required fields
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showAuthError('Please enter a valid email address.');
+                return;
+            }
+            if (!password) {
+                showAuthError('Please enter your password.');
                 return;
             }
 
-            try {
-                const res = await fetch('/api/virtual/auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, name, password })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    loginSuccess(data.user);
+            if (authMode === 'register') {
+                if (!name) {
+                    showAuthError('Please enter your full name.');
                     return;
                 }
-            } catch (err) {}
+                if (password.length < 4) {
+                    showAuthError('Password must be at least 4 characters.');
+                    return;
+                }
 
-            loginSuccess({ email, name, cash_balance: 100000.00 });
+                try {
+                    const res = await fetch('/api/virtual/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, name, password })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok) {
+                        // Successful account creation: display success message and redirect to login section
+                        switchAuthTab('login');
+                        if (emailInput) emailInput.value = email;
+                        if (passInput) {
+                            passInput.value = '';
+                            passInput.focus();
+                        }
+                        showAuthSuccess(data.message || 'Account created successfully! Please log in.');
+                        return;
+                    } else {
+                        // Check whether the email is already registered: "Account already exists. Please log in."
+                        const detail = data.detail || data.message || 'Account already exists. Please log in.';
+                        showAuthError(detail);
+                        return;
+                    }
+                } catch (err) {
+                    showAuthError('Unable to connect to authentication backend. Please check network.');
+                    return;
+                }
+            } else {
+                // authMode === 'login'
+                try {
+                    const res = await fetch('/api/virtual/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok) {
+                        // IF password matches: Authenticate user, open ChronosMatch account, load saved portfolio
+                        loginSuccess(data.user);
+                        return;
+                    } else {
+                        // IF password does not match: "Incorrect password. Please try again."
+                        // ELSE: "Account not found. Please create an account first."
+                        const detail = data.detail || data.message || 'Login failed. Please try again.';
+                        showAuthError(detail);
+                        return;
+                    }
+                } catch (err) {
+                    showAuthError('Unable to connect to authentication backend. Please check network.');
+                    return;
+                }
+            }
         }
 
         function quickDemoLogin() {
-            loginSuccess({ email: 'demo.trader@chronos.local', name: 'Demo Trader', cash_balance: 100000.00 });
+            loginSuccess({
+                email: 'demo.trader@chronos.local',
+                name: 'Demo Trader',
+                cash_balance: 100000.00,
+                isGuest: true
+            });
+        }
+
+        function resetInMemoryUserState() {
+            userState.cash_balance = 100000.00;
+            userState.locked_cash = 0.00;
+            userState.realized_pnl = 0.00;
+            userState.peak_equity = 100000.00;
+            userState.holdings = {};
+            userState.orders = [];
+            userState.journal = [];
+            userState.badges = new Set(['welcome']);
+            userState.risk_settings = {
+                max_trade_risk_pct: 2.0,
+                max_portfolio_exposure_pct: 80.0,
+                max_concentration_pct: 30.0
+            };
+            userWatchlist = new Set();
+            renderPortfolioDashboard();
+            renderOrdersTable();
+            renderWatchlist();
+            if (typeof renderJournalView === 'function') renderJournalView();
         }
 
         function loginSuccess(user) {
             currentUser = {
                 name: user.name || user.email.split('@')[0],
                 email: user.email,
-                color: user.color || '#3b82f6'
+                color: user.color || '#3b82f6',
+                token: user.token || null,
+                isGuest: !!user.isGuest
             };
             localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
             document.getElementById('auth-overlay').style.display = 'none';
+
+            // Clean in-memory state first to prevent cross-account contamination
+            resetInMemoryUserState();
             loadUserAccount(currentUser.email);
+            if (typeof loadAiConversations === 'function') {
+                loadAiConversations();
+                if (typeof renderActiveAiConversation === 'function') renderActiveAiConversation();
+                if (typeof renderAiHistoryList === 'function') renderAiHistoryList();
+            }
             renderUserPill();
-            showToast(`✓ Welcome, ${currentUser.name}! Starting virtual capital ready.`);
+            const welcomeMsg = currentUser.isGuest
+                ? '⚡ Demo Mode activated. Practicing with ₹1,00,000 virtual balance.'
+                : `✓ Welcome, ${currentUser.name}! Account connected.`;
+            showToast(welcomeMsg);
         }
 
         function renderUserPill() {
@@ -6021,18 +6148,30 @@
 
         function logoutUser() {
             if (confirm('Log out from your virtual trading session?')) {
+                fetch('/api/virtual/logout', { method: 'POST' }).catch(() => {});
                 localStorage.removeItem('chronos_simple_user');
                 currentUser = null;
+
+                // Reset in-memory state cleanly without deleting saved user data in localStorage
+                resetInMemoryUserState();
+                aiConversations = [];
+                activeAiConversationId = null;
+                if (typeof renderActiveAiConversation === 'function') renderActiveAiConversation();
+                if (typeof renderAiHistoryList === 'function') renderAiHistoryList();
+                if (typeof updateAiHistoryCountBadge === 'function') updateAiHistoryCountBadge();
+
                 document.getElementById('user-header-pill').style.display = 'none';
                 document.getElementById('btn-header-login').style.display = 'block';
                 openAuthModal();
+                showToast('ℹ️ Logged out successfully.');
             }
         }
 
         // ==========================================================================
-        // 4. PERSISTENT STORAGE & DATA LOADING
+        // 4. PERSISTENT STORAGE & DATA LOADING (ISOLATED PER USER)
         // ==========================================================================
         function loadUserAccount(email) {
+            resetInMemoryUserState();
             const key = 'chronos_data_' + encodeURIComponent(email);
             const saved = localStorage.getItem(key);
             if (saved) {
@@ -6058,18 +6197,6 @@
                     }
                 } catch (e) {
                     console.warn("Recovered from corrupted browser localStorage:", e);
-                    userState.cash_balance = 100000.00;
-                    userState.locked_cash = 0.00;
-                    userState.realized_pnl = 0.00;
-                    userState.holdings = {};
-                    userState.orders = [];
-                    userState.journal = [];
-                    userState.badges = new Set(['welcome']);
-                    userState.risk_settings = {
-                        max_trade_risk_pct: 2.0,
-                        max_portfolio_exposure_pct: 80.0,
-                        max_concentration_pct: 30.0
-                    };
                 }
             }
 
@@ -8427,13 +8554,22 @@
         }
 
         // --- Storage & Initialization ---
+        function getAiConversationsStorageKey() {
+            if (currentUser && currentUser.email) {
+                return 'chronos_ai_conversations_' + encodeURIComponent(currentUser.email);
+            }
+            return 'chronos_ai_conversations_demo';
+        }
+
         function loadAiConversations() {
             try {
-                const raw = localStorage.getItem('chronos_ai_conversations');
+                const key = getAiConversationsStorageKey();
+                const raw = localStorage.getItem(key);
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         aiConversations = parsed;
+                        activeAiConversationId = aiConversations[0].id;
                         return;
                     }
                 }
@@ -8441,11 +8577,13 @@
                 console.warn("Failed to load AI conversations from localStorage:", e);
             }
             aiConversations = [];
+            activeAiConversationId = null;
         }
 
         function saveAiConversations() {
             try {
-                localStorage.setItem('chronos_ai_conversations', JSON.stringify(aiConversations));
+                const key = getAiConversationsStorageKey();
+                localStorage.setItem(key, JSON.stringify(aiConversations));
             } catch (e) {
                 console.warn("Failed to save AI conversations to localStorage:", e);
             }

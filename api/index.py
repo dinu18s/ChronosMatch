@@ -148,11 +148,24 @@ class FillVirtualOrderRequest(BaseModel):
     fill_qty: Optional[float] = Field(default=None, description="Fill quantity (defaults to remaining quantity)")
 
 
+class RegisterRequest(BaseModel):
+    email: str = Field(..., description="User email address")
+    name: Optional[str] = Field(default="", description="User display name")
+    password: str = Field(..., min_length=1, description="Account password")
+    color: Optional[str] = Field(default="#3b82f6", description="User avatar color")
+
+
+class LoginRequest(BaseModel):
+    email: str = Field(..., description="User email address")
+    password: str = Field(..., description="Account password")
+
+
 class VirtualAuthRequest(BaseModel):
     email: str = Field(..., description="User email address")
-    name: str = Field(default="Trader", description="User display name")
-    password: str = Field(default="password123", description="User password")
+    name: Optional[str] = Field(default="Trader", description="User display name")
+    password: Optional[str] = Field(default="pass", description="User password")
     color: Optional[str] = Field(default="#3b82f6", description="User avatar color")
+    action: Optional[str] = Field(default=None, description="Optional action: 'register', 'login'")
 
 
 class VirtualTradeRequest(BaseModel):
@@ -378,21 +391,91 @@ def search_market_instruments(q: str = "", category: Optional[str] = None):
 # ==========================================================================
 # VIRTUAL PAPER TRADING & PORTFOLIO API
 # ==========================================================================
+@app.post("/api/virtual/register")
+def virtual_register(req: RegisterRequest):
+    """Securely register a new user account with initial ₹1,00,000 virtual balance and PBKDF2 hashed password."""
+    try:
+        name = req.name.strip() if req.name else req.email.split("@")[0]
+        user_data = db.create_user(
+            email=req.email,
+            name=name,
+            password=req.password,
+            color=req.color,
+        )
+        return {
+            "status": "ok",
+            "message": "Account created successfully! Please log in.",
+            "user": user_data,
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+
+
+@app.post("/api/virtual/login")
+def virtual_login(req: LoginRequest):
+    """Authenticate an existing user account using secure salted hash verification."""
+    try:
+        user_data = db.authenticate_user(
+            email=req.email,
+            password=req.password,
+        )
+        return {"status": "ok", "user": user_data}
+    except ValueError as e:
+        status_code = 404 if "not found" in str(e).lower() else 401
+        raise HTTPException(status_code=status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+
+
+@app.post("/api/virtual/logout")
+def virtual_logout():
+    """Acknowledge session termination on server."""
+    return {"status": "ok", "message": "Logged out successfully."}
+
+
+@app.get("/api/virtual/user/{email}")
+def get_virtual_user(email: str):
+    """Get public profile information for a user."""
+    user = db.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @app.post("/api/virtual/auth")
 def virtual_auth(req: VirtualAuthRequest):
     """Sign in or register a user for virtual paper trading with initial ₹1,00,000 balance."""
     try:
-        user_data = db.register_or_login(
-            email=req.email,
-            name=req.name,
-            password=req.password,
-            color=req.color,
-        )
-        return {"status": "ok", "user": user_data}
+        if req.action == "register":
+            name = req.name.strip() if req.name else req.email.split("@")[0]
+            user_data = db.create_user(
+                email=req.email,
+                name=name,
+                password=req.password,
+                color=req.color,
+            )
+            return {"status": "ok", "message": "Account created successfully! Please log in.", "user": user_data}
+        elif req.action == "login":
+            user_data = db.authenticate_user(
+                email=req.email,
+                password=req.password,
+            )
+            return {"status": "ok", "user": user_data}
+        else:
+            user_data = db.register_or_login(
+                email=req.email,
+                name=req.name or "Trader",
+                password=req.password,
+                color=req.color,
+            )
+            return {"status": "ok", "user": user_data}
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        status_code = 404 if "not found" in str(e).lower() else (401 if "incorrect password" in str(e).lower() else 400)
+        raise HTTPException(status_code=status_code, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Trade execution failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Authentication failed: {str(e)}")
 
 
 @app.post("/api/virtual/reset")

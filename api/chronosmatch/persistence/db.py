@@ -1,10 +1,32 @@
 """Persistent SQLite database manager for ChronosMatch Virtual Paper Trading."""
 
 import datetime
+import hashlib
 import os
+import secrets
 import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+
+def hash_password(password: str) -> str:
+    """Hash password securely using PBKDF2-HMAC-SHA256 with a unique random salt."""
+    salt = secrets.token_hex(16)
+    key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), 100000)
+    return f"pbkdf2:sha256:100000${salt}${key.hex()}"
+
+
+def verify_password(password: str, stored_hash: str) -> bool:
+    """Verify password against stored PBKDF2 hash, or legacy plaintext for test fixtures."""
+    if not stored_hash:
+        return False
+    if stored_hash.startswith("pbkdf2:sha256:"):
+        parts = stored_hash.split("$")
+        if len(parts) == 3:
+            _, salt_hex, hash_hex = parts
+            key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt_hex), 100000)
+            return secrets.compare_digest(key.hex(), hash_hex)
+    return secrets.compare_digest(password, stored_hash)
 
 def _find_project_root() -> Path:
     p = Path(__file__).resolve().parent
@@ -113,29 +135,52 @@ class Database:
                 except sqlite3.OperationalError:
                     pass
 
-    def register_or_login(self, email: str, name: str, password: str, color: Optional[str] = None) -> Dict[str, Any]:
-        """Sign in or register a user, ensuring an account with ₹1,00,000 initial virtual cash."""
+    def user_exists(self, email: str) -> bool:
+        """Check whether an email address is already registered."""
         email = email.strip().lower()
-        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
+            return cursor.fetchone() is not None
+
+    def get_user(self, email: str) -> Optional[Dict[str, Any]]:
+        """Retrieve user profile metadata without exposing credential hashes."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT email, name, color, created_at FROM users WHERE email = ?", (email,))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return dict(row)
+
+    def create_user(self, email: str, name: str, password: str, color: Optional[str] = None) -> Dict[str, Any]:
+        """Securely register a new user account with ₹1,00,000 initial virtual cash and PBKDF2 hashed password."""
+        email = email.strip().lower()
+        if not email or "@" not in email:
+            raise ValueError("Please enter a valid email address.")
+        if not password:
+            raise ValueError("Password is required.")
+        if len(password) < 4:
+            raise ValueError("Password must be at least 4 characters.")
+
+        name = name.strip() if name else email.split("@")[0]
         color = color or "#3b82f6"
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT email, name, password, color FROM users WHERE email = ?", (email,))
-            row = cursor.fetchone()
+            cursor.execute("SELECT email FROM users WHERE email = ?", (email,))
+            if cursor.fetchone():
+                raise ValueError("Account already exists. Please log in.")
 
-            if row:
-                if row["password"] and row["password"] != password:
-                    raise ValueError("Incorrect password. Please try again.")
-                user_data = dict(row)
-            else:
-                cursor.execute(
-                    "INSERT INTO users (email, name, password, color, created_at) VALUES (?, ?, ?, ?, ?)",
-                    (email, name, password, color, now),
-                )
-                user_data = {"email": email, "name": name, "color": color}
+            hashed_pwd = hash_password(password)
+            cursor.execute(
+                "INSERT INTO users (email, name, password, color, created_at) VALUES (?, ?, ?, ?, ?)",
+                (email, name, hashed_pwd, color, now),
+            )
 
-            # Ensure account balance exists
+            # Ensure account balance exists with ₹1,00,000 initial virtual cash
             cursor.execute("SELECT cash_balance, realized_pnl FROM accounts WHERE email = ?", (email,))
             acct = cursor.fetchone()
             if not acct:
@@ -151,9 +196,73 @@ class Database:
 
             conn.commit()
 
-        user_data["cash_balance"] = cash_balance
-        user_data["realized_pnl"] = realized_pnl
-        return user_data
+        return {
+            "email": email,
+            "name": name,
+            "color": color,
+            "cash_balance": cash_balance,
+            "realized_pnl": realized_pnl,
+            "created_at": now,
+        }
+
+    def authenticate_user(self, email: str, password: str) -> Dict[str, Any]:
+        """Authenticate user credentials using constant-time hash comparison and return session data."""
+        email = email.strip().lower()
+        if not email:
+            raise ValueError("Email address is required.")
+        if not password:
+            raise ValueError("Password is required.")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT email, name, password, color, created_at FROM users WHERE email = ?", (email,))
+            row = cursor.fetchone()
+
+            if not row:
+                raise ValueError("Account not found. Please create an account first.")
+
+            stored_pwd = row["password"]
+            if not verify_password(password, stored_pwd):
+                raise ValueError("Incorrect password. Please try again.")
+
+            # Auto-upgrade legacy plaintext passwords to secure PBKDF2 hash on successful login
+            if stored_pwd and not stored_pwd.startswith("pbkdf2:sha256:"):
+                upgraded = hash_password(password)
+                cursor.execute("UPDATE users SET password = ? WHERE email = ?", (upgraded, email))
+                conn.commit()
+
+            cursor.execute("SELECT cash_balance, realized_pnl FROM accounts WHERE email = ?", (email,))
+            acct = cursor.fetchone()
+            if not acct:
+                now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                cursor.execute(
+                    "INSERT INTO accounts (email, cash_balance, realized_pnl, updated_at) VALUES (?, 100000.00, 0.00, ?)",
+                    (email, now),
+                )
+                conn.commit()
+                cash_balance = 100000.00
+                realized_pnl = 0.00
+            else:
+                cash_balance = acct["cash_balance"]
+                realized_pnl = acct["realized_pnl"]
+
+        token = secrets.token_urlsafe(32)
+        return {
+            "email": row["email"],
+            "name": row["name"],
+            "color": row["color"],
+            "cash_balance": cash_balance,
+            "realized_pnl": realized_pnl,
+            "token": token,
+        }
+
+    def register_or_login(self, email: str, name: str, password: str, color: Optional[str] = None) -> Dict[str, Any]:
+        """Sign in or register a user, ensuring an account with ₹1,00,000 initial virtual cash."""
+        email = email.strip().lower()
+        if self.user_exists(email):
+            return self.authenticate_user(email, password)
+        else:
+            return self.create_user(email, name, password, color)
 
     def get_account(self, email: str) -> Optional[Dict[str, Any]]:
         email = email.strip().lower()
@@ -173,8 +282,8 @@ class Database:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
-                (email, now),
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', ?, '#3b82f6', ?)",
+                (email, hash_password("pass"), now),
             )
             cursor.execute(
                 "INSERT INTO accounts (email, cash_balance, realized_pnl, updated_at) VALUES (?, ?, 0.0, ?) ON CONFLICT(email) DO UPDATE SET cash_balance = ?, realized_pnl = 0.0, updated_at = ?",
@@ -318,8 +427,8 @@ class Database:
 
             # Ensure user and account exist
             cursor.execute(
-                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
-                (email, now),
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', ?, '#3b82f6', ?)",
+                (email, hash_password("pass"), now),
             )
             cursor.execute("SELECT cash_balance, realized_pnl FROM accounts WHERE email = ?", (email,))
             acct = cursor.fetchone()
@@ -680,8 +789,8 @@ class Database:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
-                (email, now),
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', ?, '#3b82f6', ?)",
+                (email, hash_password("pass"), now),
             )
             cursor.execute(
                 """INSERT INTO journal_entries
@@ -735,8 +844,8 @@ class Database:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', 'pass', '#3b82f6', ?)",
-                (email, now),
+                "INSERT OR IGNORE INTO users (email, name, password, color, created_at) VALUES (?, 'Trader', ?, '#3b82f6', ?)",
+                (email, hash_password("pass"), now),
             )
             cursor.execute("SELECT 1 FROM watchlists WHERE email = ? AND symbol = ?", (email, symbol))
             if cursor.fetchone():
