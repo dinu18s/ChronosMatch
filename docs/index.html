@@ -2518,16 +2518,17 @@
             </button>
 
             <!-- Active Trader Pill -->
-            <div class="user-pill" id="user-header-pill" style="display: flex;">
+            <div class="user-pill" id="user-header-pill" style="display: none;">
                 <div class="user-avatar-wrap" id="user-avatar-badge">P</div>
                 <div style="display: flex; flex-direction: column; line-height: 1.1;">
                     <span style="font-weight: 700;" id="user-header-name">Paper Trader</span>
                     <span style="font-size: 10px; color: var(--text-sub);" class="mono" id="user-header-email">Virtual Trading Active</span>
                 </div>
                 <button type="button" class="btn-action-tool" style="background: none; border: 1px solid var(--border); color: var(--text-sub); cursor: pointer; padding: 2px 6px; font-size: 11px; border-radius: 4px; margin-left: 4px;" onclick="resetVirtualAccount()" title="Reset Virtual Account to ₹1,00,000">↺ Reset</button>
+                <button type="button" class="btn-action-tool" style="background: none; border: 1px solid var(--border); color: var(--text-sub); cursor: pointer; padding: 2px 6px; font-size: 11px; border-radius: 4px; margin-left: 2px;" onclick="logoutUser()" title="Log Out / Switch Account">✕ Logout</button>
             </div>
 
-            <button type="button" class="btn-action-tool" id="btn-header-login" onclick="openAuthModal()" style="display: none; background: var(--blue); color: white; border: none;">
+            <button type="button" class="btn-action-tool" id="btn-header-login" onclick="openAuthModal()" style="display: inline-flex; align-items: center; background: var(--blue); color: white; border: none; padding: 6px 14px; font-weight: 600; border-radius: 6px; cursor: pointer;">
                 Sign In
             </button>
         </div>
@@ -5692,27 +5693,28 @@
     </div>
 
     <!-- ==========================================================================
-         AUTHENTICATION MODAL (REMOVED / DISABLED)
+         AUTHENTICATION & PASSWORD RECOVERY MODAL
          ========================================================================== -->
-    <div class="modal-overlay" id="auth-overlay" style="display: none !important;">
+    <div class="modal-overlay" id="auth-overlay" style="display: none;">
         <div class="modal-card">
             <div class="modal-card-header">
                 <div class="modal-title" id="auth-header-title">⚡ Sign In</div>
                 <button type="button" class="modal-close-btn" id="btn-auth-cancel" onclick="closeAuthModal()">✕</button>
             </div>
 
-            <div style="display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; gap: 16px;">
+            <div id="auth-tabs-row" style="display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; gap: 16px;">
                 <button type="button" class="cat-chip active" id="tab-login" onclick="switchAuthTab('login')" style="padding: 10px 0; border: none; border-bottom: 2px solid var(--blue); border-radius: 0; font-size: 13px;">Sign In</button>
                 <button type="button" class="cat-chip" id="tab-register" onclick="switchAuthTab('register')" style="padding: 10px 0; border: none; border-bottom: 2px solid transparent; border-radius: 0; font-size: 13px;">Create Account</button>
             </div>
 
+            <!-- Login & Create Account Form -->
             <form class="modal-body" id="auth-form" onsubmit="handleAuthSubmit(event)">
                 <div id="auth-error-msg" style="display: none; background: var(--red-soft); border: 1px solid rgba(244, 63, 94, 0.3); color: #fecdd3; font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 8px;"></div>
                 <div id="auth-success-msg" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 8px;"></div>
 
                 <div class="input-group" id="field-group-name" style="display: none;">
                     <label class="input-label-row"><span>Full Name</span></label>
-                    <input type="text" class="trade-input" id="auth-input-name" placeholder="Enter your name">
+                    <input type="text" class="trade-input" id="auth-input-name" placeholder="Enter your full name">
                 </div>
 
                 <div class="input-group">
@@ -5720,9 +5722,14 @@
                     <input type="email" class="trade-input mono" id="auth-input-email" placeholder="name@example.com" required autocomplete="email">
                 </div>
 
-                <div class="input-group">
+                <div class="input-group" id="field-group-password">
                     <label class="input-label-row"><span>Password</span></label>
                     <input type="password" class="trade-input mono" id="auth-input-password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <!-- Forgot Password Link -->
+                <div id="field-group-forgot-link" style="display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 8px;">
+                    <a href="javascript:void(0)" id="link-forgot-password" onclick="switchAuthTab('forgot')" style="color: var(--blue); font-size: 12px; text-decoration: none; cursor: pointer; ">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="btn-order-action buy" id="btn-auth-submit-action" style="margin-top: 6px;">
@@ -5735,6 +5742,61 @@
                     </button>
                 </div>
             </form>
+
+            <!-- Forgot Password Recovery Panel -->
+            <div class="modal-body" id="forgot-recovery-panel" style="display: none;">
+                <div id="forgot-error-msg" style="display: none; background: var(--red-soft); border: 1px solid rgba(244, 63, 94, 0.3); color: #fecdd3; font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 8px;"></div>
+                <div id="forgot-success-msg" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 8px;"></div>
+
+                <!-- Step 1: Request Reset Token via Email -->
+                <form id="forgot-step1-form" onsubmit="handleForgotPasswordSubmit(event)">
+                    <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px; line-height: 1.4;">
+                        Enter your registered email address to verify your account and receive password recovery instructions.
+                    </p>
+
+                    <div class="input-group">
+                        <label class="input-label-row"><span>Registered Email Address</span></label>
+                        <input type="email" class="trade-input mono" id="forgot-input-email" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+
+                    <button type="submit" class="btn-order-action buy" id="btn-forgot-submit" style="margin-top: 6px; width: 100%;">
+                        Continue to Reset Password
+                    </button>
+
+                    <div style="text-align: center; margin-top: 12px;">
+                        <a href="javascript:void(0)" onclick="switchAuthTab('login')" style="color: var(--text-sub); font-size: 12px; text-decoration: none; cursor: pointer;">
+                            ← Back to Sign In
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Step 2: Enter New Password and Confirm -->
+                <form id="forgot-step2-form" style="display: none;" onsubmit="handleResetPasswordSubmit(event)">
+                    <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px; line-height: 1.4;" id="reset-step2-desc">
+                        Set a new password for your ChronosMatch account.
+                    </p>
+
+                    <div class="input-group">
+                        <label class="input-label-row"><span>New Password</span></label>
+                        <input type="password" class="trade-input mono" id="reset-input-password" placeholder="Minimum 4 characters" minlength="4" required autocomplete="new-password">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label-row"><span>Confirm New Password</span></label>
+                        <input type="password" class="trade-input mono" id="reset-input-confirm" placeholder="Re-enter new password" minlength="4" required autocomplete="new-password">
+                    </div>
+
+                    <button type="submit" class="btn-order-action buy" id="btn-reset-submit" style="margin-top: 6px; width: 100%;">
+                        Reset Password
+                    </button>
+
+                    <div style="text-align: center; margin-top: 12px;">
+                        <a href="javascript:void(0)" onclick="switchAuthTab('login')" style="color: var(--text-sub); font-size: 12px; text-decoration: none; cursor: pointer;">
+                            ← Back to Sign In
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -5890,9 +5952,11 @@
         }
 
         // ==========================================================================
-        // 3. AUTHENTICATION & RECOVERY
+        // 3. AUTHENTICATION & PASSWORD RECOVERY
         // ==========================================================================
         let authMode = 'login';
+        let currentResetToken = null;
+        let currentResetEmail = null;
 
         function showAuthError(msg) {
             const errBox = document.getElementById('auth-error-msg');
@@ -5914,6 +5978,118 @@
             }
         }
 
+        function showForgotError(msg) {
+            const errBox = document.getElementById('forgot-error-msg');
+            const successBox = document.getElementById('forgot-success-msg');
+            if (successBox) successBox.style.display = 'none';
+            if (errBox) {
+                errBox.innerText = msg;
+                errBox.style.display = 'block';
+            }
+        }
+
+        function showForgotSuccess(msg) {
+            const errBox = document.getElementById('forgot-error-msg');
+            const successBox = document.getElementById('forgot-success-msg');
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) {
+                successBox.innerText = msg;
+                successBox.style.display = 'block';
+            }
+        }
+
+        function showResetStep1() {
+            const s1 = document.getElementById('forgot-step1-form');
+            const s2 = document.getElementById('forgot-step2-form');
+            if (s1) s1.style.display = 'block';
+            if (s2) s2.style.display = 'none';
+            const emailInp = document.getElementById('forgot-input-email');
+            if (emailInp) {
+                emailInp.value = currentResetEmail || '';
+                emailInp.focus();
+            }
+        }
+
+        function showResetStep2() {
+            const s1 = document.getElementById('forgot-step1-form');
+            const s2 = document.getElementById('forgot-step2-form');
+            if (s1) s1.style.display = 'none';
+            if (s2) s2.style.display = 'block';
+            const desc = document.getElementById('reset-step2-desc');
+            if (desc && currentResetEmail) {
+                desc.innerText = `Set a new secure password for ${currentResetEmail}:`;
+            }
+            const passInp = document.getElementById('reset-input-password');
+            const confInp = document.getElementById('reset-input-confirm');
+            if (passInp) passInp.value = '';
+            if (confInp) confInp.value = '';
+            if (passInp) passInp.focus();
+        }
+
+        // Local storage registry fallback for offline / GitHub Pages static mode
+        function getLocalUsers() {
+            try {
+                const raw = localStorage.getItem('chronos_registered_users');
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveLocalUserRecord(email, name, password) {
+            try {
+                const users = getLocalUsers();
+                users[email.toLowerCase()] = {
+                    email: email.toLowerCase(),
+                    name: name || email.split('@')[0],
+                    password: password,
+                    cash_balance: 100000.00,
+                    created_at: new Date().toISOString()
+                };
+                localStorage.setItem('chronos_registered_users', JSON.stringify(users));
+            } catch (e) {}
+        }
+
+        function localRegister(email, name, password) {
+            const users = getLocalUsers();
+            const key = email.toLowerCase();
+            if (users[key]) {
+                return { success: false, error: 'Account already exists. Please log in.' };
+            }
+            saveLocalUserRecord(email, name, password);
+            return { success: true };
+        }
+
+        function localLogin(email, password) {
+            const users = getLocalUsers();
+            const user = users[email.toLowerCase()];
+            if (!user) {
+                return { success: false, error: 'Account not found. Please create an account first.' };
+            }
+            if (user.password !== password) {
+                return { success: false, error: 'Incorrect password. Please try again.' };
+            }
+            return {
+                success: true,
+                user: {
+                    email: user.email,
+                    name: user.name,
+                    cash_balance: user.cash_balance || 100000.00
+                }
+            };
+        }
+
+        function localResetPassword(email, newPassword) {
+            const users = getLocalUsers();
+            const key = email.toLowerCase();
+            if (users[key]) {
+                users[key].password = newPassword;
+                localStorage.setItem('chronos_registered_users', JSON.stringify(users));
+                return true;
+            }
+            return false;
+        }
+
         function checkUserAuth() {
             try {
                 const savedUser = localStorage.getItem('chronos_simple_user');
@@ -5929,56 +6105,113 @@
                 }
             } catch (e) {}
 
-            // Immediate paper trading access without login authentication
-            currentUser = {
-                name: 'Paper Trader',
-                email: 'trader@chronos.local',
-                color: '#3b82f6',
-                isGuest: false
-            };
-            try {
-                localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
-            } catch (e) {}
-            loadUserAccount(currentUser.email);
-            if (typeof loadAiConversations === 'function') loadAiConversations();
+            // When no saved session exists, prompt for login with clean blank fields
+            currentUser = null;
             renderUserPill();
+            openAuthModal();
         }
 
         function openAuthModal() {
-            // Login authentication removed - ensure overlay remains hidden
             const overlay = document.getElementById('auth-overlay');
-            if (overlay) overlay.style.display = 'none';
+            if (overlay) {
+                overlay.style.display = 'flex';
+                overlay.style.setProperty('display', 'flex', 'important');
+            }
+
+            const emailInput = document.getElementById('auth-input-email');
+            const passInput = document.getElementById('auth-input-password');
+            const nameInput = document.getElementById('auth-input-name');
+            const forgotEmail = document.getElementById('forgot-input-email');
+            const resetPass = document.getElementById('reset-input-password');
+            const resetConf = document.getElementById('reset-input-confirm');
+
+            const errBox = document.getElementById('auth-error-msg');
+            const successBox = document.getElementById('auth-success-msg');
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) successBox.style.display = 'none';
+
+            const forgotErr = document.getElementById('forgot-error-msg');
+            const forgotSuccess = document.getElementById('forgot-success-msg');
+            if (forgotErr) forgotErr.style.display = 'none';
+            if (forgotSuccess) forgotSuccess.style.display = 'none';
+
+            // Keep login fields blank by default
+            if (emailInput) emailInput.value = '';
+            if (passInput) passInput.value = '';
+            if (nameInput) nameInput.value = '';
+            if (forgotEmail) forgotEmail.value = '';
+            if (resetPass) resetPass.value = '';
+            if (resetConf) resetConf.value = '';
+
+            const cancelBtn = document.getElementById('btn-auth-cancel');
+            if (cancelBtn) cancelBtn.style.display = currentUser ? 'block' : 'none';
+
+            currentResetToken = null;
+            currentResetEmail = null;
+            switchAuthTab('login');
         }
 
         function closeAuthModal() {
             const overlay = document.getElementById('auth-overlay');
-            if (overlay) overlay.style.display = 'none';
+            if (overlay) {
+                overlay.style.display = 'none';
+                overlay.style.setProperty('display', 'none', 'important');
+            }
         }
 
         function switchAuthTab(mode) {
             authMode = mode;
             const tabLogin = document.getElementById('tab-login');
             const tabRegister = document.getElementById('tab-register');
+            const tabsRow = document.getElementById('auth-tabs-row');
+            const authForm = document.getElementById('auth-form');
+            const forgotPanel = document.getElementById('forgot-recovery-panel');
             const nameGroup = document.getElementById('field-group-name');
+            const passGroup = document.getElementById('field-group-password');
+            const forgotLinkGroup = document.getElementById('field-group-forgot-link');
             const submitBtn = document.getElementById('btn-auth-submit-action');
             const titleEl = document.getElementById('auth-header-title');
+
             const errBox = document.getElementById('auth-error-msg');
+            const successBox = document.getElementById('auth-success-msg');
             if (errBox) errBox.style.display = 'none';
+            if (successBox) successBox.style.display = 'none';
+
+            const forgotErr = document.getElementById('forgot-error-msg');
+            const forgotSuccess = document.getElementById('forgot-success-msg');
+            if (forgotErr) forgotErr.style.display = 'none';
+            if (forgotSuccess) forgotSuccess.style.display = 'none';
 
             if (mode === 'login') {
-                tabLogin.classList.add('active');
-                tabRegister.classList.remove('active');
-                nameGroup.style.display = 'none';
-                submitBtn.innerText = 'Sign In';
-                titleEl.innerText = '⚡ Sign In';
-            } else {
-                tabRegister.classList.add('active');
-                tabLogin.classList.remove('active');
-                nameGroup.style.display = 'flex';
-                submitBtn.innerText = 'Create Account';
-                titleEl.innerText = '⚡ Create Account';
-                const successBox = document.getElementById('auth-success-msg');
-                if (successBox) successBox.style.display = 'none';
+                if (tabsRow) tabsRow.style.display = 'flex';
+                if (authForm) authForm.style.display = 'block';
+                if (forgotPanel) forgotPanel.style.display = 'none';
+
+                if (tabLogin) tabLogin.classList.add('active');
+                if (tabRegister) tabRegister.classList.remove('active');
+                if (nameGroup) nameGroup.style.display = 'none';
+                if (passGroup) passGroup.style.display = 'block';
+                if (forgotLinkGroup) forgotLinkGroup.style.display = 'flex';
+                if (submitBtn) submitBtn.innerText = 'Sign In';
+                if (titleEl) titleEl.innerText = '⚡ Sign In';
+            } else if (mode === 'register') {
+                if (tabsRow) tabsRow.style.display = 'flex';
+                if (authForm) authForm.style.display = 'block';
+                if (forgotPanel) forgotPanel.style.display = 'none';
+
+                if (tabRegister) tabRegister.classList.add('active');
+                if (tabLogin) tabLogin.classList.remove('active');
+                if (nameGroup) nameGroup.style.display = 'flex';
+                if (passGroup) passGroup.style.display = 'block';
+                if (forgotLinkGroup) forgotLinkGroup.style.display = 'none';
+                if (submitBtn) submitBtn.innerText = 'Create Account';
+                if (titleEl) titleEl.innerText = '⚡ Create Account';
+            } else if (mode === 'forgot') {
+                if (tabsRow) tabsRow.style.display = 'none';
+                if (authForm) authForm.style.display = 'none';
+                if (forgotPanel) forgotPanel.style.display = 'block';
+                if (titleEl) titleEl.innerText = '🔑 Reset Password';
+                showResetStep1();
             }
         }
 
@@ -6025,23 +6258,28 @@
                     });
                     const data = await res.json().catch(() => ({}));
                     if (res.ok) {
-                        // Successful account creation: display success message and redirect to login section
+                        saveLocalUserRecord(email, name, password);
                         switchAuthTab('login');
-                        if (emailInput) emailInput.value = email;
-                        if (passInput) {
-                            passInput.value = '';
-                            passInput.focus();
-                        }
+                        if (emailInput) emailInput.value = '';
+                        if (passInput) passInput.value = '';
                         showAuthSuccess(data.message || 'Account created successfully! Please log in.');
                         return;
                     } else {
-                        // Check whether the email is already registered: "Account already exists. Please log in."
                         const detail = data.detail || data.message || 'Account already exists. Please log in.';
                         showAuthError(detail);
                         return;
                     }
                 } catch (err) {
-                    showAuthError('Unable to connect to authentication backend. Please check network.');
+                    // Client-side fallback for static host
+                    const localRes = localRegister(email, name, password);
+                    if (localRes.success) {
+                        switchAuthTab('login');
+                        if (emailInput) emailInput.value = '';
+                        if (passInput) passInput.value = '';
+                        showAuthSuccess('Account created successfully! Please log in.');
+                    } else {
+                        showAuthError(localRes.error);
+                    }
                     return;
                 }
             } else {
@@ -6054,20 +6292,136 @@
                     });
                     const data = await res.json().catch(() => ({}));
                     if (res.ok) {
-                        // IF password matches: Authenticate user, open ChronosMatch account, load saved portfolio
+                        saveLocalUserRecord(email, data.user?.name || name, password);
                         loginSuccess(data.user);
                         return;
                     } else {
-                        // IF password does not match: "Incorrect password. Please try again."
-                        // ELSE: "Account not found. Please create an account first."
                         const detail = data.detail || data.message || 'Login failed. Please try again.';
                         showAuthError(detail);
                         return;
                     }
                 } catch (err) {
-                    showAuthError('Unable to connect to authentication backend. Please check network.');
+                    // Client-side fallback for static host
+                    const localRes = localLogin(email, password);
+                    if (localRes.success) {
+                        loginSuccess(localRes.user);
+                    } else {
+                        showAuthError(localRes.error);
+                    }
                     return;
                 }
+            }
+        }
+
+        async function handleForgotPasswordSubmit(e) {
+            e.preventDefault();
+            const errBox = document.getElementById('forgot-error-msg');
+            const successBox = document.getElementById('forgot-success-msg');
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) successBox.style.display = 'none';
+
+            const emailInp = document.getElementById('forgot-input-email');
+            const email = emailInp ? emailInp.value.trim().toLowerCase() : '';
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showForgotError('Please enter a valid registered email address.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/virtual/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.token) {
+                    // Valid account with generated token
+                    currentResetToken = data.token;
+                    currentResetEmail = email;
+                    showResetStep2();
+                    showForgotSuccess('Verification successful. Please enter your new password below.');
+                } else {
+                    // Generic security response: do not reveal email existence
+                    showForgotSuccess(data.message || 'If this email is registered, password reset instructions have been generated.');
+                }
+            } catch (err) {
+                // Client-side fallback for static host
+                const localUsers = getLocalUsers();
+                if (localUsers[email]) {
+                    currentResetToken = 'local_' + Math.random().toString(36).substring(2);
+                    currentResetEmail = email;
+                    showResetStep2();
+                    showForgotSuccess('Account verified. Please enter your new password below.');
+                } else {
+                    showForgotSuccess('If this email is registered, password reset instructions have been generated.');
+                }
+            }
+        }
+
+        async function handleResetPasswordSubmit(e) {
+            e.preventDefault();
+            const errBox = document.getElementById('forgot-error-msg');
+            const successBox = document.getElementById('forgot-success-msg');
+            if (errBox) errBox.style.display = 'none';
+            if (successBox) successBox.style.display = 'none';
+
+            const newPassInp = document.getElementById('reset-input-password');
+            const confPassInp = document.getElementById('reset-input-confirm');
+
+            const newPassword = newPassInp ? newPassInp.value : '';
+            const confirmPassword = confPassInp ? confPassInp.value : '';
+
+            if (!newPassword || newPassword.length < 4) {
+                showForgotError('Password must be at least 4 characters long.');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showForgotError('Passwords do not match. Please verify and re-enter.');
+                return;
+            }
+            if (!currentResetToken) {
+                showForgotError('Reset session expired. Please enter your email again.');
+                showResetStep1();
+                return;
+            }
+
+            try {
+                if (currentResetToken.startsWith('local_')) {
+                    localResetPassword(currentResetEmail, newPassword);
+                } else {
+                    const res = await fetch('/api/virtual/reset-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            token: currentResetToken,
+                            new_password: newPassword
+                        })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        const detail = data.detail || data.message || 'Password reset failed. Token may be expired.';
+                        showForgotError(detail);
+                        return;
+                    }
+                }
+
+                // Password reset succeeded: switch to login tab and prefill email
+                switchAuthTab('login');
+                const emailInp = document.getElementById('auth-input-email');
+                const passInp = document.getElementById('auth-input-password');
+                if (emailInp) emailInp.value = currentResetEmail || '';
+                if (passInp) {
+                    passInp.value = '';
+                    passInp.focus();
+                }
+                showAuthSuccess('Password reset successfully! Please sign in with your new password.');
+                showToast('✓ Password reset successfully! Please sign in.');
+                currentResetToken = null;
+                currentResetEmail = null;
+            } catch (err) {
+                showForgotError('Unable to connect to authentication backend. Please check network.');
             }
         }
 
@@ -6110,7 +6464,7 @@
                 isGuest: !!user.isGuest
             };
             localStorage.setItem('chronos_simple_user', JSON.stringify(currentUser));
-            document.getElementById('auth-overlay').style.display = 'none';
+            closeAuthModal();
 
             // Clean in-memory state first to prevent cross-account contamination
             resetInMemoryUserState();
@@ -6128,27 +6482,25 @@
         }
 
         function renderUserPill() {
-            if (!currentUser) {
-                currentUser = {
-                    name: 'Paper Trader',
-                    email: 'trader@chronos.local',
-                    color: '#3b82f6',
-                    isGuest: false
-                };
-            }
             const loginBtn = document.getElementById('btn-header-login');
-            if (loginBtn) loginBtn.style.display = 'none';
             const pill = document.getElementById('user-header-pill');
+            if (!currentUser) {
+                if (pill) pill.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'inline-flex';
+                return;
+            }
+            if (loginBtn) loginBtn.style.display = 'none';
             if (pill) pill.style.display = 'flex';
             const nameEl = document.getElementById('user-header-name');
-            if (nameEl) nameEl.innerText = currentUser.name || 'Paper Trader';
+            if (nameEl) nameEl.innerText = currentUser.name || 'Trader';
             const emailEl = document.getElementById('user-header-email');
             if (emailEl) {
-                emailEl.innerText = 'Virtual Trading Active';
-                emailEl.title = 'Virtual paper trading session with ₹1,00,000 capital and live market execution simulation.';
+                const isLocalDemo = currentUser.email?.includes('@chronos.local') || currentUser.isGuest;
+                emailEl.innerText = isLocalDemo ? `${currentUser.email} • Demo` : currentUser.email;
+                emailEl.title = currentUser.email;
             }
             const badgeEl = document.getElementById('user-avatar-badge');
-            if (badgeEl) badgeEl.innerText = (currentUser.name || 'P').charAt(0).toUpperCase();
+            if (badgeEl) badgeEl.innerText = (currentUser.name || 'T').charAt(0).toUpperCase();
         }
 
         function resetVirtualAccount() {
@@ -6167,7 +6519,23 @@
         }
 
         function logoutUser() {
-            resetVirtualAccount();
+            if (confirm('Log out from your ChronosMatch trading session?')) {
+                fetch('/api/virtual/logout', { method: 'POST' }).catch(() => {});
+                localStorage.removeItem('chronos_simple_user');
+                currentUser = null;
+
+                // Reset in-memory state cleanly without deleting saved user data in localStorage
+                resetInMemoryUserState();
+                aiConversations = [];
+                activeAiConversationId = null;
+                if (typeof renderActiveAiConversation === 'function') renderActiveAiConversation();
+                if (typeof renderAiHistoryList === 'function') renderAiHistoryList();
+                if (typeof updateAiHistoryCountBadge === 'function') updateAiHistoryCountBadge();
+
+                renderUserPill();
+                openAuthModal();
+                showToast('ℹ️ Logged out successfully.');
+            }
         }
 
         // ==========================================================================

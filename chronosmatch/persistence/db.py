@@ -122,6 +122,15 @@ class Database:
                     created_at TEXT NOT NULL,
                     FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
                 );
+
+                CREATE TABLE IF NOT EXISTS password_resets (
+                    token TEXT PRIMARY KEY,
+                    email TEXT NOT NULL,
+                    expires_at TEXT NOT NULL,
+                    used INTEGER DEFAULT 0,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
+                );
             """)
 
             # Automatic schema migration for existing databases
@@ -263,6 +272,77 @@ class Database:
             return self.authenticate_user(email, password)
         else:
             return self.create_user(email, name, password, color)
+
+    def create_password_reset_token(self, email: str, expires_in_minutes: int = 15) -> Optional[str]:
+        """Generate a secure, expiring, single-use password reset token for a registered user."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT email FROM users WHERE email = ?", (email,))
+            if not cursor.fetchone():
+                return None
+
+            # Invalidate any existing unused reset tokens for this user
+            cursor.execute("UPDATE password_resets SET used = 1 WHERE email = ? AND used = 0", (email,))
+
+            token = secrets.token_urlsafe(32)
+            now_dt = datetime.datetime.now(datetime.timezone.utc)
+            created_at = now_dt.isoformat()
+            expires_at = (now_dt + datetime.timedelta(minutes=expires_in_minutes)).isoformat()
+
+            cursor.execute(
+                "INSERT INTO password_resets (token, email, expires_at, used, created_at) VALUES (?, ?, ?, 0, ?)",
+                (token, email, expires_at, created_at),
+            )
+            conn.commit()
+            return token
+
+    def reset_password_with_token(self, token: str, new_password: str) -> Dict[str, Any]:
+        """Validate single-use token and update user's password with PBKDF2 hash."""
+        token = token.strip()
+        if not token:
+            raise ValueError("Password reset token is required.")
+        if not new_password:
+            raise ValueError("New password is required.")
+        if len(new_password) < 4:
+            raise ValueError("Password must be at least 4 characters.")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT email, expires_at, used FROM password_resets WHERE token = ?",
+                (token,),
+            )
+            row = cursor.fetchone()
+            if not row or row["used"] == 1:
+                raise ValueError("Invalid or expired password reset token.")
+
+            email = row["email"]
+            expires_at_str = row["expires_at"]
+            try:
+                expires_at = datetime.datetime.fromisoformat(expires_at_str)
+            except Exception:
+                raise ValueError("Invalid token expiration format.")
+
+            now_dt = datetime.datetime.now(datetime.timezone.utc)
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=datetime.timezone.utc)
+
+            if now_dt > expires_at:
+                cursor.execute("UPDATE password_resets SET used = 1 WHERE token = ?", (token,))
+                conn.commit()
+                raise ValueError("Password reset token has expired. Please request a new one.")
+
+            hashed_pwd = hash_password(new_password)
+            cursor.execute("UPDATE users SET password = ? WHERE email = ?", (hashed_pwd, email))
+            cursor.execute("UPDATE password_resets SET used = 1 WHERE token = ?", (token,))
+            conn.commit()
+
+            return {
+                "email": email,
+                "success": True,
+                "message": "Password reset successfully! Please sign in with your new password.",
+            }
 
     def get_account(self, email: str) -> Optional[Dict[str, Any]]:
         email = email.strip().lower()

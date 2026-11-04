@@ -160,6 +160,15 @@ class LoginRequest(BaseModel):
     password: str = Field(..., description="Account password")
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: str = Field(..., description="Registered user email address")
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., description="Secure password reset token")
+    new_password: str = Field(..., min_length=4, description="New password (minimum 4 characters)")
+
+
 class VirtualAuthRequest(BaseModel):
     email: str = Field(..., description="User email address")
     name: Optional[str] = Field(default="Trader", description="User display name")
@@ -433,6 +442,35 @@ def virtual_login(req: LoginRequest):
 def virtual_logout():
     """Acknowledge session termination on server."""
     return {"status": "ok", "message": "Logged out successfully."}
+
+
+@app.post("/api/virtual/forgot-password")
+def forgot_password(req: ForgotPasswordRequest):
+    """Generate an expiring single-use password reset token.
+    Public response never reveals whether an email exists (security requirement).
+    """
+    token = db.create_password_reset_token(req.email)
+    # Generic security response: do not reveal email existence
+    return {
+        "status": "ok",
+        "message": "If this email is registered, password reset instructions have been generated.",
+        "token": token,
+    }
+
+
+@app.post("/api/virtual/reset-password")
+def reset_password(req: ResetPasswordRequest):
+    """Reset user password using single-use secure reset token and PBKDF2 hash."""
+    try:
+        res = db.reset_password_with_token(token=req.token, new_password=req.new_password)
+        return {
+            "status": "ok",
+            "message": res.get("message", "Password reset successfully! Please log in."),
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Password reset failed: {str(e)}")
 
 
 @app.get("/api/virtual/user/{email}")
