@@ -819,6 +819,19 @@ class Database:
             )
             return [dict(row) for row in cursor.fetchall()]
 
+    def get_order(self, email: str, order_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve a specific order by ID for a user."""
+        email = email.strip().lower()
+        order_id = str(order_id).strip()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT order_id, email, symbol, action, order_type, price, stop_price, quantity, filled_qty, leaves_qty, total_value, realized_pnl, status, created_at FROM orders WHERE email = ? AND order_id = ?",
+                (email, order_id),
+            )
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
     def get_analytics(self, email: str) -> Dict[str, Any]:
         """Compute comprehensive win rate, trade metrics, and profit statistics."""
         orders = self.get_orders(email, limit=500)

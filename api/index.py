@@ -12,7 +12,8 @@ for p in [str(CURRENT_DIR), str(ROOT_DIR), str(ROOT_DIR / "src")]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from fastapi import FastAPI, HTTPException, Query, Request
+import datetime
+from fastapi import FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
@@ -39,7 +40,7 @@ from chronosmatch.engine.arena import (
     MarketCondition,
     run_strategy_evolution_test,
 )
-from chronosmatch.marketdata.service import market_data_service
+from chronosmatch.marketdata.service import INSTRUMENT_CATALOG, market_data_service
 from chronosmatch.persistence.db import db
 from chronosmatch.ai.mentor import mentor_engine
 from chronosmatch.protocol import (
@@ -397,6 +398,92 @@ def search_market_instruments(q: str = "", category: Optional[str] = None):
     return market_data_service.search_instruments(query=q, category=category)
 
 
+@app.get("/api/market/instruments")
+def get_market_instruments():
+    """Retrieve catalog of all available trading instruments."""
+    return {
+        "status": "ok",
+        "count": len(INSTRUMENT_CATALOG),
+        "instruments": INSTRUMENT_CATALOG,
+    }
+
+
+@app.get("/api/market/depth/{symbol}")
+def get_market_depth(symbol: str, depth: int = Query(default=10, ge=1, le=50)):
+    """Retrieve Level 2 (L2) aggregated order book depth snapshot."""
+    sym = symbol.upper()
+    book = engine.get_book(sym)
+    if book is None:
+        quote = market_data_service.fetch_live_quote(sym)
+        base = quote["price"] if quote else 1000.0
+        tick = quote.get("tick_size", 0.05) if quote else 0.05
+        bids = [{"price": round(base - (i + 1) * tick, 2), "quantity": round(15.0 + i * 4.5, 1)} for i in range(depth)]
+        asks = [{"price": round(base + (i + 1) * tick, 2), "quantity": round(12.0 + i * 3.8, 1)} for i in range(depth)]
+        cum_b, cum_a = 0.0, 0.0
+        for b in bids:
+            cum_b += b["quantity"]
+            b["total"] = round(cum_b, 1)
+        for a in asks:
+            cum_a += a["quantity"]
+            a["total"] = round(cum_a, 1)
+        return {
+            "symbol": sym,
+            "depth": depth,
+            "bids": bids,
+            "asks": asks,
+            "total_active_orders": len(bids) + len(asks),
+            "environment": "MarketDataService",
+        }
+
+    bids_raw, asks_raw = book.get_l2_depth(depth=depth)
+    bids = [{"price": p, "quantity": q} for p, q in bids_raw]
+    asks = [{"price": p, "quantity": q} for p, q in asks_raw]
+    return {
+        "symbol": sym,
+        "depth": depth,
+        "bids": bids,
+        "asks": asks,
+        "total_active_orders": book.order_count,
+        "environment": "MatchingEngine",
+    }
+
+
+@app.get("/api/market/bbo/{symbol}")
+def get_market_bbo(symbol: str):
+    """Retrieve Best Bid & Offer (BBO) with spread."""
+    sym = symbol.upper()
+    book = engine.get_book(sym)
+    if book is not None:
+        bid, ask = book.get_bbo()
+        if bid or ask:
+            best_bid_p = fixed_to_price(bid[0]) if bid else None
+            best_ask_p = fixed_to_price(ask[0]) if ask else None
+            spread = round(best_ask_p - best_bid_p, 4) if (best_bid_p and best_ask_p) else 0.0
+            return {
+                "symbol": sym,
+                "best_bid": {"price": best_bid_p, "quantity": bid[1] if bid else 0},
+                "best_ask": {"price": best_ask_p, "quantity": ask[1] if ask else 0},
+                "spread": spread,
+                "environment": "MatchingEngine",
+            }
+
+    quote = market_data_service.fetch_live_quote(sym)
+    if not quote:
+        raise HTTPException(status_code=404, detail=f"Symbol '{symbol}' not found")
+    price = quote["price"]
+    tick = quote.get("tick_size", 0.05)
+    best_bid_p = round(price - tick, 2)
+    best_ask_p = round(price + tick, 2)
+    return {
+        "symbol": sym,
+        "best_bid": {"price": best_bid_p, "quantity": 25.0},
+        "best_ask": {"price": best_ask_p, "quantity": 20.0},
+        "spread": round(best_ask_p - best_bid_p, 2),
+        "environment": "MarketDataService",
+    }
+
+
+
 # ==========================================================================
 # VIRTUAL PAPER TRADING & PORTFOLIO API
 # ==========================================================================
@@ -562,6 +649,31 @@ def execute_virtual_trade(req: VirtualTradeRequest):
 def get_virtual_orders(email: str, limit: int = Query(default=100, ge=1, le=500)):
     """Retrieve user's virtual order and trade transaction history."""
     return db.get_orders(email, limit=limit)
+
+
+@app.get("/api/virtual/orders/{email}/{order_id}")
+def get_single_virtual_order(email: str, order_id: str):
+    """Retrieve details and status for a specific virtual order."""
+    order = db.get_order(email, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail=f"Order '{order_id}' not found for user {email}")
+    return {"status": "ok", "order": order}
+
+
+@app.get("/api/virtual/account/{email}")
+def get_virtual_account(email: str):
+    """Retrieve account summary, cash balances, and portfolio equity."""
+    user = db.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account not found")
+    portfolio = db.get_portfolio(email)
+    return {
+        "status": "ok",
+        "email": user["email"],
+        "name": user["name"],
+        "created_at": user.get("created_at"),
+        "portfolio": portfolio,
+    }
 
 
 @app.post("/api/virtual/cancel")
@@ -1060,3 +1172,31 @@ def cancel_order(symbol: str, order_id: int, client_id: int = 1):
         "symbol": symbol.upper(),
         "exec_type": et_name,
     }
+
+
+@app.websocket("/api/market/ws")
+@app.websocket("/ws/events")
+async def websocket_market_events(websocket: WebSocket):
+    """Real-time WebSocket event stream for Developer Playground & Market Monitor."""
+    await websocket.accept()
+    try:
+        import asyncio
+        await websocket.send_json({
+            "type": "connection_status",
+            "status": "connected",
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "message": "Connected to ChronosMatch Real-Time Event Stream",
+            "server": "ChronosMatch-FastAPI-v0.3.0",
+        })
+        while True:
+            quotes = market_data_service.get_all_quotes()
+            await websocket.send_json({
+                "type": "quotes",
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "data": quotes,
+            })
+            await asyncio.sleep(2.0)
+    except WebSocketDisconnect:
+        pass
+    except Exception:
+        pass

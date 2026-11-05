@@ -2455,6 +2455,178 @@
             padding: 14px 18px;
             margin-bottom: 16px;
         }
+    
+        /* ==========================================================================
+           CHRONOSMATCH DEVELOPER API PLAYGROUND STYLES
+           ========================================================================== */
+        .pg-subnav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            background: var(--bg-card);
+            overflow-x: auto;
+        }
+        .pg-subnav-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: border-color 0.15s ease, opacity 0.15s ease;
+        }
+        .pg-subnav-btn:hover {
+            color: var(--text-main);
+        }
+        .pg-subnav-btn.active {
+            color: var(--blue);
+            border-bottom-color: var(--blue);
+        }
+        .pg-content-area {
+            padding: 18px 20px;
+        }
+        .pg-sub-panel {
+            display: none;
+        }
+        .pg-sub-panel.active {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+        .pg-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .pg-method-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-family: var(--font-mono, monospace);
+            display: inline-block;
+        }
+        .pg-method-get {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .pg-method-post {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .pg-method-put {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .pg-method-delete {
+            background: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .pg-status-badge {
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .pg-status-2xx {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .pg-status-4xx {
+            background: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .pg-status-5xx {
+            background: rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        .pg-code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-mono, monospace);
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 12px;
+            overflow-x: auto;
+            color: #e2e8f0;
+            max-height: 480px;
+            white-space: pre;
+        }
+        /* JSON Syntax Highlighting */
+        .j-key { color: #38bdf8; font-weight: 600; }
+        .j-str { color: #4ade80; }
+        .j-num { color: #fbbf24; }
+        .j-bool { color: #c084fc; font-weight: 600; }
+        .j-null { color: #94a3b8; font-style: italic; }
+        .pg-pill-btn {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background 0.15s ease;
+            white-space: nowrap;
+        }
+        .pg-pill-btn:hover {
+            border-color: var(--blue);
+            color: var(--text-main);
+        }
+        .pg-pill-btn.active {
+            background: var(--blue-soft, rgba(59, 130, 246, 0.15));
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+        .pg-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .pg-table th {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+        .pg-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .pg-event-row {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .pg-event-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
     </style>
 </head>
 <body>
@@ -2597,6 +2769,13 @@
                         <button type="button" class="nav-link-btn" id="nav-btn-arena" onclick="switchView('arena')">
                             <span class="nav-icon">🏟️</span>
                             <span class="nav-text">Algo Trading Arena</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-playground" onclick="switchView('playground')">
+                            <span class="nav-icon">⚡</span>
+                            <span class="nav-text">API Playground</span>
+                            <span class="sidebar-badge" style="background: rgba(59, 130, 246, 0.2); color: var(--blue);">DEV</span>
                         </button>
                     </li>
                 </ul>
@@ -5477,6 +5656,433 @@
                     </div>
                 </div>
             </div>
+                    <!-- ==========================================================================
+                 CHRONOSMATCH DEVELOPER API PLAYGROUND
+                 ========================================================================== -->
+            <div class="view-panel" id="view-playground">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <!-- Playground Header Banner -->
+                    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="card-title">⚡ ChronosMatch Developer API Playground</span>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">
+                                Interactive exchange API workbench, real-time WebSocket event streaming, client code generation, and guided developer learning tutorials.
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge-tag" id="pg-env-badge" style="background: rgba(16, 185, 129, 0.12); color: var(--green); font-size: 11px; border: 1px solid rgba(16, 185, 129, 0.25);">
+                                ● Live Backend API
+                            </span>
+                            <span class="badge-tag" style="background: rgba(59, 130, 246, 0.12); color: var(--blue); font-size: 11px;">
+                                v0.3.0
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Truthful Notice Banner -->
+                    <div style="background: rgba(59, 130, 246, 0.08); border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-sub); flex-wrap: wrap; gap: 6px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="color: var(--blue); font-weight: 700;">ℹ️ HYBRID EXECUTION ARCHITECTURE:</span>
+                            <span>Direct REST queries sent to live FastAPI matching engine when connected. When offline or on static GitHub Pages, requests execute via the authentic in-browser Local Simulation Engine with strict FIFO matching & order persistence. All simulation data is isolated from real-money trades.</span>
+                        </div>
+                        <span class="mono" style="font-size: 10px; color: var(--text-muted);" id="pg-current-user-pill">Session: trader@chronos.local</span>
+                    </div>
+
+                    <!-- Sub-Navigation Tabs -->
+                    <div class="pg-subnav">
+                        <button type="button" class="pg-subnav-btn active" id="pg-tab-console" onclick="ChronosDeveloperPlayground.switchSubTab('console')">
+                            <span>🎮</span> API Console
+                        </button>
+                        <button type="button" class="pg-subnav-btn" id="pg-tab-ws" onclick="ChronosDeveloperPlayground.switchSubTab('ws')">
+                            <span>📡</span> WebSocket Stream
+                        </button>
+                        <button type="button" class="pg-subnav-btn" id="pg-tab-collections" onclick="ChronosDeveloperPlayground.switchSubTab('collections')">
+                            <span>📚</span> Collections & Docs
+                        </button>
+                        <button type="button" class="pg-subnav-btn" id="pg-tab-tutorial" onclick="ChronosDeveloperPlayground.switchSubTab('tutorial')">
+                            <span>🎓</span> Developer Learning Mode
+                        </button>
+                        <button type="button" class="pg-subnav-btn" id="pg-tab-history" onclick="ChronosDeveloperPlayground.switchSubTab('history')">
+                            <span>📜</span> Request History
+                        </button>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 1: API CONSOLE
+                         ========================================================== -->
+                    <div class="pg-content-area pg-sub-panel active" id="pg-subpanel-console">
+                        <!-- Quick Presets Strip -->
+                        <div style="margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Presets:</span>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('instruments')">Instruments (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('quote')">Quote RELIANCE (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('quotes_all')">Quotes All (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('depth')">Depth L2 (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('bbo')">BBO Spread (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('place_order')">Submit Buy Order (POST)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('orders')">User Orders (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('portfolio')">Portfolio (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('account')">Account (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('journal')">Trade History (GET)</button>
+                            <button type="button" class="pg-pill-btn" onclick="ChronosDeveloperPlayground.loadPreset('engine_metrics')">Engine Metrics (GET)</button>
+                        </div>
+
+                        <!-- Request URL Bar -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+                            <select id="pg-http-method" onchange="ChronosDeveloperPlayground.onMethodChange()" class="pg-method-badge pg-method-get" style="cursor: pointer; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 800; font-size: 12px; padding: 8px 12px; border-radius: 6px; outline: none;">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+
+                            <input type="text" id="pg-http-url" value="/api/market/quote/RELIANCE" oninput="ChronosDeveloperPlayground.onUrlChange()" class="trade-input mono" placeholder="/api/market/quote/RELIANCE" style="flex: 1; min-width: 260px; font-size: 13px; padding: 8px 12px;">
+
+                            <button type="button" id="pg-btn-send" onclick="ChronosDeveloperPlayground.sendRequest()" class="btn-order-action buy" style="padding: 8px 20px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                ⚡ Send Request
+                            </button>
+
+                            <button type="button" onclick="ChronosDeveloperPlayground.saveCurrentToCollection()" class="btn-action-tool" style="border: 1px solid var(--border); padding: 8px 14px; font-size: 12px; border-radius: 6px; cursor: pointer;" title="Save current request into custom collections">
+                                💾 Save
+                            </button>
+                        </div>
+
+                        <!-- Two-Column Split Layout -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px;">
+                            <!-- LEFT COLUMN: REQUEST BUILDER -->
+                            <div class="pg-card" style="margin-bottom: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px;">
+                                    <div style="font-weight: 700; font-size: 13px; color: var(--text-main);">Request Configuration</div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <button type="button" class="pg-pill-btn pg-req-tab-btn active" id="pg-req-tab-btn-headers" onclick="ChronosDeveloperPlayground.switchReqTab('headers')">Headers</button>
+                                        <button type="button" class="pg-pill-btn pg-req-tab-btn" id="pg-req-tab-btn-body" onclick="ChronosDeveloperPlayground.switchReqTab('body')">Body (JSON)</button>
+                                        <button type="button" class="pg-pill-btn pg-req-tab-btn" id="pg-req-tab-btn-auth" onclick="ChronosDeveloperPlayground.switchReqTab('auth')">Auth</button>
+                                    </div>
+                                </div>
+
+                                <!-- Tab 1: Headers -->
+                                <div class="pg-req-tab-panel active" id="pg-req-tab-headers">
+                                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">HTTP Request Headers:</div>
+                                    <div id="pg-headers-list"></div>
+                                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.addHeaderRow()" style="border: 1px dashed var(--border); width: 100%; padding: 6px; font-size: 11px; margin-top: 6px; cursor: pointer;">+ Add Custom Header</button>
+                                </div>
+
+                                <!-- Tab 2: Body (JSON) -->
+                                <div class="pg-req-tab-panel" id="pg-req-tab-body">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <span id="pg-body-validation-status" style="font-size: 11px;">Empty Body</span>
+                                        <div style="display: flex; gap: 6px;">
+                                            <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.formatJsonBody()" style="padding: 3px 8px; font-size: 11px; border: 1px solid var(--border);">Format JSON</button>
+                                            <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.clearBody()" style="padding: 3px 8px; font-size: 11px; border: 1px solid var(--border); color: var(--red);">Clear</button>
+                                        </div>
+                                    </div>
+                                    <textarea id="pg-req-body-input" class="mono" placeholder='{\n  "email": "trader@chronos.local",\n  "symbol": "RELIANCE",\n  "action": "BUY",\n  "order_type": "LIMIT",\n  "price": 1180.00,\n  "quantity": 10.0\n}' style="width: 100%; min-height: 220px; background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 12px; color: #e2e8f0; line-height: 1.5; resize: vertical; outline: none;"></textarea>
+                                </div>
+
+                                <!-- Tab 3: Auth -->
+                                <div class="pg-req-tab-panel" id="pg-req-tab-auth">
+                                    <p style="font-size: 12px; color: var(--text-sub); line-height: 1.5; margin-bottom: 12px;">
+                                        ChronosMatch Paper Trading APIs use session email isolation. For authenticated requests, pass the registered email in the request payload or URL path.
+                                    </p>
+                                    <div class="input-group">
+                                        <label class="input-label-row"><span>Active Session Email</span></label>
+                                        <input type="text" id="pg-auth-email-input" class="trade-input mono" value="trader@chronos.local" readonly style="opacity: 0.8;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT COLUMN: RESPONSE INSPECTOR & CODE GENERATOR -->
+                            <div class="pg-card" style="margin-bottom: 0;">
+                                <!-- Response Metrics Bar -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span id="pg-resp-status-badge" class="pg-status-badge pg-status-2xx">Ready</span>
+                                        <span class="mono" style="font-size: 11px; color: var(--text-sub);" id="pg-resp-time">0 ms</span>
+                                        <span class="mono" style="font-size: 11px; color: var(--text-muted);" id="pg-resp-size">0 B</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="font-size: 11px; color: #10b981; font-weight: 600;" id="pg-resp-env">Live / Simulated</span>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.copyResponse()" style="padding: 3px 8px; font-size: 11px; border: 1px solid var(--border); margin-left: 4px;">📋 Copy</button>
+                                    </div>
+                                </div>
+
+                                <!-- Response Subtabs -->
+                                <div style="display: flex; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                                    <button type="button" class="pg-pill-btn pg-resp-tab-btn active" id="pg-resp-tab-btn-body" onclick="ChronosDeveloperPlayground.switchRespTab('body')">Response Body</button>
+                                    <button type="button" class="pg-pill-btn pg-resp-tab-btn" id="pg-resp-tab-btn-headers" onclick="ChronosDeveloperPlayground.switchRespTab('headers')">Headers</button>
+                                    <button type="button" class="pg-pill-btn pg-resp-tab-btn" id="pg-resp-tab-btn-code" onclick="ChronosDeveloperPlayground.switchRespTab('code')">Code Generator</button>
+                                </div>
+
+                                <!-- Response Tab 1: Body -->
+                                <div class="pg-resp-tab-panel active" id="pg-resp-tab-body">
+                                    <div class="pg-code-container" id="pg-resp-json-viewer">// Response output will appear here after sending a request.
+// Click any preset above or press "Send Request" to test.</div>
+                                </div>
+
+                                <!-- Response Tab 2: Headers -->
+                                <div class="pg-resp-tab-panel" id="pg-resp-tab-headers">
+                                    <table class="pg-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 35%;">Header</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pg-resp-headers-tbody">
+                                            <tr><td colspan="2" style="color: var(--text-muted); padding: 8px;">No headers available yet.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Response Tab 3: Code Generator -->
+                                <div class="pg-resp-tab-panel" id="pg-resp-tab-code">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; gap: 4px;">
+                                            <button type="button" class="pg-pill-btn pg-code-tab-btn active" id="pg-code-tab-js" onclick="ChronosDeveloperPlayground.switchCodeTab('js')">JavaScript Fetch</button>
+                                            <button type="button" class="pg-pill-btn pg-code-tab-btn" id="pg-code-tab-py" onclick="ChronosDeveloperPlayground.switchCodeTab('py')">Python Requests</button>
+                                            <button type="button" class="pg-pill-btn pg-code-tab-btn" id="pg-code-tab-curl" onclick="ChronosDeveloperPlayground.switchCodeTab('curl')">cURL</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="pg-code-panel active" id="pg-code-box-js">
+                                        <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;">
+                                            <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.copyCodeSnippet('js')" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border);">Copy JS</button>
+                                        </div>
+                                        <div class="pg-code-container" id="pg-code-js">// JS fetch snippet will generate automatically.</div>
+                                    </div>
+
+                                    <div class="pg-code-panel" id="pg-code-box-py" style="display: none;">
+                                        <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;">
+                                            <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.copyCodeSnippet('py')" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border);">Copy Python</button>
+                                        </div>
+                                        <div class="pg-code-container" id="pg-code-py"># Python requests snippet will generate automatically.</div>
+                                    </div>
+
+                                    <div class="pg-code-panel" id="pg-code-box-curl" style="display: none;">
+                                        <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;">
+                                            <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.copyCodeSnippet('curl')" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border);">Copy cURL</button>
+                                        </div>
+                                        <div class="pg-code-container" id="pg-code-curl">curl command will generate automatically.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Error Diagnosis Card (Auto-shown on 4xx/5xx) -->
+                                <div id="pg-error-helper-card" style="display: none; margin-top: 12px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 8px; padding: 12px; font-size: 12px;">
+                                    <div style="font-weight: 700; color: #fecdd3; margin-bottom: 4px;">💡 Developer Diagnosis & Solution Guide:</div>
+                                    <div id="pg-error-helper-desc" style="color: var(--text-sub); line-height: 1.5;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 2: WEBSOCKET EVENT MONITOR
+                         ========================================================== -->
+                    <div class="pg-content-area pg-sub-panel" id="pg-subpanel-ws">
+                        <div class="pg-card" style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <button type="button" id="pg-ws-toggle-btn" class="btn-order-action buy" onclick="ChronosDeveloperPlayground.toggleWsConnection()" style="padding: 6px 16px; font-size: 12px; cursor: pointer;">
+                                        Connect
+                                    </button>
+                                    <button type="button" id="pg-ws-pause-btn" class="btn-action-tool" onclick="ChronosDeveloperPlayground.toggleWsPause()" style="border: 1px solid var(--border); padding: 6px 12px; font-size: 12px; cursor: pointer;">
+                                        ⏸ Pause
+                                    </button>
+                                    <button type="button" id="pg-ws-clear-btn" class="btn-action-tool" onclick="ChronosDeveloperPlayground.clearWsEvents()" style="border: 1px solid var(--border); padding: 6px 12px; font-size: 12px; cursor: pointer;">
+                                        🗑 Clear Feed
+                                    </button>
+                                    <span id="pg-ws-status-badge" class="pg-status-badge pg-status-4xx">✕ Disconnected</span>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 11px; color: var(--text-muted);" id="pg-ws-stats-label">Received: 0 events | 0.0 evt/sec</span>
+                                    <select id="pg-ws-filter-select" onchange="ChronosDeveloperPlayground.filterWsEvents(this.value)" class="trade-input mono" style="padding: 5px 10px; font-size: 11px; width: 140px;">
+                                        <option value="ALL">All Events</option>
+                                        <option value="PRICE_UPDATE">Price Updates</option>
+                                        <option value="DEPTH_UPDATE">Depth Ladder</option>
+                                        <option value="TRADE_EXECUTED">Trades Executed</option>
+                                        <option value="CONNECTION_STATUS">Connection</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Stream List Container -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                            <div style="background: var(--bg-subtle); padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                                <span>LIVE MICROSTRUCTURE EVENT STREAM</span>
+                                <span>LATEST EVENTS FIRST</span>
+                            </div>
+                            <div id="pg-ws-feed" style="max-height: 480px; overflow-y: auto;">
+                                <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px;">
+                                    WebSocket feed is waiting. Click "Connect" to stream live price updates, order-book changes, and trade executions.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 3: COLLECTIONS & INTERACTIVE DOCS
+                         ========================================================== -->
+                    <div class="pg-content-area pg-sub-panel" id="pg-subpanel-collections">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+                            <!-- Ready-to-Use Collections -->
+                            <div class="pg-card">
+                                <div style="font-weight: 700; font-size: 13px; color: var(--text-main); margin-bottom: 10px;">Standard Exchange Collections</div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <div style="font-size: 11px; font-weight: 700; color: var(--blue); margin-bottom: 6px;">📈 Market Data API</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('instruments')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/market/instruments</span>
+                                            <span style="color: var(--text-muted);">Catalog</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('quote')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/market/quote/{sym}</span>
+                                            <span style="color: var(--text-muted);">Live Quote</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('depth')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/market/depth/{sym}</span>
+                                            <span style="color: var(--text-muted);">L2 Book</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('bbo')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/market/bbo/{sym}</span>
+                                            <span style="color: var(--text-muted);">BBO Spread</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <div style="font-size: 11px; font-weight: 700; color: #10b981; margin-bottom: 6px;">⚡ Order Management API</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('place_order')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-post">POST</span> /api/virtual/trade</span>
+                                            <span style="color: var(--text-muted);">Submit Order</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('orders')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/virtual/orders/{email}</span>
+                                            <span style="color: var(--text-muted);">Order Log</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('cancel_order')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-post">POST</span> /api/virtual/cancel</span>
+                                            <span style="color: var(--text-muted);">Cancel Order</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div style="font-size: 11px; font-weight: 700; color: #ec4899; margin-bottom: 6px;">💼 Portfolio & Account API</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('portfolio')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/virtual/portfolio/{email}</span>
+                                            <span style="color: var(--text-muted);">Holdings</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('account')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/virtual/account/{email}</span>
+                                            <span style="color: var(--text-muted);">Profile</span>
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadPreset('journal')" style="text-align: left; padding: 6px 10px; font-size: 11px; border: 1px solid var(--border); display: flex; justify-content: space-between;">
+                                            <span><span class="pg-method-badge pg-method-get">GET</span> /api/virtual/journal/{email}</span>
+                                            <span style="color: var(--text-muted);">Trade History</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Custom Saved Collections -->
+                            <div class="pg-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <span style="font-weight: 700; font-size: 13px; color: var(--text-main);">Custom User Collections</span>
+                                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.saveCurrentToCollection()" style="border: 1px solid var(--border); padding: 4px 8px; font-size: 11px; color: var(--blue);">+ Save Current</button>
+                                </div>
+                                <div id="pg-collections-custom-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 4: DEVELOPER LEARNING MODE (TUTORIAL)
+                         ========================================================== -->
+                    <div class="pg-content-area pg-sub-panel" id="pg-subpanel-tutorial">
+                        <div class="pg-card" style="max-width: 820px; margin: 0 auto;">
+                            <!-- Progress Bar -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-weight: 700; font-size: 13px; color: var(--text-main);">Developer Learning Progress</span>
+                                <span style="font-size: 11px; color: var(--blue); font-weight: 700;" id="pg-tut-progress-count">0 of 6 Complete (0%)</span>
+                            </div>
+                            <div style="height: 8px; background: var(--bg-subtle); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px;">
+                                <div id="pg-tut-progress-fill" style="height: 100%; width: 0%; background: var(--blue); transition: width 0.3s ease;"></div>
+                            </div>
+
+                            <!-- Exercise Card -->
+                            <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                                    <div style="font-weight: 800; font-size: 15px; color: var(--text-main);" id="pg-tut-title">Exercise 1: Retrieve Market Price</div>
+                                    <span id="pg-tut-badge" class="badge-tag pg-status-2xx">Beginner</span>
+                                </div>
+
+                                <div id="pg-tut-desc" style="font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 12px;"></div>
+
+                                <div style="background: var(--bg-card); border-left: 3px solid var(--blue); padding: 10px 14px; border-radius: 4px; font-size: 12px; margin-bottom: 14px;">
+                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 2px;">Verification Criteria:</div>
+                                    <div id="pg-tut-criteria" style="color: var(--text-sub);"></div>
+                                </div>
+
+                                <div id="pg-tut-feedback-banner" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 14px; font-size: 12px;"></div>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <button type="button" class="btn-order-action buy" onclick="ChronosDeveloperPlayground.loadTutorialTemplate()" style="padding: 8px 16px; font-size: 12px; cursor: pointer;">
+                                        ⚡ Load Template in Playground
+                                    </button>
+
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" id="pg-tut-prev-btn" class="btn-action-tool" onclick="ChronosDeveloperPlayground.prevTutorialStep()" style="border: 1px solid var(--border); padding: 6px 12px; font-size: 12px; cursor: pointer;">
+                                            ← Previous
+                                        </button>
+                                        <button type="button" id="pg-tut-next-btn" class="btn-action-tool" onclick="ChronosDeveloperPlayground.nextTutorialStep()" style="border: 1px solid var(--border); padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--blue);">
+                                            Next Exercise →
+                                        </button>
+                                        <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.resetTutorial()" style="border: 1px solid var(--border); padding: 6px 10px; font-size: 11px; color: var(--text-muted); cursor: pointer;" title="Reset progress">
+                                            ↺ Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================================
+                         SUB-PANEL 5: REQUEST HISTORY
+                         ========================================================== -->
+                    <div class="pg-content-area pg-sub-panel" id="pg-subpanel-history">
+                        <div class="pg-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="font-weight: 700; font-size: 13px; color: var(--text-main);">Recent Request Execution Log</span>
+                                <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.clearHistory()" style="border: 1px solid var(--border); color: var(--red); padding: 4px 10px; font-size: 11px;">Clear All History</button>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <table class="pg-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Status</th>
+                                            <th>Latency</th>
+                                            <th>Size</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pg-history-tbody">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -5920,6 +6526,8 @@
                 initArenaView();
             } else if (viewName === 'ai') {
                 initAiChatView();
+            } else if (viewName === 'playground') {
+                initPlaygroundView();
             }
         }
 
@@ -14663,6 +15271,1575 @@
         // ==========================================================================
         // 16. INITIALIZATION
         // ==========================================================================
+        // ==========================================================================
+// 16. CHRONOSMATCH DEVELOPER API PLAYGROUND & WEBSOCKET ENGINE
+// ==========================================================================
+
+const ChronosDeveloperPlayground = {
+    activeSubTab: 'console',
+    currentMethod: 'GET',
+    currentUrl: '/api/market/quote/RELIANCE',
+    headers: [
+        { key: 'Content-Type', value: 'application/json', enabled: true },
+        { key: 'Accept', value: 'application/json', enabled: true }
+    ],
+    queryParams: [],
+    requestBody: '',
+    authMode: 'none',
+    authToken: '',
+    lastResponse: null,
+    history: [],
+    customCollections: [],
+    tutorialStep: 1,
+    tutorialCompleted: [],
+    wsConnected: false,
+    wsPaused: false,
+    wsFilter: 'ALL',
+    wsSocket: null,
+    wsSimInterval: null,
+    wsEventCount: 0,
+    wsStartTime: null,
+
+    init() {
+        this.loadStorage();
+        this.renderHeadersEditor();
+        this.renderHistory();
+        this.renderCollectionsList();
+        this.renderTutorialCard();
+        this.updateCodeSnippets();
+        this.checkEnvironment();
+
+        // Listen for method change to update URL / Body defaults
+        const methodSelect = document.getElementById('pg-http-method');
+        if (methodSelect) {
+            methodSelect.value = this.currentMethod;
+            this.updateMethodStyling(this.currentMethod);
+        }
+
+        const urlInput = document.getElementById('pg-http-url');
+        if (urlInput) {
+            urlInput.value = this.currentUrl;
+        }
+
+        // Live code snippet update when editing body
+        const bodyInput = document.getElementById('pg-req-body-input');
+        if (bodyInput) {
+            bodyInput.addEventListener('input', () => {
+                this.requestBody = bodyInput.value;
+                this.validateJsonBody();
+                this.updateCodeSnippets();
+            });
+        }
+    },
+
+    loadStorage() {
+        try {
+            const hist = localStorage.getItem('chronos_dev_history');
+            if (hist) this.history = JSON.parse(hist);
+            const cols = localStorage.getItem('chronos_dev_collections');
+            if (cols) this.customCollections = JSON.parse(cols);
+            const tut = localStorage.getItem('chronos_dev_tutorial_step');
+            if (tut) this.tutorialStep = parseInt(tut, 10) || 1;
+            const comp = localStorage.getItem('chronos_dev_tutorial_completed');
+            if (comp) this.tutorialCompleted = JSON.parse(comp);
+        } catch (e) {
+            console.warn('Playground storage read failed:', e);
+        }
+    },
+
+    saveStorage() {
+        try {
+            localStorage.setItem('chronos_dev_history', JSON.stringify(this.history.slice(0, 50)));
+            localStorage.setItem('chronos_dev_collections', JSON.stringify(this.customCollections));
+            localStorage.setItem('chronos_dev_tutorial_step', this.tutorialStep.toString());
+            localStorage.setItem('chronos_dev_tutorial_completed', JSON.stringify(this.tutorialCompleted));
+        } catch (e) {
+            console.warn('Playground storage write failed:', e);
+        }
+    },
+
+    checkEnvironment() {
+        const badge = document.getElementById('pg-env-badge');
+        const isStatic = window.location.protocol === 'file:' || (window.location.hostname && window.location.hostname.includes('github.io'));
+        if (badge) {
+            if (isStatic) {
+                badge.innerText = '○ Local Simulation Engine (Offline / Static)';
+                badge.style.background = 'rgba(245, 158, 11, 0.15)';
+                badge.style.color = '#f59e0b';
+                badge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            } else {
+                badge.innerText = '● Live Backend API (FastAPI Connected)';
+                badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                badge.style.color = '#10b981';
+                badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            }
+        }
+    },
+
+    switchSubTab(tabName) {
+        this.activeSubTab = tabName;
+        document.querySelectorAll('.pg-subnav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.pg-sub-panel').forEach(p => p.classList.remove('active'));
+
+        const btn = document.getElementById(`pg-tab-${tabName}`);
+        const panel = document.getElementById(`pg-subpanel-${tabName}`);
+        if (btn) btn.classList.add('active');
+        if (panel) panel.classList.add('active');
+
+        if (tabName === 'ws' && !this.wsConnected) {
+            this.wsConnect();
+        }
+    },
+
+    onMethodChange() {
+        const sel = document.getElementById('pg-http-method');
+        if (!sel) return;
+        this.currentMethod = sel.value;
+        this.updateMethodStyling(this.currentMethod);
+        this.updateCodeSnippets();
+    },
+
+    updateMethodStyling(method) {
+        const sel = document.getElementById('pg-http-method');
+        if (!sel) return;
+        sel.className = `pg-method-badge pg-method-${method.toLowerCase()}`;
+    },
+
+    onUrlChange() {
+        const inp = document.getElementById('pg-http-url');
+        if (!inp) return;
+        this.currentUrl = inp.value.trim();
+        this.updateCodeSnippets();
+    },
+
+    loadPreset(presetId) {
+        const userEmail = (currentUser && currentUser.email) ? currentUser.email : 'trader@chronos.local';
+
+        const presets = {
+            'instruments': {
+                method: 'GET',
+                url: '/api/market/instruments',
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'quote': {
+                method: 'GET',
+                url: '/api/market/quote/RELIANCE',
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'quotes_all': {
+                method: 'GET',
+                url: '/api/market/quotes',
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'depth': {
+                method: 'GET',
+                url: '/api/market/depth/RELIANCE?depth=5',
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'bbo': {
+                method: 'GET',
+                url: '/api/market/bbo/RELIANCE',
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'place_order': {
+                method: 'POST',
+                url: '/api/virtual/trade',
+                body: JSON.stringify({
+                    email: userEmail,
+                    symbol: 'RELIANCE',
+                    action: 'BUY',
+                    order_type: 'LIMIT',
+                    price: 1180.00,
+                    quantity: 10.0
+                }, null, 2),
+                headers: [
+                    { key: 'Content-Type', value: 'application/json', enabled: true },
+                    { key: 'Accept', value: 'application/json', enabled: true }
+                ]
+            },
+            'orders': {
+                method: 'GET',
+                url: `/api/virtual/orders/${encodeURIComponent(userEmail)}`,
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'cancel_order': {
+                method: 'POST',
+                url: '/api/virtual/cancel',
+                body: JSON.stringify({
+                    email: userEmail,
+                    order_id: 'ORD-DEMO-001'
+                }, null, 2),
+                headers: [
+                    { key: 'Content-Type', value: 'application/json', enabled: true },
+                    { key: 'Accept', value: 'application/json', enabled: true }
+                ]
+            },
+            'portfolio': {
+                method: 'GET',
+                url: `/api/virtual/portfolio/${encodeURIComponent(userEmail)}`,
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'account': {
+                method: 'GET',
+                url: `/api/virtual/account/${encodeURIComponent(userEmail)}`,
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'journal': {
+                method: 'GET',
+                url: `/api/virtual/journal/${encodeURIComponent(userEmail)}`,
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            },
+            'engine_metrics': {
+                method: 'GET',
+                url: '/api/engine/metrics',
+                body: '',
+                headers: [{ key: 'Accept', value: 'application/json', enabled: true }]
+            }
+        };
+
+        const config = presets[presetId];
+        if (!config) return;
+
+        this.currentMethod = config.method;
+        this.currentUrl = config.url;
+        this.requestBody = config.body;
+        this.headers = config.headers;
+
+        const methodEl = document.getElementById('pg-http-method');
+        const urlEl = document.getElementById('pg-http-url');
+        const bodyEl = document.getElementById('pg-req-body-input');
+
+        if (methodEl) methodEl.value = this.currentMethod;
+        if (urlEl) urlEl.value = this.currentUrl;
+        if (bodyEl) bodyEl.value = this.requestBody;
+
+        this.updateMethodStyling(this.currentMethod);
+        this.renderHeadersEditor();
+        this.validateJsonBody();
+        this.updateCodeSnippets();
+
+        // Switch to body tab if POST/PUT
+        if (this.currentMethod === 'POST' || this.currentMethod === 'PUT') {
+            this.switchReqTab('body');
+        }
+    },
+
+    switchReqTab(tabName) {
+        document.querySelectorAll('.pg-req-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pg-req-tab-panel').forEach(p => p.classList.remove('active'));
+
+        const btn = document.getElementById(`pg-req-tab-btn-${tabName}`);
+        const panel = document.getElementById(`pg-req-tab-${tabName}`);
+        if (btn) btn.classList.add('active');
+        if (panel) panel.classList.add('active');
+    },
+
+    switchRespTab(tabName) {
+        document.querySelectorAll('.pg-resp-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pg-resp-tab-panel').forEach(p => p.classList.remove('active'));
+
+        const btn = document.getElementById(`pg-resp-tab-btn-${tabName}`);
+        const panel = document.getElementById(`pg-resp-tab-${tabName}`);
+        if (btn) btn.classList.add('active');
+        if (panel) panel.classList.add('active');
+    },
+
+    renderHeadersEditor() {
+        const container = document.getElementById('pg-headers-list');
+        if (!container) return;
+
+        container.innerHTML = this.headers.map((h, i) => `
+            <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                <input type="checkbox" ${h.enabled ? 'checked' : ''} onchange="ChronosDeveloperPlayground.toggleHeader(${i}, this.checked)" style="accent-color: var(--blue);">
+                <input type="text" class="trade-input mono" placeholder="Header Name" value="${h.key}" onchange="ChronosDeveloperPlayground.updateHeader(${i}, 'key', this.value)" style="flex: 1; padding: 6px 10px; font-size: 11px;">
+                <input type="text" class="trade-input mono" placeholder="Value" value="${h.value}" onchange="ChronosDeveloperPlayground.updateHeader(${i}, 'value', this.value)" style="flex: 1; padding: 6px 10px; font-size: 11px;">
+                <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.removeHeader(${i})" style="color: var(--red); background: transparent; border: 1px solid var(--border); padding: 4px 8px;" title="Remove Header">✕</button>
+            </div>
+        `).join('');
+    },
+
+    addHeaderRow() {
+        this.headers.push({ key: '', value: '', enabled: true });
+        this.renderHeadersEditor();
+        this.updateCodeSnippets();
+    },
+
+    updateHeader(idx, field, value) {
+        if (this.headers[idx]) {
+            this.headers[idx][field] = value;
+            this.updateCodeSnippets();
+        }
+    },
+
+    toggleHeader(idx, enabled) {
+        if (this.headers[idx]) {
+            this.headers[idx].enabled = enabled;
+            this.updateCodeSnippets();
+        }
+    },
+
+    removeHeader(idx) {
+        this.headers.splice(idx, 1);
+        this.renderHeadersEditor();
+        this.updateCodeSnippets();
+    },
+
+    validateJsonBody() {
+        const statusEl = document.getElementById('pg-body-validation-status');
+        if (!statusEl) return;
+        const val = (this.requestBody || '').trim();
+        if (!val) {
+            statusEl.innerHTML = '<span style="color: var(--text-muted);">Empty Body</span>';
+            return;
+        }
+        try {
+            JSON.parse(val);
+            statusEl.innerHTML = '<span style="color: var(--green);">✓ Valid JSON</span>';
+        } catch (err) {
+            statusEl.innerHTML = `<span style="color: var(--red);">⚠ Invalid JSON: ${err.message}</span>`;
+        }
+    },
+
+    formatJsonBody() {
+        const bodyInput = document.getElementById('pg-req-body-input');
+        if (!bodyInput) return;
+        try {
+            const parsed = JSON.parse(bodyInput.value);
+            bodyInput.value = JSON.stringify(parsed, null, 2);
+            this.requestBody = bodyInput.value;
+            this.validateJsonBody();
+            this.updateCodeSnippets();
+            showToast('✓ JSON formatted successfully.');
+        } catch (e) {
+            showToast('⚠ Cannot format invalid JSON syntax.');
+        }
+    },
+
+    clearBody() {
+        const bodyInput = document.getElementById('pg-req-body-input');
+        if (bodyInput) bodyInput.value = '';
+        this.requestBody = '';
+        this.validateJsonBody();
+        this.updateCodeSnippets();
+    },
+
+    async sendRequest() {
+        const btn = document.getElementById('pg-btn-send');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Executing...';
+        }
+
+        const method = this.currentMethod.toUpperCase();
+        const url = this.currentUrl;
+        const startTime = performance.now();
+
+        // Build active headers object
+        const activeHeaders = {};
+        this.headers.forEach(h => {
+            if (h.enabled && h.key.trim()) {
+                activeHeaders[h.key.trim()] = h.value;
+            }
+        });
+
+        let statusCode = 200;
+        let statusText = 'OK';
+        let responseData = null;
+        let responseHeaders = {};
+        let isSimulated = false;
+
+        const isStaticHost = window.location.protocol === 'file:' || (window.location.hostname && window.location.hostname.includes('github.io'));
+
+        if (!isStaticHost) {
+            try {
+                const fetchOpts = {
+                    method: method,
+                    headers: activeHeaders
+                };
+                if (method !== 'GET' && method !== 'HEAD' && this.requestBody.trim()) {
+                    fetchOpts.body = this.requestBody;
+                }
+
+                // Timeout after 8 seconds
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 8000);
+                fetchOpts.signal = controller.signal;
+
+                const res = await fetch(url, fetchOpts);
+                clearTimeout(timer);
+
+                statusCode = res.status;
+                statusText = res.statusText || (statusCode === 200 ? 'OK' : 'Error');
+
+                res.headers.forEach((v, k) => {
+                    responseHeaders[k] = v;
+                });
+
+                const text = await res.text();
+                try {
+                    responseData = JSON.parse(text);
+                } catch (e) {
+                    responseData = { raw_response: text };
+                }
+            } catch (networkErr) {
+                // If backend fetch throws, fallback transparently to authentic Local Simulation Engine
+                isSimulated = true;
+                const simResult = ChronosLocalExchangeAPI.handleRequest(method, url, activeHeaders, this.requestBody);
+                statusCode = simResult.status;
+                statusText = simResult.statusText;
+                responseData = simResult.data;
+                responseHeaders = simResult.headers;
+            }
+        } else {
+            // Running in Static / GitHub Pages Mode
+            isSimulated = true;
+            const simResult = ChronosLocalExchangeAPI.handleRequest(method, url, activeHeaders, this.requestBody);
+            statusCode = simResult.status;
+            statusText = simResult.statusText;
+            responseData = simResult.data;
+            responseHeaders = simResult.headers;
+        }
+
+        const durationMs = Math.round(performance.now() - startTime);
+        const payloadStr = JSON.stringify(responseData);
+        const sizeBytes = payloadStr ? new Blob([payloadStr]).size : 0;
+
+        this.lastResponse = {
+            status: statusCode,
+            statusText: statusText,
+            duration: durationMs,
+            size: sizeBytes,
+            headers: responseHeaders,
+            data: responseData,
+            isSimulated: isSimulated,
+            timestamp: new Date().toISOString()
+        };
+
+        // Render response inspector
+        this.renderResponseInspector();
+
+        // Push to request history
+        this.history.unshift({
+            timestamp: new Date().toLocaleTimeString(),
+            method: method,
+            url: url,
+            status: statusCode,
+            duration: durationMs,
+            size: sizeBytes,
+            body: this.requestBody
+        });
+        this.saveStorage();
+        this.renderHistory();
+
+        // Trigger tutorial check
+        ChronosTutorialEngine.checkProgress(method, url, statusCode, responseData);
+
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '⚡ Send Request';
+        }
+    },
+
+    renderResponseInspector() {
+        if (!this.lastResponse) return;
+        const { status, statusText, duration, size, headers, data, isSimulated } = this.lastResponse;
+
+        // 1. Status Pill
+        const statusBadge = document.getElementById('pg-resp-status-badge');
+        if (statusBadge) {
+            statusBadge.innerText = `${status} ${statusText}`;
+            statusBadge.className = `pg-status-badge ${status >= 200 && status < 300 ? 'pg-status-2xx' : (status >= 400 && status < 500 ? 'pg-status-4xx' : 'pg-status-5xx')}`;
+        }
+
+        // 2. Metrics
+        const timeEl = document.getElementById('pg-resp-time');
+        const sizeEl = document.getElementById('pg-resp-size');
+        const envEl = document.getElementById('pg-resp-env');
+        if (timeEl) timeEl.innerText = `${duration} ms`;
+        if (sizeEl) sizeEl.innerText = size > 1024 ? `${(size / 1024).toFixed(2)} KB` : `${size} B`;
+        if (envEl) {
+            envEl.innerText = isSimulated ? 'Simulated Local Engine' : 'Live FastAPI Backend';
+            envEl.style.color = isSimulated ? '#f59e0b' : '#10b981';
+        }
+
+        // 3. Highlighted JSON Body
+        const jsonEl = document.getElementById('pg-resp-json-viewer');
+        if (jsonEl) {
+            jsonEl.innerHTML = this.syntaxHighlightJson(data);
+        }
+
+        // 4. Response Headers
+        const headersTable = document.getElementById('pg-resp-headers-tbody');
+        if (headersTable) {
+            const headerKeys = Object.keys(headers);
+            if (headerKeys.length === 0) {
+                headersTable.innerHTML = '<tr><td colspan="2" style="color: var(--text-muted); padding: 8px;">No headers returned.</td></tr>';
+            } else {
+                headersTable.innerHTML = headerKeys.map(k => `
+                    <tr>
+                        <td class="mono" style="color: var(--blue); padding: 4px 8px; font-weight: 700;">${k}</td>
+                        <td class="mono" style="padding: 4px 8px; color: var(--text-sub);">${headers[k]}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // 5. Error diagnosis helper
+        const errorCard = document.getElementById('pg-error-helper-card');
+        const errorDesc = document.getElementById('pg-error-helper-desc');
+        if (status >= 400 && errorCard && errorDesc) {
+            errorCard.style.display = 'block';
+            let msg = '';
+            if (status === 400) {
+                msg = `<strong>400 Bad Request:</strong> The server or simulation engine rejected this request due to invalid parameters. Check that required fields (e.g. <code>email</code>, <code>symbol</code>, <code>price</code>, <code>quantity</code>) are present and properly formatted.`;
+            } else if (status === 404) {
+                msg = `<strong>404 Not Found:</strong> The requested endpoint path <code>${this.currentUrl}</code> or resource does not exist in the catalog or order book.`;
+            } else if (status === 401) {
+                msg = `<strong>401 Unauthorized:</strong> This endpoint requires a valid user session or registered account. Use the Sign In modal or check your registered email.`;
+            } else if (status === 422) {
+                msg = `<strong>422 Unprocessable Entity:</strong> Pydantic schema validation failed. Check parameter data types.`;
+            } else {
+                msg = `<strong>HTTP ${status}:</strong> An unexpected response occurred.`;
+            }
+            errorDesc.innerHTML = msg;
+        } else if (errorCard) {
+            errorCard.style.display = 'none';
+        }
+    },
+
+    syntaxHighlightJson(jsonObj) {
+        if (jsonObj === undefined || jsonObj === null) return '<span class="j-null">null</span>';
+        let jsonStr = JSON.stringify(jsonObj, null, 2);
+        jsonStr = jsonStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            let cls = 'j-num';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'j-key';
+                } else {
+                    cls = 'j-str';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'j-bool';
+            } else if (/null/.test(match)) {
+                cls = 'j-null';
+            }
+            return `<span class="${cls}">${match}</span>`;
+        });
+    },
+
+    copyResponse() {
+        if (!this.lastResponse || !this.lastResponse.data) {
+            showToast('No response data to copy.');
+            return;
+        }
+        navigator.clipboard.writeText(JSON.stringify(this.lastResponse.data, null, 2))
+            .then(() => showToast('✓ Response JSON copied to clipboard!'))
+            .catch(() => showToast('Could not copy to clipboard.'));
+    },
+
+    // Code Generator
+    updateCodeSnippets() {
+        const method = this.currentMethod.toUpperCase();
+        const url = this.currentUrl;
+        const origin = window.location.origin || 'http://localhost:8000';
+        const fullUrl = url.startsWith('http') ? url : `${origin}${url}`;
+
+        // 1. JavaScript Fetch
+        const jsHeaders = {};
+        this.headers.forEach(h => {
+            if (h.enabled && h.key.trim()) jsHeaders[h.key.trim()] = h.value;
+        });
+
+        let jsCode = `// ChronosMatch API Client - JavaScript Fetch\n`;
+        jsCode += `async function executeRequest() {\n`;
+        jsCode += `    const url = '${fullUrl}';\n`;
+        jsCode += `    const options = {\n`;
+        jsCode += `        method: '${method}',\n`;
+        jsCode += `        headers: ${JSON.stringify(jsHeaders, null, 8).replace('}', '    }')}`;
+
+        if (method !== 'GET' && method !== 'HEAD' && this.requestBody.trim()) {
+            jsCode += `,\n        body: JSON.stringify(${this.requestBody.trim()})`;
+        }
+        jsCode += `\n    };\n\n`;
+        jsCode += `    try {\n`;
+        jsCode += `        const response = await fetch(url, options);\n`;
+        jsCode += `        const data = await response.json();\n`;
+        jsCode += `        console.log('Response Status:', response.status);\n`;
+        jsCode += `        console.log('Response Data:', data);\n`;
+        jsCode += `        return data;\n`;
+        jsCode += `    } catch (error) {\n`;
+        jsCode += `        console.error('Request failed:', error);\n`;
+        jsCode += `    }\n`;
+        jsCode += `}\n\nexecuteRequest();`;
+
+        const jsBox = document.getElementById('pg-code-js');
+        if (jsBox) jsBox.textContent = jsCode;
+
+        // 2. Python Requests
+        let pyCode = `# ChronosMatch API Client - Python Requests\n`;
+        pyCode += `import requests\n\n`;
+        pyCode += `url = "${fullUrl}"\n`;
+        pyCode += `headers = ${JSON.stringify(jsHeaders, null, 4)}\n\n`;
+
+        if (method !== 'GET' && method !== 'HEAD' && this.requestBody.trim()) {
+            pyCode += `payload = ${this.requestBody.trim()}\n\n`;
+            pyCode += `response = requests.${method.toLowerCase()}(url, json=payload, headers=headers, timeout=10)\n`;
+        } else {
+            pyCode += `response = requests.${method.toLowerCase()}(url, headers=headers, timeout=10)\n`;
+        }
+        pyCode += `print(f"Status: {response.status_code}")\n`;
+        pyCode += `print(response.json())\n`;
+
+        const pyBox = document.getElementById('pg-code-py');
+        if (pyBox) pyBox.textContent = pyCode;
+
+        // 3. cURL
+        let curlCode = `curl -X ${method} "${fullUrl}" \\\n`;
+        Object.keys(jsHeaders).forEach(k => {
+            curlCode += `  -H "${k}: ${jsHeaders[k]}" \\\n`;
+        });
+        if (method !== 'GET' && method !== 'HEAD' && this.requestBody.trim()) {
+            const cleanBody = this.requestBody.replace(/'/g, "'\\''");
+            curlCode += `  -d '${cleanBody}'\n`;
+        } else {
+            curlCode = curlCode.slice(0, -3); // remove trailing backslash
+        }
+
+        const curlBox = document.getElementById('pg-code-curl');
+        if (curlBox) curlBox.textContent = curlCode;
+    },
+
+    switchCodeTab(lang) {
+        document.querySelectorAll('.pg-code-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pg-code-panel').forEach(p => p.classList.remove('active'));
+
+        const btn = document.getElementById(`pg-code-tab-${lang}`);
+        const panel = document.getElementById(`pg-code-box-${lang}`);
+        if (btn) btn.classList.add('active');
+        if (panel) panel.classList.add('active');
+    },
+
+    copyCodeSnippet(lang) {
+        const box = document.getElementById(`pg-code-${lang}`);
+        if (!box) return;
+        navigator.clipboard.writeText(box.textContent)
+            .then(() => showToast(`✓ ${lang.toUpperCase()} code copied to clipboard!`))
+            .catch(() => showToast('Could not copy code.'));
+    },
+
+    renderHistory() {
+        const tbody = document.getElementById('pg-history-tbody');
+        if (!tbody) return;
+        if (this.history.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No requests recorded yet. Execute requests in the console to populate history.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = this.history.map((h, i) => `
+            <tr>
+                <td class="mono" style="color: var(--text-muted); font-size: 11px;">${h.timestamp}</td>
+                <td><span class="pg-method-badge pg-method-${h.method.toLowerCase()}">${h.method}</span></td>
+                <td class="mono" style="color: var(--text-main); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${h.url}</td>
+                <td><span class="pg-status-badge ${h.status >= 200 && h.status < 300 ? 'pg-status-2xx' : (h.status >= 400 && h.status < 500 ? 'pg-status-4xx' : 'pg-status-5xx')}">${h.status}</span></td>
+                <td class="mono" style="color: var(--text-sub);">${h.duration} ms</td>
+                <td class="mono" style="color: var(--text-muted);">${h.size > 1024 ? (h.size / 1024).toFixed(1) + ' KB' : h.size + ' B'}</td>
+                <td>
+                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.restoreHistory(${i})" style="padding: 3px 8px; font-size: 11px; color: var(--blue); border: 1px solid var(--border);">Load</button>
+                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.deleteHistoryItem(${i})" style="padding: 3px 6px; font-size: 11px; color: var(--red); border: 1px solid var(--border); margin-left: 4px;">✕</button>
+                </td>
+            </tr>
+        `).join('');
+    },
+
+    restoreHistory(index) {
+        const item = this.history[index];
+        if (!item) return;
+        this.currentMethod = item.method;
+        this.currentUrl = item.url;
+        this.requestBody = item.body || '';
+
+        const mEl = document.getElementById('pg-http-method');
+        const uEl = document.getElementById('pg-http-url');
+        const bEl = document.getElementById('pg-req-body-input');
+        if (mEl) mEl.value = this.currentMethod;
+        if (uEl) uEl.value = this.currentUrl;
+        if (bEl) bEl.value = this.requestBody;
+
+        this.updateMethodStyling(this.currentMethod);
+        this.updateCodeSnippets();
+        this.switchSubTab('console');
+        showToast(`Loaded: ${item.method} ${item.url}`);
+    },
+
+    deleteHistoryItem(index) {
+        this.history.splice(index, 1);
+        this.saveStorage();
+        this.renderHistory();
+    },
+
+    clearHistory() {
+        if (confirm('Clear all request history?')) {
+            this.history = [];
+            this.saveStorage();
+            this.renderHistory();
+            showToast('Request history cleared.');
+        }
+    },
+
+    // Collections Management
+    saveCurrentToCollection() {
+        const name = prompt('Enter a title for this request in your collection:', `${this.currentMethod} ${this.currentUrl}`);
+        if (!name) return;
+        this.customCollections.push({
+            id: 'req_' + Date.now(),
+            name: name.trim(),
+            method: this.currentMethod,
+            url: this.currentUrl,
+            headers: JSON.parse(JSON.stringify(this.headers)),
+            body: this.requestBody,
+            category: 'Custom Developer Requests'
+        });
+        this.saveStorage();
+        this.renderCollectionsList();
+        showToast('✓ Request saved to collection.');
+    },
+
+    renderCollectionsList() {
+        const container = document.getElementById('pg-collections-custom-list');
+        if (!container) return;
+        if (this.customCollections.length === 0) {
+            container.innerHTML = '<div style="color: var(--text-muted); font-size: 11px; padding: 10px;">No custom saved requests. Click "Save to Collection" in the console to bookmark API calls.</div>';
+            return;
+        }
+
+        container.innerHTML = this.customCollections.map((col, i) => `
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 700; font-size: 12px; color: var(--text-main);">${col.name}</div>
+                    <div style="font-family: var(--font-mono, monospace); font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                        <span class="pg-method-badge pg-method-${col.method.toLowerCase()}">${col.method}</span>
+                        <span>${col.url}</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.loadCollectionItem(${i})" style="color: var(--blue); border: 1px solid var(--border); padding: 4px 8px; font-size: 11px;">Run</button>
+                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.duplicateCollectionItem(${i})" style="color: var(--text-sub); border: 1px solid var(--border); padding: 4px 8px; font-size: 11px;">Clone</button>
+                    <button type="button" class="btn-action-tool" onclick="ChronosDeveloperPlayground.deleteCollectionItem(${i})" style="color: var(--red); border: 1px solid var(--border); padding: 4px 6px; font-size: 11px;">✕</button>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    loadCollectionItem(idx) {
+        const item = this.customCollections[idx];
+        if (!item) return;
+        this.currentMethod = item.method;
+        this.currentUrl = item.url;
+        this.headers = item.headers || [];
+        this.requestBody = item.body || '';
+
+        const mEl = document.getElementById('pg-http-method');
+        const uEl = document.getElementById('pg-http-url');
+        const bEl = document.getElementById('pg-req-body-input');
+        if (mEl) mEl.value = this.currentMethod;
+        if (uEl) uEl.value = this.currentUrl;
+        if (bEl) bEl.value = this.requestBody;
+
+        this.updateMethodStyling(this.currentMethod);
+        this.renderHeadersEditor();
+        this.updateCodeSnippets();
+        this.switchSubTab('console');
+        showToast(`Loaded collection request: ${item.name}`);
+    },
+
+    duplicateCollectionItem(idx) {
+        const item = this.customCollections[idx];
+        if (!item) return;
+        const copy = JSON.parse(JSON.stringify(item));
+        copy.id = 'req_' + Date.now();
+        copy.name = `${item.name} (Copy)`;
+        this.customCollections.push(copy);
+        this.saveStorage();
+        this.renderCollectionsList();
+        showToast('✓ Collection item duplicated.');
+    },
+
+    deleteCollectionItem(idx) {
+        if (confirm('Delete this saved request from collection?')) {
+            this.customCollections.splice(idx, 1);
+            this.saveStorage();
+            this.renderCollectionsList();
+            showToast('Collection item deleted.');
+        }
+    },
+
+    // WebSocket Event Monitor
+    wsConnect() {
+        const isStaticHost = window.location.protocol === 'file:' || (window.location.hostname && window.location.hostname.includes('github.io'));
+        const statusBadge = document.getElementById('pg-ws-status-badge');
+        const toggleBtn = document.getElementById('pg-ws-toggle-btn');
+
+        if (!isStaticHost) {
+            try {
+                const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${wsProto}//${window.location.host}/api/market/ws`;
+                this.wsSocket = new WebSocket(wsUrl);
+
+                this.wsSocket.onopen = () => {
+                    this.wsConnected = true;
+                    this.wsStartTime = Date.now();
+                    if (statusBadge) {
+                        statusBadge.innerText = '● Connected (/api/market/ws)';
+                        statusBadge.className = 'pg-status-badge pg-status-2xx';
+                    }
+                    if (toggleBtn) toggleBtn.innerHTML = 'Disconnect';
+                    this.appendWsEvent('CONNECTION_STATUS', { status: 'Connected', endpoint: '/api/market/ws', timestamp: new Date().toISOString() });
+                };
+
+                this.wsSocket.onmessage = (event) => {
+                    if (this.wsPaused) return;
+                    try {
+                        const parsed = JSON.parse(event.data);
+                        this.appendWsEvent(parsed.type ? parsed.type.toUpperCase() : 'MARKET_DATA', parsed);
+                    } catch (e) {
+                        this.appendWsEvent('RAW_STREAM', { message: event.data });
+                    }
+                };
+
+                this.wsSocket.onclose = () => {
+                    this.wsDisconnect();
+                };
+
+                this.wsSocket.onerror = () => {
+                    // Fallback to local simulated stream
+                    this.startSimulatedWs();
+                };
+            } catch (err) {
+                this.startSimulatedWs();
+            }
+        } else {
+            this.startSimulatedWs();
+        }
+    },
+
+    startSimulatedWs() {
+        this.wsConnected = true;
+        this.wsStartTime = Date.now();
+        const statusBadge = document.getElementById('pg-ws-status-badge');
+        const toggleBtn = document.getElementById('pg-ws-toggle-btn');
+
+        if (statusBadge) {
+            statusBadge.innerText = '○ Local Simulation Stream (Active)';
+            statusBadge.className = 'pg-status-badge pg-status-2xx';
+        }
+        if (toggleBtn) toggleBtn.innerHTML = 'Disconnect';
+
+        this.appendWsEvent('CONNECTION_STATUS', {
+            status: 'Connected',
+            stream: 'ChronosMatch Local Microstructure Simulation',
+            protocol: 'WebSocket L2 Event Pump',
+            timestamp: new Date().toISOString()
+        });
+
+        // High-frequency event emitter (every 1.5s)
+        if (this.wsSimInterval) clearInterval(this.wsSimInterval);
+        this.wsSimInterval = setInterval(() => {
+            if (this.wsPaused) return;
+            const symbols = ['RELIANCE', 'TCS', 'INFY', 'HDFCBANK', 'MARUTI'];
+            const sym = symbols[Math.floor(Math.random() * symbols.length)];
+            const quote = quotesMap[sym] || { price: 1184.50, change_pct: 0.12 };
+            const delta = (Math.random() - 0.49) * 0.5;
+            const newPrice = +(quote.price + delta).toFixed(2);
+
+            const eventTypes = ['PRICE_UPDATE', 'DEPTH_UPDATE', 'TRADE_EXECUTED'];
+            const chosenType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+
+            if (chosenType === 'PRICE_UPDATE') {
+                this.appendWsEvent('PRICE_UPDATE', {
+                    symbol: sym,
+                    price: newPrice,
+                    direction: delta >= 0 ? 'UP' : 'DOWN',
+                    change_pct: quote.change_pct,
+                    timestamp: new Date().toISOString()
+                });
+            } else if (chosenType === 'DEPTH_UPDATE') {
+                this.appendWsEvent('DEPTH_UPDATE', {
+                    symbol: sym,
+                    best_bid: +(newPrice - 0.05).toFixed(2),
+                    best_ask: +(newPrice + 0.05).toFixed(2),
+                    spread: 0.10,
+                    depth_levels: 6,
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                this.appendWsEvent('TRADE_EXECUTED', {
+                    trade_id: 'TRD-' + Math.floor(100000 + Math.random() * 900000),
+                    symbol: sym,
+                    side: Math.random() > 0.5 ? 'BUY' : 'SELL',
+                    price: newPrice,
+                    quantity: +(5 + Math.random() * 45).toFixed(1),
+                    exec_type: 'TRADE',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }, 1500);
+    },
+
+    wsDisconnect() {
+        this.wsConnected = false;
+        if (this.wsSocket) {
+            try { this.wsSocket.close(); } catch (e) {}
+            this.wsSocket = null;
+        }
+        if (this.wsSimInterval) {
+            clearInterval(this.wsSimInterval);
+            this.wsSimInterval = null;
+        }
+        const statusBadge = document.getElementById('pg-ws-status-badge');
+        const toggleBtn = document.getElementById('pg-ws-toggle-btn');
+        if (statusBadge) {
+            statusBadge.innerText = '✕ Disconnected';
+            statusBadge.className = 'pg-status-badge pg-status-4xx';
+        }
+        if (toggleBtn) toggleBtn.innerHTML = 'Connect';
+
+        this.appendWsEvent('CONNECTION_STATUS', { status: 'Disconnected', timestamp: new Date().toISOString() });
+    },
+
+    toggleWsConnection() {
+        if (this.wsConnected) {
+            this.wsDisconnect();
+        } else {
+            this.wsConnect();
+        }
+    },
+
+    toggleWsPause() {
+        this.wsPaused = !this.wsPaused;
+        const btn = document.getElementById('pg-ws-pause-btn');
+        if (btn) {
+            btn.innerText = this.wsPaused ? '▶ Resume' : '⏸ Pause';
+            btn.style.color = this.wsPaused ? 'var(--green)' : 'var(--text-sub)';
+        }
+    },
+
+    clearWsEvents() {
+        const feed = document.getElementById('pg-ws-feed');
+        if (feed) feed.innerHTML = '';
+        this.wsEventCount = 0;
+        this.updateWsStats();
+    },
+
+    filterWsEvents(type) {
+        this.wsFilter = type;
+        const rows = document.querySelectorAll('.pg-event-row');
+        rows.forEach(r => {
+            if (type === 'ALL' || r.dataset.eventType === type) {
+                r.style.display = 'flex';
+            } else {
+                r.style.display = 'none';
+            }
+        });
+    },
+
+    appendWsEvent(type, payload) {
+        this.wsEventCount++;
+        this.updateWsStats();
+
+        // Tutorial check for WS monitor
+        if (this.wsEventCount >= 3) {
+            ChronosTutorialEngine.checkProgress('WS', 'event_stream', 200, payload);
+        }
+
+        const feed = document.getElementById('pg-ws-feed');
+        if (!feed) return;
+
+        const timeStr = new Date().toTimeString().split(' ')[0] + '.' + String(Date.now() % 1000).padStart(3, '0');
+        const badgeColors = {
+            'PRICE_UPDATE': 'pg-status-2xx',
+            'DEPTH_UPDATE': 'pg-method-get',
+            'ORDER_SUBMITTED': 'pg-method-post',
+            'TRADE_EXECUTED': 'pg-status-2xx',
+            'ORDER_CANCELLED': 'pg-status-4xx',
+            'CONNECTION_STATUS': 'pg-method-put'
+        };
+        const badgeClass = badgeColors[type] || 'pg-status-2xx';
+
+        const row = document.createElement('div');
+        row.className = 'pg-event-row';
+        row.dataset.eventType = type;
+
+        if (this.wsFilter !== 'ALL' && this.wsFilter !== type) {
+            row.style.display = 'none';
+        }
+
+        row.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--text-muted); font-size: 11px;">${timeStr}</span>
+                <span class="pg-status-badge ${badgeClass}" style="font-size: 10px;">${type}</span>
+                <span style="color: var(--text-main); font-weight: 600;">${payload.symbol || payload.status || 'EVENT'}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" class="btn-action-tool" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'" style="padding: 2px 6px; font-size: 10px; border: 1px solid var(--border);">JSON</button>
+                <div style="display: none; position: absolute; right: 20px; background: #090d16; border: 1px solid var(--border); padding: 10px; border-radius: 8px; z-index: 100; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="font-size: 10px; color: var(--text-sub);">${type}</span>
+                        <button type="button" style="background: none; border: none; color: var(--text-muted); cursor: pointer;" onclick="this.parentElement.parentElement.style.display='none'">✕</button>
+                    </div>
+                    <pre style="margin: 0; font-size: 11px; white-space: pre-wrap;" class="mono">${JSON.stringify(payload, null, 2)}</pre>
+                </div>
+            </div>
+        `;
+
+        feed.insertBefore(row, feed.firstChild);
+
+        // Keep maximum 100 events in memory
+        while (feed.children.length > 100) {
+            feed.removeChild(feed.lastChild);
+        }
+    },
+
+    updateWsStats() {
+        const statsEl = document.getElementById('pg-ws-stats-label');
+        if (!statsEl) return;
+        const elapsedSec = this.wsStartTime ? Math.max(1, (Date.now() - this.wsStartTime) / 1000) : 1;
+        const rate = (this.wsEventCount / elapsedSec).toFixed(1);
+        statsEl.innerText = `Received: ${this.wsEventCount} events | ${rate} evt/sec`;
+    },
+
+    // Tutorial Card & Learning Mode
+    renderTutorialCard() {
+        const titleEl = document.getElementById('pg-tut-title');
+        const badgeEl = document.getElementById('pg-tut-badge');
+        const descEl = document.getElementById('pg-tut-desc');
+        const criteriaEl = document.getElementById('pg-tut-criteria');
+        const progressEl = document.getElementById('pg-tut-progress-fill');
+        const countEl = document.getElementById('pg-tut-progress-count');
+        const feedbackEl = document.getElementById('pg-tut-feedback-banner');
+
+        const step = this.tutorialStep;
+        const exercises = ChronosTutorialEngine.exercises;
+        const ex = exercises[step - 1];
+        if (!ex) return;
+
+        if (titleEl) titleEl.innerText = `Exercise ${step}: ${ex.title}`;
+        if (badgeEl) {
+            badgeEl.innerText = ex.level;
+            badgeEl.className = `badge-tag ${ex.level === 'Beginner' ? 'pg-status-2xx' : (ex.level === 'Intermediate' ? 'pg-method-post' : 'pg-method-delete')}`;
+        }
+        if (descEl) descEl.innerHTML = ex.description;
+        if (criteriaEl) criteriaEl.innerHTML = ex.criteria;
+
+        const isDone = this.tutorialCompleted.includes(step);
+        if (feedbackEl) {
+            if (isDone) {
+                feedbackEl.style.display = 'block';
+                feedbackEl.style.background = 'rgba(16, 185, 129, 0.15)';
+                feedbackEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                feedbackEl.style.color = '#a7f3d0';
+                feedbackEl.innerHTML = `✓ <strong>Exercise Completed!</strong> Great job. Click "Next Exercise" to continue.`;
+            } else {
+                feedbackEl.style.display = 'none';
+            }
+        }
+
+        const pct = Math.round((this.tutorialCompleted.length / exercises.length) * 100);
+        if (progressEl) progressEl.style.width = `${pct}%`;
+        if (countEl) countEl.innerText = `${this.tutorialCompleted.length} of ${exercises.length} Complete (${pct}%)`;
+
+        const prevBtn = document.getElementById('pg-tut-prev-btn');
+        const nextBtn = document.getElementById('pg-tut-next-btn');
+        if (prevBtn) prevBtn.disabled = step <= 1;
+        if (nextBtn) nextBtn.disabled = step >= exercises.length;
+    },
+
+    loadTutorialTemplate() {
+        const ex = ChronosTutorialEngine.exercises[this.tutorialStep - 1];
+        if (!ex) return;
+        this.currentMethod = ex.template.method;
+        this.currentUrl = ex.template.url;
+        this.requestBody = ex.template.body || '';
+
+        const mEl = document.getElementById('pg-http-method');
+        const uEl = document.getElementById('pg-http-url');
+        const bEl = document.getElementById('pg-req-body-input');
+        if (mEl) mEl.value = this.currentMethod;
+        if (uEl) uEl.value = this.currentUrl;
+        if (bEl) bEl.value = this.requestBody;
+
+        this.updateMethodStyling(this.currentMethod);
+        this.updateCodeSnippets();
+        this.switchSubTab('console');
+        showToast(`Template loaded for Exercise ${this.tutorialStep}. Click "Send Request" to test!`);
+    },
+
+    prevTutorialStep() {
+        if (this.tutorialStep > 1) {
+            this.tutorialStep--;
+            this.saveStorage();
+            this.renderTutorialCard();
+        }
+    },
+
+    nextTutorialStep() {
+        if (this.tutorialStep < ChronosTutorialEngine.exercises.length) {
+            this.tutorialStep++;
+            this.saveStorage();
+            this.renderTutorialCard();
+        }
+    },
+
+    resetTutorial() {
+        if (confirm('Reset your tutorial learning progress back to Exercise 1?')) {
+            this.tutorialStep = 1;
+            this.tutorialCompleted = [];
+            this.saveStorage();
+            this.renderTutorialCard();
+            showToast('Tutorial progress reset.');
+        }
+    }
+};
+
+// ==========================================================================
+// LOCAL SIMULATION ENGINE (FOR OFFLINE & GITHUB PAGES INTEGRITY)
+// ==========================================================================
+const ChronosLocalExchangeAPI = {
+    handleRequest(method, url, headers, body) {
+        const cleanUrl = url.split('?')[0].trim();
+        const queryParams = new URLSearchParams(url.includes('?') ? url.split('?')[1] : '');
+        let parsedBody = {};
+        if (body && typeof body === 'string' && body.trim()) {
+            try { parsedBody = JSON.parse(body); } catch (e) {}
+        }
+
+        const simHeaders = {
+            'content-type': 'application/json',
+            'x-chronos-environment': 'Local-Simulation-Engine',
+            'x-chronos-engine': 'Price-Time-Priority-FIFO',
+            'x-simulation-notice': 'Simulated local in-browser exchange layer for static GitHub Pages'
+        };
+
+        // 1. GET /api/market/instruments
+        if (method === 'GET' && cleanUrl === '/api/market/instruments') {
+            const instList = catalog.map(c => ({
+                symbol: c.symbol,
+                name: c.name,
+                ticker: c.ticker,
+                category: c.category,
+                currency: c.currency,
+                base_price: c.basePrice,
+                tick_size: c.tick
+            }));
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: { status: 'ok', count: instList.length, instruments: instList }
+            };
+        }
+
+        // 2. GET /api/market/quotes
+        if (method === 'GET' && cleanUrl === '/api/market/quotes') {
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: Object.values(quotesMap)
+            };
+        }
+
+        // 3. GET /api/market/quote/{symbol}
+        if (method === 'GET' && cleanUrl.startsWith('/api/market/quote/')) {
+            const sym = cleanUrl.replace('/api/market/quote/', '').toUpperCase();
+            const quote = quotesMap[sym];
+            if (!quote) {
+                return {
+                    status: 404,
+                    statusText: 'Not Found',
+                    headers: simHeaders,
+                    data: { detail: `Symbol '${sym}' not found in active instruments catalog.` }
+                };
+            }
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: quote
+            };
+        }
+
+        // 4. GET /api/market/depth/{symbol} or /api/depth/{symbol}
+        if (method === 'GET' && (cleanUrl.startsWith('/api/market/depth/') || cleanUrl.startsWith('/api/depth/'))) {
+            const sym = cleanUrl.split('/').pop().toUpperCase();
+            const quote = quotesMap[sym] || { price: 1184.50, tick: 0.05 };
+            const depth = parseInt(queryParams.get('depth') || '10', 10);
+            const bids = [];
+            const asks = [];
+            let cumB = 0;
+            let cumA = 0;
+
+            for (let i = 0; i < depth; i++) {
+                const bQty = +(15.0 + i * 4.5).toFixed(1);
+                const aQty = +(12.0 + i * 3.8).toFixed(1);
+                cumB += bQty;
+                cumA += aQty;
+                bids.push({ price: +(quote.price - (i + 1) * (quote.tick || 0.05)).toFixed(2), quantity: bQty, total: +cumB.toFixed(1) });
+                asks.push({ price: +(quote.price + (i + 1) * (quote.tick || 0.05)).toFixed(2), quantity: aQty, total: +cumA.toFixed(1) });
+            }
+
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: {
+                    symbol: sym,
+                    depth: depth,
+                    bids: bids,
+                    asks: asks,
+                    total_active_orders: bids.length + asks.length,
+                    environment: 'Local-Simulation-Engine'
+                }
+            };
+        }
+
+        // 5. GET /api/market/bbo/{symbol} or /api/bbo/{symbol}
+        if (method === 'GET' && (cleanUrl.startsWith('/api/market/bbo/') || cleanUrl.startsWith('/api/bbo/'))) {
+            const sym = cleanUrl.split('/').pop().toUpperCase();
+            const quote = quotesMap[sym] || { price: 1184.50, tick: 0.05 };
+            const tick = quote.tick || 0.05;
+            const bestBid = +(quote.price - tick).toFixed(2);
+            const bestAsk = +(quote.price + tick).toFixed(2);
+
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: {
+                    symbol: sym,
+                    best_bid: { price: bestBid, quantity: 40.0 },
+                    best_ask: { price: bestAsk, quantity: 25.0 },
+                    spread: +(bestAsk - bestBid).toFixed(2),
+                    environment: 'Local-Simulation-Engine'
+                }
+            };
+        }
+
+        // 6. POST /api/virtual/trade
+        if (method === 'POST' && cleanUrl === '/api/virtual/trade') {
+            const email = (parsedBody.email || (currentUser && currentUser.email) || 'trader@chronos.local').toLowerCase();
+            const symbol = (parsedBody.symbol || 'RELIANCE').toUpperCase();
+            const action = (parsedBody.action || 'BUY').toUpperCase();
+            const orderType = (parsedBody.order_type || 'MARKET').toUpperCase();
+            const price = parseFloat(parsedBody.price);
+            const qty = parseFloat(parsedBody.quantity);
+
+            if (!price || price <= 0) {
+                return { status: 400, statusText: 'Bad Request', headers: simHeaders, data: { detail: 'Price must be positive.' } };
+            }
+            if (!qty || qty <= 0) {
+                return { status: 400, statusText: 'Bad Request', headers: simHeaders, data: { detail: 'Quantity must be positive.' } };
+            }
+
+            const totalValue = price * qty;
+            if (action === 'BUY' && userState.cash_balance < totalValue) {
+                return { status: 400, statusText: 'Bad Request', headers: simHeaders, data: { detail: 'Insufficient cash balance.' } };
+            }
+
+            const orderId = 'ORD-' + Date.now();
+            const isFilled = orderType === 'MARKET';
+
+            if (action === 'BUY') {
+                userState.cash_balance -= totalValue;
+                if (!userState.holdings[symbol]) {
+                    userState.holdings[symbol] = { symbol: symbol, quantity: 0, avg_buy_price: 0, total_invested: 0 };
+                }
+                const h = userState.holdings[symbol];
+                h.total_invested += totalValue;
+                h.quantity += qty;
+                h.avg_buy_price = +(h.total_invested / h.quantity).toFixed(2);
+            } else {
+                // SELL
+                if (!userState.holdings[symbol] || userState.holdings[symbol].quantity < qty) {
+                    return { status: 400, statusText: 'Bad Request', headers: simHeaders, data: { detail: `Insufficient holdings of ${symbol} to sell.` } };
+                }
+                const h = userState.holdings[symbol];
+                h.quantity -= qty;
+                h.total_invested -= (h.avg_buy_price * qty);
+                userState.cash_balance += totalValue;
+            }
+
+            const orderRecord = {
+                order_id: orderId,
+                email: email,
+                symbol: symbol,
+                action: action,
+                order_type: orderType,
+                price: price,
+                quantity: qty,
+                status: isFilled ? 'Filled' : 'Pending',
+                created_at: new Date().toISOString()
+            };
+
+            userState.orders.unshift(orderRecord);
+            saveUserAccount();
+            renderPortfolioDashboard();
+            renderOrdersTable();
+
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: {
+                    status: 'success',
+                    trade: {
+                        order_id: orderId,
+                        symbol: symbol,
+                        action: action,
+                        order_type: orderType,
+                        price: price,
+                        quantity: qty,
+                        execution_status: isFilled ? 'Filled' : 'Pending',
+                        message: `Order #${orderId} successfully processed.`
+                    }
+                }
+            };
+        }
+
+        // 7. GET /api/virtual/orders/{email}
+        if (method === 'GET' && cleanUrl.startsWith('/api/virtual/orders/')) {
+            const parts = cleanUrl.replace('/api/virtual/orders/', '').split('/');
+            const email = decodeURIComponent(parts[0]);
+            const singleOrderId = parts[1];
+
+            if (singleOrderId) {
+                const found = userState.orders.find(o => o.order_id === singleOrderId);
+                if (!found) {
+                    return { status: 404, statusText: 'Not Found', headers: simHeaders, data: { detail: `Order '${singleOrderId}' not found.` } };
+                }
+                return { status: 200, statusText: 'OK', headers: simHeaders, data: { status: 'ok', order: found } };
+            }
+
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: userState.orders
+            };
+        }
+
+        // 8. POST /api/virtual/cancel or DELETE /api/virtual/orders/{email}/{order_id}
+        if ((method === 'POST' && cleanUrl === '/api/virtual/cancel') || (method === 'DELETE' && cleanUrl.startsWith('/api/virtual/orders/'))) {
+            let orderId = parsedBody.order_id;
+            if (!orderId && cleanUrl.includes('/orders/')) {
+                orderId = cleanUrl.split('/').pop();
+            }
+            const order = userState.orders.find(o => o.order_id === orderId);
+            if (!order) {
+                return { status: 404, statusText: 'Not Found', headers: simHeaders, data: { detail: `Order #${orderId} not found.` } };
+            }
+            order.status = 'Cancelled';
+            saveUserAccount();
+            renderOrdersTable();
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: { status: 'success', message: `Order #${orderId} cancelled.`, order: order }
+            };
+        }
+
+        // 9. GET /api/virtual/portfolio/{email}
+        if (method === 'GET' && cleanUrl.startsWith('/api/virtual/portfolio/')) {
+            const email = decodeURIComponent(cleanUrl.replace('/api/virtual/portfolio/', ''));
+            const holdingsArray = Object.values(userState.holdings).filter(h => h.quantity > 0);
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: {
+                    email: email,
+                    cash_balance: userState.cash_balance,
+                    locked_cash: userState.locked_cash,
+                    realized_pnl: userState.realized_pnl,
+                    peak_equity: userState.peak_equity,
+                    holdings: holdingsArray
+                }
+            };
+        }
+
+        // 10. GET /api/virtual/account/{email}
+        if (method === 'GET' && cleanUrl.startsWith('/api/virtual/account/')) {
+            const email = decodeURIComponent(cleanUrl.replace('/api/virtual/account/', ''));
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: {
+                    status: 'ok',
+                    email: email,
+                    name: (currentUser && currentUser.name) || 'Developer Trader',
+                    created_at: new Date().toISOString(),
+                    portfolio: {
+                        cash_balance: userState.cash_balance,
+                        realized_pnl: userState.realized_pnl,
+                        holdings_count: Object.keys(userState.holdings).length
+                    }
+                }
+            };
+        }
+
+        // 11. GET /api/virtual/journal/{email}
+        if (method === 'GET' && cleanUrl.startsWith('/api/virtual/journal/')) {
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: userState.journal || []
+            };
+        }
+
+        // 12. GET /api/engine/metrics
+        if (method === 'GET' && cleanUrl === '/api/engine/metrics') {
+            return {
+                status: 200,
+                statusText: 'OK',
+                headers: simHeaders,
+                data: {
+                    engine_version: '0.3.0',
+                    throughput_ops_sec: 1420000,
+                    latency_p50_ns: 420,
+                    latency_p99_ns: 1150,
+                    matching_algorithm: 'FIFO Price-Time Priority',
+                    memory_architecture: 'Zero-Copy C-Structs'
+                }
+            };
+        }
+
+        // Fallback: 404 for unknown endpoints
+        return {
+            status: 404,
+            statusText: 'Not Found',
+            headers: simHeaders,
+            data: {
+                error: 'Endpoint not found',
+                method: method,
+                path: cleanUrl,
+                detail: `No simulated or backend handler found for '${method} ${cleanUrl}'. Check API documentation for valid paths.`
+            }
+        };
+    }
+};
+
+// ==========================================================================
+// DEVELOPER TUTORIAL LEARNING ENGINE
+// ==========================================================================
+const ChronosTutorialEngine = {
+    exercises: [
+        {
+            step: 1,
+            title: "Retrieve an Instrument's Market Price",
+            level: "Beginner",
+            description: "Query the real-time quote for <strong>RELIANCE</strong>. Examine the returned pricing payload, 24-hour highs and lows, and tick timestamps.",
+            criteria: "Send a <code>GET /api/market/quote/RELIANCE</code> request and receive a <code>200 OK</code> response containing price metrics.",
+            template: { method: 'GET', url: '/api/market/quote/RELIANCE', body: '' }
+        },
+        {
+            step: 2,
+            title: "Inspect Order-Book Microstructure Depth",
+            level: "Beginner",
+            description: "Examine the Level 2 aggregated limit order book depth. Notice how bids and asks are sorted by Price-Time Priority (FIFO).",
+            criteria: "Send a <code>GET /api/market/depth/RELIANCE</code> or <code>/api/bbo/RELIANCE</code> request and inspect the bid/ask ladder.",
+            template: { method: 'GET', url: '/api/market/depth/RELIANCE?depth=5', body: '' }
+        },
+        {
+            step: 3,
+            title: "Submit a Simulated Limit Order",
+            level: "Intermediate",
+            description: "Place a simulated limit buy order using the Virtual Trading API. Notice how virtual cash is reserved and the order enters the matching book.",
+            criteria: "Send a <code>POST /api/virtual/trade</code> request with valid <code>action</code>, <code>price</code>, and <code>quantity</code>.",
+            template: {
+                method: 'POST',
+                url: '/api/virtual/trade',
+                body: JSON.stringify({
+                    email: 'trader@chronos.local',
+                    symbol: 'RELIANCE',
+                    action: 'BUY',
+                    order_type: 'LIMIT',
+                    price: 1180.00,
+                    quantity: 10.0
+                }, null, 2)
+            }
+        },
+        {
+            step: 4,
+            title: "Check Order Lifecycle Status",
+            level: "Intermediate",
+            description: "Verify that your placed order is tracked in the exchange order log with an assigned order ID, remaining leaves quantity, and status.",
+            criteria: "Send a <code>GET /api/virtual/orders/{email}</code> request and receive a list containing your order records.",
+            template: { method: 'GET', url: '/api/virtual/orders/trader@chronos.local', body: '' }
+        },
+        {
+            step: 5,
+            title: "Retrieve Account Equity & Portfolio Holdings",
+            level: "Intermediate",
+            description: "Retrieve your account portfolio summary to verify cash balance, invested capital, active asset holdings, and realized PnL.",
+            criteria: "Send a <code>GET /api/virtual/portfolio/{email}</code> request and verify holdings.",
+            template: { method: 'GET', url: '/api/virtual/portfolio/trader@chronos.local', body: '' }
+        },
+        {
+            step: 6,
+            title: "Subscribe to Real-Time Market Microstructure Events",
+            level: "Advanced",
+            description: "Connect to the real-time WebSocket event stream and capture live price updates, order book changes, and execution events.",
+            criteria: "Navigate to the WebSocket Stream tab, connect, and receive at least 3 live market events.",
+            template: { method: 'GET', url: '/api/market/instruments', body: '' }
+        }
+    ],
+
+    checkProgress(method, url, statusCode, responseData) {
+        if (statusCode !== 200) return;
+        const currentStep = ChronosDeveloperPlayground.tutorialStep;
+        let matched = false;
+
+        if (currentStep === 1 && method === 'GET' && url.includes('/api/market/quote/')) {
+            matched = true;
+        } else if (currentStep === 2 && method === 'GET' && (url.includes('/depth/') || url.includes('/bbo/'))) {
+            matched = true;
+        } else if (currentStep === 3 && method === 'POST' && url.includes('/api/virtual/trade')) {
+            matched = true;
+        } else if (currentStep === 4 && method === 'GET' && url.includes('/api/virtual/orders/')) {
+            matched = true;
+        } else if (currentStep === 5 && method === 'GET' && url.includes('/api/virtual/portfolio/')) {
+            matched = true;
+        } else if (currentStep === 6 && method === 'WS') {
+            matched = true;
+        }
+
+        if (matched && !ChronosDeveloperPlayground.tutorialCompleted.includes(currentStep)) {
+            ChronosDeveloperPlayground.tutorialCompleted.push(currentStep);
+            ChronosDeveloperPlayground.saveStorage();
+            ChronosDeveloperPlayground.renderTutorialCard();
+            showToast(`🎉 Exercise ${currentStep} completed! Great job.`);
+        }
+    }
+};
+
+function initPlaygroundView() {
+    ChronosDeveloperPlayground.init();
+}
+
+
+
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             setupChartInteraction();
