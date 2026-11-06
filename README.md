@@ -81,6 +81,27 @@
   - **Strategy Performance Metrics**: Computes Total Return %, CAGR, Maximum Drawdown %, Win Rate %, Profit Factor, Payoff Ratio, Closed Trades, and Market Exposure Time %.
   - **Portfolio Scenario Stress Testing**: Models hypothetical market crashes (-5% to -35%), volatility spikes, and correlated shocks against active holdings with risk rating classifications.
   - **Risk Rules & Win-Rate Fallacy Simulator**: Interactive tool demonstrating why a 70% win-rate with poor R:R produces guaranteed bankruptcy while a 40% win-rate with 3:1 R:R creates consistent wealth. Configurable risk limits.
+- **🏛️ Corporate Actions Simulator (Educational Module)**:
+  > **DISCLAIMER:** All corporate actions in this module are **simulated educational events** designed to demonstrate how corporate capital decisions alter holdings, cost basis, and cash balances. None of the events represent real-world corporate announcements or financial advice.
+  - **Simulated Event Types**:
+    - **Cash Dividends**: Rupee amount credited directly to available virtual cash balance on payment date.
+    - **Stock Splits & Reverse Splits**: Ratio-based share sub-division (e.g. 2:1) or consolidation (e.g. 1:5) with reciprocal per-share price adjustments ($N:M$).
+    - **Bonus Shares Issues**: Capitalization of free reserves granting additional shares with proportional average cost basis dilution ($1:1$, $1:2$).
+    - **Rights Issues**: Discounted rights offering with selectable exercise quantities and blended cost basis calculations.
+    - **Stock Buybacks**: Tender offer model with cash payout, share cancellation, and realized profit/loss booking.
+    - **Symbol Changes**: Ticker migration (e.g. MOTHERSUM ➔ MOTHERSON) with zero capital loss.
+  - **Deterministic Zero Artificial Profit Proof**: Mathematical guarantee that non-cash actions (splits, reverse splits, bonus issues) alter share counts and per-share prices in exact reciprocity without inflating portfolio equity or generating artificial gains.
+  - **Pre-Application Impact Preview**: Side-by-side KPI diffs (Share Quantity, Average Cost Basis, Cash Adjustment, Net Portfolio Value) with step-by-step mathematical breakdown before applying.
+  - **Single-Use Execution Ledger**: Enforces duplicate prevention per account ID to preserve ledger integrity.
+  - **Corporate Events Calendar & Timeline**: Chronological tracking of Ex-Dates, Record Dates, and Payment Dates with distinct `[SIMULATED EVENT]` badges.
+  - **Corporate Actions Academy**: In-depth educational guides explaining the definitions, company motivations, shareholder effects, and numerical examples for all 7 action types.
+
+- **🛠️ ChronosMatch Developer API Playground**:
+  - Interactive exchange API workbench supporting HTTP request execution (`GET`, `POST`, `PUT`, `DELETE`), custom headers, query parameters, and JSON request payloads.
+  - Endpoints covering market quotes, order book depth, BBO, order submission, cancellation, balances, and portfolios.
+  - Multi-language client code generation for cURL, Python (`requests`), JavaScript (`fetch`), and Go (`net/http`).
+  - Real-time WebSocket event monitor with message inspector and pause/resume streaming controls.
+
 
 ---
 
@@ -149,6 +170,8 @@ ChronosMatch provides both an autonomous offline client experience (for static z
 | **Trade Cancellation** | Instant one-click cancel & capital refund | Atomic O(1) cancel with transaction rollback safety |
 | **Risk Management Metrics**| Live exposure %, drawdown %, 2% rule | Server-computed portfolio analytics & position limits |
 | **Educational AI Assistant**| Client-side rule-based mentor with live stats | Educational AI endpoint (`/api/ai/chat`) |
+| **Corporate Actions Simulator** | In-browser deterministic accounting, duplicate prevention, 8 simulated actions | Dedicated REST API (`/api/corporate-actions/*`) with SQLite persistence |
+| **Developer API Playground** | Interactive client-side workbench, simulated WebSocket stream, code generator | Live FastAPI matching engine execution & `/api/market/ws` WebSocket |
 
 ---
 

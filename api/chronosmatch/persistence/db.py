@@ -1,6 +1,8 @@
 """Persistent SQLite database manager for ChronosMatch Virtual Paper Trading."""
 
 import datetime
+import json
+import uuid
 import hashlib
 import os
 import secrets
@@ -37,6 +39,167 @@ def _find_project_root() -> Path:
     return Path(__file__).resolve().parent
 
 DB_PATH = Path(os.environ.get("CHRONOS_DB_PATH", _find_project_root() / "chronos_paper_trading.db"))
+
+
+
+def calculate_corporate_action(
+    action_type: str,
+    parameters: Dict[str, Any],
+    current_qty: float,
+    current_avg: float,
+    current_cash: float,
+    market_price: float = 0.0
+) -> Dict[str, Any]:
+    """Calculate deterministic before-and-after values for any corporate action."""
+    action_type = action_type.strip().upper()
+    old_qty = float(current_qty)
+    old_avg = float(current_avg)
+    old_invested = round(old_qty * old_avg, 2)
+    old_cash = float(current_cash)
+    effective_mkt = market_price if market_price > 0 else old_avg
+    old_mkt_val = round(old_qty * effective_mkt, 2)
+    old_equity = round(old_cash + old_mkt_val, 2)
+
+    new_qty = old_qty
+    new_avg = old_avg
+    new_invested = old_invested
+    new_cash = old_cash
+    new_mkt_price = market_price
+    cash_adj = 0.0
+    summary = ""
+
+    if action_type == "DIVIDEND":
+        dps = float(parameters.get("dividend_per_share", 0.0))
+        if old_qty <= 0:
+            raise ValueError("Holding quantity must be greater than zero to receive dividend.")
+        cash_adj = round(old_qty * dps, 2)
+        new_cash = round(old_cash + cash_adj, 2)
+        summary = f"Cash dividend of ₹{dps:.2f}/share credited ₹{cash_adj:.2f} to available cash balance."
+
+    elif action_type == "STOCK_SPLIT":
+        split_from = float(parameters.get("split_from", 1))
+        split_to = float(parameters.get("split_to", 2))
+        if split_from <= 0 or split_to <= 0:
+            raise ValueError("Split ratios must be positive.")
+        if old_qty <= 0:
+            raise ValueError("Holding quantity must be greater than zero for stock split.")
+        ratio = split_to / split_from
+        new_qty = round(old_qty * ratio, 4)
+        new_avg = round(old_avg / ratio, 4)
+        new_invested = old_invested
+        if market_price > 0:
+            new_mkt_price = round(market_price / ratio, 2)
+        summary = f"Stock split {split_to:g}:{split_from:g} adjusted shares from {old_qty:g} to {new_qty:g}. Avg cost reduced to ₹{new_avg:.2f}. Total invested capital remains unchanged."
+
+    elif action_type == "REVERSE_SPLIT":
+        from_shares = float(parameters.get("from_shares", 5))
+        to_shares = float(parameters.get("to_shares", 1))
+        if from_shares <= 0 or to_shares <= 0:
+            raise ValueError("Reverse split ratios must be positive.")
+        if old_qty <= 0:
+            raise ValueError("Holding quantity must be greater than zero for reverse split.")
+        ratio = to_shares / from_shares
+        new_qty = round(old_qty * ratio, 4)
+        new_avg = round(old_avg / ratio, 4)
+        new_invested = old_invested
+        if market_price > 0:
+            new_mkt_price = round(market_price / ratio, 2)
+        summary = f"Reverse split {to_shares:g}:{from_shares:g} consolidated shares from {old_qty:g} to {new_qty:g}. Avg cost increased to ₹{new_avg:.2f}. Total invested capital remains unchanged."
+
+    elif action_type == "BONUS_ISSUE":
+        bonus_shares = float(parameters.get("bonus_shares", 1))
+        existing_shares = float(parameters.get("existing_shares", 1))
+        if bonus_shares <= 0 or existing_shares <= 0:
+            raise ValueError("Bonus ratios must be positive.")
+        if old_qty <= 0:
+            raise ValueError("Holding quantity must be greater than zero for bonus issue.")
+        ratio = bonus_shares / existing_shares
+        bonus_qty = round(old_qty * ratio, 4)
+        new_qty = round(old_qty + bonus_qty, 4)
+        new_avg = round(old_invested / new_qty, 4)
+        new_invested = old_invested
+        if market_price > 0:
+            new_mkt_price = round(market_price / (1.0 + ratio), 2)
+        summary = f"Bonus issue {bonus_shares:g}:{existing_shares:g} issued {bonus_qty:g} bonus shares. Total shares: {new_qty:g}, adjusted avg cost: ₹{new_avg:.2f}. Zero artificial profit."
+
+    elif action_type == "RIGHTS_ISSUE":
+        rights_shares = float(parameters.get("rights_shares", 1))
+        for_shares = float(parameters.get("for_shares", 14))
+        sub_price = float(parameters.get("subscription_price", 0.0))
+        max_rights = round(old_qty * (rights_shares / for_shares), 4)
+        exercised = float(parameters.get("exercised_shares", max_rights))
+        if exercised > max_rights:
+            raise ValueError(f"Exercised shares ({exercised}) cannot exceed eligible rights ({max_rights}).")
+        cost = round(exercised * sub_price, 2)
+        if old_cash < cost:
+            raise ValueError(f"Insufficient cash balance (₹{old_cash:.2f}) to exercise rights (Cost: ₹{cost:.2f}).")
+        cash_adj = -cost
+        new_cash = round(old_cash - cost, 2)
+        new_qty = round(old_qty + exercised, 4)
+        new_invested = round(old_invested + cost, 2)
+        new_avg = round(new_invested / new_qty, 4)
+        summary = f"Exercised {exercised:g} rights shares at ₹{sub_price:.2f}/share. Cash debited: ₹{cost:.2f}. Blended avg price: ₹{new_avg:.2f}."
+
+    elif action_type == "BUYBACK":
+        bb_price = float(parameters.get("buyback_price", market_price if market_price > 0 else old_avg))
+        tender_req = float(parameters.get("tendered_shares", old_qty))
+        tendered = min(old_qty, tender_req)
+        if tendered <= 0:
+            raise ValueError("Tendered shares must be positive.")
+        proceeds = round(tendered * bb_price, 2)
+        cost_of_tendered = round(tendered * old_avg, 2)
+        realized_pnl = round(proceeds - cost_of_tendered, 2)
+        cash_adj = proceeds
+        new_cash = round(old_cash + proceeds, 2)
+        new_qty = round(old_qty - tendered, 4)
+        if new_qty <= 0.0001:
+            new_qty = 0.0
+            new_avg = 0.0
+            new_invested = 0.0
+        else:
+            new_invested = round(new_qty * old_avg, 2)
+            new_avg = old_avg
+        summary = f"Tendered {tendered:g} shares at ₹{bb_price:.2f}/share for buyback. Cash credited: ₹{proceeds:.2f}, Realized PnL: ₹{realized_pnl:.2f}. Remaining shares: {new_qty:g}."
+
+    elif action_type == "SYMBOL_CHANGE":
+        new_symbol = parameters.get("new_symbol", "").strip().upper()
+        if not new_symbol:
+            raise ValueError("New symbol must be specified.")
+        summary = f"Symbol changed to {new_symbol}. Holdings and position quantities preserved intact."
+
+    else:
+        raise ValueError(f"Unsupported corporate action type: {action_type}")
+
+    new_mkt_val = round(new_qty * (new_mkt_price if new_mkt_price > 0 else new_avg), 2)
+    new_equity = round(new_cash + new_mkt_val, 2)
+
+    return {
+        "action_type": action_type,
+        "before": {
+            "quantity": old_qty,
+            "avg_buy_price": old_avg,
+            "total_invested": old_invested,
+            "cash_balance": old_cash,
+            "market_price": market_price,
+            "market_value": old_mkt_val,
+            "total_equity": old_equity
+        },
+        "after": {
+            "quantity": new_qty,
+            "avg_buy_price": new_avg,
+            "total_invested": new_invested,
+            "cash_balance": new_cash,
+            "market_price": new_mkt_price,
+            "market_value": new_mkt_val,
+            "total_equity": new_equity
+        },
+        "impact": {
+            "cash_adjustment": cash_adj,
+            "shares_adjustment": round(new_qty - old_qty, 4),
+            "valuation_impact": round(new_equity - old_equity, 2),
+            "summary": summary
+        }
+    }
 
 
 class Database:
@@ -131,6 +294,19 @@ class Database:
                     created_at TEXT NOT NULL,
                     FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
                 );
+
+                CREATE TABLE IF NOT EXISTS corporate_actions (
+                    id TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    action_type TEXT NOT NULL,
+                    parameters_json TEXT NOT NULL,
+                    impact_summary TEXT,
+                    applied_at TEXT NOT NULL,
+                    PRIMARY KEY (email, id),
+                    FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
+                );
+
             """)
 
             # Automatic schema migration for existing databases
@@ -950,6 +1126,171 @@ class Database:
             conn.commit()
 
         return {"email": email, "symbol": symbol, "in_watchlist": is_in_watchlist}
+
+
+
+    def is_corporate_action_applied(self, email: str, action_id: str) -> bool:
+        """Check whether a specific corporate action was already applied to the user's account."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM corporate_actions WHERE email = ? AND id = ?", (email, action_id))
+            return cursor.fetchone() is not None
+
+    def get_corporate_actions(self, email: str) -> List[Dict[str, Any]]:
+        """Retrieve applied corporate actions history for a user."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, email, symbol, action_type, parameters_json, impact_summary, applied_at "
+                "FROM corporate_actions WHERE email = ? ORDER BY applied_at DESC",
+                (email,),
+            )
+            rows = cursor.fetchall()
+            results = []
+            for r in rows:
+                params = {}
+                try:
+                    params = json.loads(r["parameters_json"])
+                except Exception:
+                    pass
+                results.append({
+                    "id": r["id"],
+                    "email": r["email"],
+                    "symbol": r["symbol"],
+                    "action_type": r["action_type"],
+                    "parameters": params,
+                    "impact_summary": r["impact_summary"],
+                    "applied_at": r["applied_at"],
+                })
+            return results
+
+    def apply_corporate_action(
+        self,
+        email: str,
+        action_id: str,
+        symbol: str,
+        action_type: str,
+        parameters: Dict[str, Any],
+        current_price: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Apply a simulated corporate action to a user's holdings and account balance."""
+        email = email.strip().lower()
+        symbol = symbol.strip().upper()
+        action_type = action_type.strip().upper()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+        if self.is_corporate_action_applied(email, action_id):
+            raise ValueError(f"Corporate action '{action_id}' has already been applied for user '{email}'.")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT cash_balance, realized_pnl FROM accounts WHERE email = ?", (email,))
+            acct = cursor.fetchone()
+            if not acct:
+                raise ValueError(f"Account for '{email}' does not exist.")
+
+            cash_balance = float(acct["cash_balance"])
+            realized_pnl = float(acct["realized_pnl"])
+
+            cursor.execute(
+                "SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?",
+                (email, symbol),
+            )
+            h = cursor.fetchone()
+            old_qty = float(h["quantity"]) if h else 0.0
+            old_avg = float(h["avg_buy_price"]) if h else 0.0
+            old_invested = float(h["total_invested"]) if h else 0.0
+
+            if action_type not in ["SYMBOL_CHANGE"] and old_qty <= 0:
+                raise ValueError(f"User holds zero shares of '{symbol}'. Cannot execute {action_type}.")
+
+            mkt_price = float(current_price) if (current_price and current_price > 0) else old_avg
+
+            res = calculate_corporate_action(
+                action_type=action_type,
+                parameters=parameters,
+                current_qty=old_qty,
+                current_avg=old_avg,
+                current_cash=cash_balance,
+                market_price=mkt_price,
+            )
+
+            new_qty = res["after"]["quantity"]
+            new_avg = res["after"]["avg_buy_price"]
+            new_invested = res["after"]["total_invested"]
+            new_cash = res["after"]["cash_balance"]
+            summary = res["impact"]["summary"]
+
+            # Update accounts
+            cursor.execute(
+                "UPDATE accounts SET cash_balance = ?, updated_at = ? WHERE email = ?",
+                (new_cash, now, email),
+            )
+
+            # Update holdings
+            if action_type == "SYMBOL_CHANGE":
+                new_symbol = parameters.get("new_symbol", "").strip().upper()
+                cursor.execute("DELETE FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
+                cursor.execute(
+                    "INSERT INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?) "
+                    "ON CONFLICT(email, symbol) DO UPDATE SET quantity = quantity + excluded.quantity, "
+                    "total_invested = total_invested + excluded.total_invested, "
+                    "avg_buy_price = (total_invested + excluded.total_invested) / (quantity + excluded.quantity), "
+                    "updated_at = excluded.updated_at",
+                    (email, new_symbol, old_qty, old_avg, old_invested, now),
+                )
+            elif new_qty <= 0.0001:
+                cursor.execute("DELETE FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
+            else:
+                cursor.execute(
+                    "INSERT INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?) "
+                    "ON CONFLICT(email, symbol) DO UPDATE SET "
+                    "quantity = excluded.quantity, avg_buy_price = excluded.avg_buy_price, "
+                    "total_invested = excluded.total_invested, updated_at = excluded.updated_at",
+                    (email, symbol, new_qty, new_avg, new_invested, now),
+                )
+
+            # Journal entry
+            entry_id = f"CA-JOURNAL-{uuid.uuid4().hex[:8].upper()}"
+            cursor.execute(
+                "INSERT INTO journal_entries (entry_id, email, symbol, order_id, strategy, sentiment, notes, lessons, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    entry_id,
+                    email,
+                    symbol,
+                    action_id,
+                    f"Corporate Action: {action_type}",
+                    "NEUTRAL",
+                    f"[SIMULATED CORPORATE ACTION] {summary}",
+                    "Corporate actions adjust holdings and cash deterministically without creating artificial profits.",
+                    now,
+                ),
+            )
+
+            # Record corporate action to prevent duplicate application
+            cursor.execute(
+                "INSERT INTO corporate_actions (id, email, symbol, action_type, parameters_json, impact_summary, applied_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (action_id, email, symbol, action_type, json.dumps(parameters), summary, now),
+            )
+
+            conn.commit()
+
+        return {
+            "status": "applied",
+            "action_id": action_id,
+            "symbol": symbol,
+            "action_type": action_type,
+            "before": res["before"],
+            "after": res["after"],
+            "impact": res["impact"],
+            "applied_at": now,
+        }
 
 
 # Global default instance

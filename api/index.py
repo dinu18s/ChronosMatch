@@ -41,7 +41,7 @@ from chronosmatch.engine.arena import (
     run_strategy_evolution_test,
 )
 from chronosmatch.marketdata.service import INSTRUMENT_CATALOG, market_data_service
-from chronosmatch.persistence.db import db
+from chronosmatch.persistence.db import db, calculate_corporate_action
 from chronosmatch.ai.mentor import mentor_engine
 from chronosmatch.protocol import (
     CancelOrderMsg,
@@ -120,6 +120,29 @@ for default_sym in ["BTCUSDT", "ETHUSDT", "AAPL"]:
 # ==========================================================================
 # REQUEST / RESPONSE MODELS
 # ==========================================================================
+
+class CorporateActionSimulateRequest(BaseModel):
+    symbol: str
+    action_type: str
+    parameters: Dict[str, Any]
+    current_quantity: Optional[float] = None
+    current_avg_price: Optional[float] = None
+    current_cash: Optional[float] = None
+    market_price: Optional[float] = None
+    email: Optional[str] = None
+
+
+class CorporateActionApplyRequest(BaseModel):
+    action_id: str
+    symbol: str
+    action_type: str
+    parameters: Dict[str, Any]
+    current_price: Optional[float] = None
+    email: Optional[str] = "demo@chronosmatch.io"
+    current_quantity: Optional[float] = None
+    current_avg_price: Optional[float] = None
+    current_cash: Optional[float] = None
+
 class PlaceOrderRequest(BaseModel):
     order_id: int = Field(..., description="Unique client order ID")
     client_id: int = Field(default=1, description="Client account ID")
@@ -1171,6 +1194,296 @@ def cancel_order(symbol: str, order_id: int, client_id: int = 1):
         "order_id": order_id,
         "symbol": symbol.upper(),
         "exec_type": et_name,
+    }
+
+
+
+CORPORATE_ACTIONS_CATALOG = [
+    {
+        "id": "SIM-DIV-RELIANCE-2026",
+        "symbol": "RELIANCE",
+        "company_name": "Reliance Industries Limited",
+        "action_type": "DIVIDEND",
+        "title": "₹10.00 Final Cash Dividend per Share",
+        "status": "ACTIVE",
+        "is_simulated": True,
+        "announcement_date": "2026-10-25",
+        "ex_date": "2026-11-10",
+        "record_date": "2026-11-12",
+        "execution_date": "2026-11-15",
+        "parameters": {"dividend_per_share": 10.0},
+        "description": "Board recommends simulated final cash dividend of ₹10.00 per equity share (Face Value ₹10).",
+        "educational_note": "Dividends are payments made by a corporation to its shareholders out of profits. On the ex-dividend date, the stock price generally drops by roughly the dividend amount as cash is transferred out of company reserves.",
+        "category": "Cash Dividend",
+    },
+    {
+        "id": "SIM-SPLIT-INFY-2026",
+        "symbol": "INFY",
+        "company_name": "Infosys Limited",
+        "action_type": "STOCK_SPLIT",
+        "title": "2:1 Stock Split (Sub-division of Shares)",
+        "status": "ACTIVE",
+        "is_simulated": True,
+        "announcement_date": "2026-10-28",
+        "ex_date": "2026-11-18",
+        "record_date": "2026-11-20",
+        "execution_date": "2026-11-22",
+        "parameters": {"split_from": 1, "split_to": 2},
+        "description": "Sub-division of 1 equity share of Face Value ₹5 each into 2 equity shares of Face Value ₹2.50 each.",
+        "educational_note": "A 2:1 stock split doubles your share quantity while cutting the share price and average cost basis in half. Total invested capital and market value remain identical: no artificial profit is created.",
+        "category": "Stock Split",
+    },
+    {
+        "id": "SIM-BONUS-TCS-2026",
+        "symbol": "TCS",
+        "company_name": "Tata Consultancy Services Ltd",
+        "action_type": "BONUS_ISSUE",
+        "title": "1:2 Bonus Issue (1 Bonus Share for every 2 held)",
+        "status": "ACTIVE",
+        "is_simulated": True,
+        "announcement_date": "2026-11-01",
+        "ex_date": "2026-11-25",
+        "record_date": "2026-11-27",
+        "execution_date": "2026-11-30",
+        "parameters": {"bonus_shares": 1, "existing_shares": 2},
+        "description": "Issuance of 1 bonus share for every 2 existing equity shares held on the record date out of free reserves.",
+        "educational_note": "Bonus shares are additional shares given to existing shareholders at no additional cost through capitalization of free reserves. Average cost basis reduces proportionately, preserving total investment value.",
+        "category": "Bonus Shares",
+    },
+    {
+        "id": "SIM-BONUS-TATAMOTORS-2026",
+        "symbol": "TATAMOTORS",
+        "company_name": "Tata Motors Limited",
+        "action_type": "BONUS_ISSUE",
+        "title": "1:1 Bonus Issue (1 Bonus Share for every 1 held)",
+        "status": "UPCOMING",
+        "is_simulated": True,
+        "announcement_date": "2026-11-04",
+        "ex_date": "2026-12-05",
+        "record_date": "2026-12-08",
+        "execution_date": "2026-12-10",
+        "parameters": {"bonus_shares": 1, "existing_shares": 1},
+        "description": "Allotment of 1 bonus equity share for every 1 fully paid equity share held by members.",
+        "educational_note": "A 1:1 bonus issue doubles the number of shares held by each eligible investor, while the ex-bonus market price mathematically halves.",
+        "category": "Bonus Shares",
+    },
+    {
+        "id": "SIM-REVSPLIT-YESBANK-2026",
+        "symbol": "YESBANK",
+        "company_name": "Yes Bank Limited",
+        "action_type": "REVERSE_SPLIT",
+        "title": "1:5 Reverse Stock Split (Share Consolidation)",
+        "status": "ACTIVE",
+        "is_simulated": True,
+        "announcement_date": "2026-10-15",
+        "ex_date": "2026-11-12",
+        "record_date": "2026-11-14",
+        "execution_date": "2026-11-16",
+        "parameters": {"from_shares": 5, "to_shares": 1},
+        "description": "Consolidation of 5 equity shares into 1 equity share to improve trading profile and reduce penny-stock volatility.",
+        "educational_note": "A reverse split reduces the total outstanding shares while increasing the per-share price proportionally. Investors retain the same proportional ownership and aggregate position value.",
+        "category": "Reverse Split",
+    },
+    {
+        "id": "SIM-RIGHTS-BHARTIARTL-2026",
+        "symbol": "BHARTIARTL",
+        "company_name": "Bharti Airtel Limited",
+        "action_type": "RIGHTS_ISSUE",
+        "title": "1:14 Rights Issue @ ₹535.00 (Discount to Market)",
+        "status": "ACTIVE",
+        "is_simulated": True,
+        "announcement_date": "2026-10-20",
+        "ex_date": "2026-11-20",
+        "record_date": "2026-11-22",
+        "execution_date": "2026-11-28",
+        "parameters": {"rights_shares": 1, "for_shares": 14, "subscription_price": 535.0},
+        "description": "Rights entitlement allowing existing shareholders to subscribe to 1 new share for every 14 held at a preferential price of ₹535.00.",
+        "educational_note": "A rights issue allows existing shareholders to purchase additional shares directly from the company at a discounted price, requiring a cash outflow to subscribe and lowering blended average cost.",
+        "category": "Rights Issue",
+    },
+    {
+        "id": "SIM-BUYBACK-WIPRO-2026",
+        "symbol": "WIPRO",
+        "company_name": "Wipro Limited",
+        "action_type": "BUYBACK",
+        "title": "Tender Offer Buyback @ ₹445.00 per Share",
+        "status": "ACTIVE",
+        "is_simulated": True,
+        "announcement_date": "2026-10-30",
+        "ex_date": "2026-11-22",
+        "record_date": "2026-11-24",
+        "execution_date": "2026-11-29",
+        "parameters": {"buyback_price": 445.0},
+        "description": "Company initiates tender offer to buy back equity shares at a premium price of ₹445.00 per share via proportionate tender.",
+        "educational_note": "In a stock buyback, the company buys its own shares from shareholders at a predetermined tender price (usually higher than market price), crediting cash and reducing share counts.",
+        "category": "Stock Buyback",
+    },
+    {
+        "id": "SIM-SYM-MOTHERSUM-2026",
+        "symbol": "MOTHERSUM",
+        "company_name": "Samvardhana Motherson International Ltd",
+        "action_type": "SYMBOL_CHANGE",
+        "title": "Symbol Transition: MOTHERSUM ➔ MOTHERSON",
+        "status": "COMPLETED",
+        "is_simulated": True,
+        "announcement_date": "2026-10-10",
+        "ex_date": "2026-10-28",
+        "record_date": "2026-10-29",
+        "execution_date": "2026-10-30",
+        "parameters": {"new_symbol": "MOTHERSON"},
+        "description": "Corporate renaming and ticker transition on exchanges from MOTHERSUM to MOTHERSON following corporate restructuring.",
+        "educational_note": "A symbol change reflects corporate rebranding or reorganizations. All holdings, position sizes, and cost bases are carried over to the new symbol with zero economic loss.",
+        "category": "Symbol Change",
+    },
+]
+
+
+@app.get("/api/corporate-actions/events")
+def get_corporate_action_events():
+    """Retrieve catalog of simulated corporate action events."""
+    return {
+        "status": "success",
+        "count": len(CORPORATE_ACTIONS_CATALOG),
+        "events": CORPORATE_ACTIONS_CATALOG,
+    }
+
+
+@app.post("/api/corporate-actions/simulate")
+def simulate_corporate_action(req: CorporateActionSimulateRequest):
+    """Simulate a corporate action and preview its impact on holdings, cash, and portfolio valuation."""
+    symbol = req.symbol.strip().upper()
+    action_type = req.action_type.strip().upper()
+
+    # Determine holdings and cash baseline
+    current_qty = req.current_quantity
+    current_avg = req.current_avg_price
+    current_cash = req.current_cash
+
+    # Fallback to database if email provided and fields missing
+    if (current_qty is None or current_cash is None) and req.email:
+        email = req.email.strip().lower()
+        acct = db.get_account(email)
+        if acct:
+            current_cash = float(acct["cash_balance"])
+        port = db.get_portfolio(email)
+        holdings = port.get("holdings", [])
+        for h in holdings:
+            if h["symbol"].upper() == symbol:
+                current_qty = float(h["quantity"])
+                current_avg = float(h["avg_buy_price"])
+                break
+
+    # If still not provided, provide sensible defaults for demonstration
+    if current_cash is None:
+        current_cash = 100000.00
+    if current_qty is None or current_qty <= 0:
+        current_qty = 100.0
+    if current_avg is None or current_avg <= 0:
+        try:
+            quote = market_data_service.fetch_live_quote(symbol)
+            current_avg = float(quote.get("price", 1000.00))
+        except Exception:
+            current_avg = 1000.00
+
+    market_price = req.market_price
+    if market_price is None or market_price <= 0:
+        try:
+            quote = market_data_service.fetch_live_quote(symbol)
+            market_price = float(quote.get("price", current_avg))
+        except Exception:
+            market_price = current_avg
+
+    try:
+        res = calculate_corporate_action(
+            action_type=action_type,
+            parameters=req.parameters,
+            current_qty=current_qty,
+            current_avg=current_avg,
+            current_cash=current_cash,
+            market_price=market_price,
+        )
+        return {
+            "status": "success",
+            "symbol": symbol,
+            "action_type": action_type,
+            "simulation": res,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/api/corporate-actions/apply")
+def apply_corporate_action_endpoint(req: CorporateActionApplyRequest):
+    """Apply a corporate action event to user portfolio, enforcing single-use event execution."""
+    email = (req.email or "demo@chronosmatch.io").strip().lower()
+    symbol = req.symbol.strip().upper()
+    action_type = req.action_type.strip().upper()
+
+    # Check if duplicate
+    if db.is_corporate_action_applied(email, req.action_id):
+        raise HTTPException(
+            status_code=409,
+            detail=f"Corporate action '{req.action_id}' has already been applied to portfolio for '{email}'. Duplicate application prevented.",
+        )
+
+    # Get market price
+    if req.current_price and req.current_price > 0:
+        mkt_price = req.current_price
+    else:
+        try:
+            quote = market_data_service.fetch_live_quote(symbol)
+            mkt_price = float(quote.get("price", 1000.00))
+        except Exception:
+            mkt_price = 1000.00
+
+    # Ensure user exists in database for persistent ledger & duplicate prevention
+    if not db.user_exists(email):
+        try:
+            db.create_user(email, "Trader", "DemoPass123!")
+            db.reset_account(email, starting_balance=req.current_cash or 100000.00)
+            if req.current_quantity and req.current_quantity > 0:
+                with db.get_connection() as conn:
+                    conn.execute(
+                        "INSERT OR REPLACE INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) "
+                        "VALUES (?, ?, ?, ?, ?, ?)",
+                        (
+                            email,
+                            symbol,
+                            req.current_quantity,
+                            req.current_avg_price or 1000.0,
+                            round(req.current_quantity * (req.current_avg_price or 1000.0), 2),
+                            datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        ),
+                    )
+        except Exception:
+            pass
+
+    try:
+        result = db.apply_corporate_action(
+            email=email,
+            action_id=req.action_id,
+            symbol=symbol,
+            action_type=action_type,
+            parameters=req.parameters,
+            current_price=mkt_price,
+        )
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Database error applying corporate action: {str(exc)}")
+
+
+@app.get("/api/corporate-actions/history/{email}")
+def get_user_corporate_actions(email: str):
+    """Retrieve history of applied corporate actions for a user."""
+    email = email.strip().lower()
+    actions = db.get_corporate_actions(email)
+    return {
+        "status": "success",
+        "email": email,
+        "count": len(actions),
+        "history": actions,
     }
 
 
