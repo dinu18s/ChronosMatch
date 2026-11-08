@@ -102,6 +102,30 @@
   - Multi-language client code generation for cURL, Python (`requests`), JavaScript (`fetch`), and Go (`net/http`).
   - Real-time WebSocket event monitor with message inspector and pause/resume streaming controls.
 
+- **🌐 Macroeconomic Simulator & Economic Events Terminal**:
+  > **DISCLAIMER:** All macroeconomic indicators, shock simulations, and cross-asset projections are **hypothetical educational models** based on historical beta sensitivity coefficients. None of the simulations constitute financial advice or guaranteed market forecasts.
+  - **Economic Events Dashboard**:
+    - Curated schedule of vital global macroeconomic indicators across India, the US, and Commodities.
+    - Tracks RBI Repo Rate, US Fed Funds Rate, CPI Inflation (India/US), GDP Growth (India/US), Unemployment Rate, Brent Crude Oil ($/bbl), USD/INR, and Manufacturing/Services PMI.
+    - Displays Event Name, Region, Frequency, Previous, Forecast/Expected, Actual, Surprise (Actual vs Expected), Importance Badge (High/Medium), and Release Schedule.
+    - Clearly labelled sample and simulated figures for educational training.
+  - **Macro Scenario Simulator**:
+    - Interactive shock controllers allowing users to adjust RBI Repo Rate (-100 to +200 bps), Fed Funds Rate (-150 to +200 bps), Brent Crude Oil (-40% to +60%), CPI Inflation (-2% to +3.5%), GDP Growth (-3% to +3%), and USD/INR (-6% to +10%).
+    - 1-Click Presets: *Hawkish Central Bank Hikes*, *Dovish Monetary Easing*, *Geopolitical Oil Surge (+30%)*, *Stagflation Squeeze*, and *India Capex Growth Boom*.
+  - **Cross-Asset Market Impact Visualization**:
+    - Deterministic empirical sensitivity engine projecting percentage impacts across 8 asset classes and key sectors: Indian Equities (Nifty 50), US Equities (S&P 500), Banking (Bank Nifty), IT Services (Nifty IT), Energy & Oil, Gold, Cryptocurrency (BTC/ETH), and Currency (USD/INR).
+    - Responsive horizontal visual impact bar chart with dynamic green (+) and red (-) bars.
+    - Outperforming beneficiaries and lagging assets summary with primary transmission drivers.
+  - **Interactive Cross-Asset Impact Map**:
+    - Visual dependency flowchart mapping step-by-step macro transmission: Policy Trigger ➔ Interbank Liquidity & Lending Rates ➔ Corporate PE Multiple De-rating ➔ Currency & Capital Equilibrium.
+    - Clickable nodes with in-depth educational walkthroughs for Interest Rate Hikes and Crude Oil Shocks.
+  - **Scenario Comparison Workbench**:
+    - Save, edit, and compare custom macroeconomic scenarios locally in `localStorage`.
+    - Multi-scenario comparison matrix and cross-scenario divergence calculator identifying the highest variance assets.
+  - **Macro Learning Academy**:
+    - Comprehensive educational guides covering Central Bank Interest Rates, Inflation Dynamics, GDP Growth, Crude Oil Vulnerabilities, Currency Mechanics, and a beginner-friendly Macro Glossary.
+
+
 
 ---
 
@@ -172,6 +196,7 @@ ChronosMatch provides both an autonomous offline client experience (for static z
 | **Educational AI Assistant**| Client-side rule-based mentor with live stats | Educational AI endpoint (`/api/ai/chat`) |
 | **Corporate Actions Simulator** | In-browser deterministic accounting, duplicate prevention, 8 simulated actions | Dedicated REST API (`/api/corporate-actions/*`) with SQLite persistence |
 | **Developer API Playground** | Interactive client-side workbench, simulated WebSocket stream, code generator | Live FastAPI matching engine execution & `/api/market/ws` WebSocket |
+| **Macroeconomic Simulator** | In-browser deterministic cross-asset engine, events calendar, comparison workbench | Dedicated REST API (`/api/macro/*`) with empirical sensitivity coefficients |
 
 ---
 

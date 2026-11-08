@@ -29,6 +29,13 @@ from chronosmatch.engine.observatory import (
     run_deterministic_experiment,
     simulate_price_impact,
 )
+from chronosmatch.engine.macro_simulator import (
+    ECONOMIC_EVENTS,
+    PRESET_SCENARIOS,
+    calculate_macro_impact,
+    compare_macro_scenarios,
+    get_cross_asset_flow_map,
+)
 from chronosmatch.engine.chaos_lab import (
     SCENARIO_PRESETS,
     compare_chaos_scenarios,
@@ -120,6 +127,27 @@ for default_sym in ["BTCUSDT", "ETHUSDT", "AAPL"]:
 # ==========================================================================
 # REQUEST / RESPONSE MODELS
 # ==========================================================================
+
+class MacroSimulateRequest(BaseModel):
+    rbi_rate_bps: Optional[float] = 0.0
+    fed_rate_bps: Optional[float] = 0.0
+    crude_oil_pct: Optional[float] = 0.0
+    cpi_inflation_pct: Optional[float] = 0.0
+    gdp_growth_pct: Optional[float] = 0.0
+    usdinr_change_pct: Optional[float] = 0.0
+    scenario_name: Optional[str] = "Custom Simulation"
+
+
+class MacroScenarioItem(BaseModel):
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = ""
+    shocks: Dict[str, float]
+
+
+class MacroCompareRequest(BaseModel):
+    scenarios: List[MacroScenarioItem]
+
 
 class CorporateActionSimulateRequest(BaseModel):
     symbol: str
@@ -1484,6 +1512,79 @@ def get_user_corporate_actions(email: str):
         "email": email,
         "count": len(actions),
         "history": actions,
+    }
+
+
+
+# ==============================================================================
+# MACROECONOMIC SIMULATOR & ECONOMIC EVENTS TERMINAL ENDPOINTS
+# ==============================================================================
+
+@app.get("/api/macro/events")
+def get_economic_events():
+    """Retrieve catalog of economic calendar indicators and events."""
+    return {
+        "status": "success",
+        "count": len(ECONOMIC_EVENTS),
+        "events": ECONOMIC_EVENTS,
+        "sample_data_note": "Clearly labelled sample & simulated macroeconomic indicators for educational exploration."
+    }
+
+
+@app.get("/api/macro/presets")
+def get_macro_presets():
+    """Retrieve curated macroeconomic scenario presets."""
+    return {
+        "status": "success",
+        "count": len(PRESET_SCENARIOS),
+        "presets": PRESET_SCENARIOS,
+    }
+
+
+@app.post("/api/macro/simulate")
+def simulate_macro_scenario(req: MacroSimulateRequest):
+    """Calculate deterministic cross-asset and sectoral impact of macroeconomic shocks."""
+    try:
+        shocks = {
+            "rbi_rate_bps": req.rbi_rate_bps or 0.0,
+            "fed_rate_bps": req.fed_rate_bps or 0.0,
+            "crude_oil_pct": req.crude_oil_pct or 0.0,
+            "cpi_inflation_pct": req.cpi_inflation_pct or 0.0,
+            "gdp_growth_pct": req.gdp_growth_pct or 0.0,
+            "usdinr_change_pct": req.usdinr_change_pct or 0.0,
+        }
+        res = calculate_macro_impact(shocks)
+        res["scenario_name"] = req.scenario_name or "Custom Simulation"
+        return {
+            "status": "success",
+            "simulation": res,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/api/macro/compare")
+def compare_macro_scenarios_endpoint(req: MacroCompareRequest):
+    """Compare multiple macroeconomic scenarios and calculate asset divergence."""
+    try:
+        scenario_dicts = [s.model_dump() for s in req.scenarios]
+        res = compare_macro_scenarios(scenario_dicts)
+        return {
+            "status": "success",
+            "comparison": res,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/macro/flow-map/{scenario_type}")
+def get_macro_flow_map(scenario_type: str = "rate_hike"):
+    """Retrieve step-by-step cross-asset transmission channel map."""
+    flow = get_cross_asset_flow_map(scenario_type)
+    return {
+        "status": "success",
+        "scenario_type": scenario_type,
+        "flow_map": flow,
     }
 
 

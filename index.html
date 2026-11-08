@@ -2456,7 +2456,52 @@
             margin-bottom: 16px;
         }
     
-                /* ==========================================================================
+                        /* ==========================================================================
+           CHRONOSMATCH MACROECONOMIC SIMULATOR STYLES
+           ========================================================================== */
+        .macro-subnav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            background: var(--bg-card);
+            overflow-x: auto;
+        }
+        .macro-subnav-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: border-color 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+        }
+        .macro-subnav-btn:hover {
+            color: var(--text-main);
+        }
+        .macro-subnav-btn.active {
+            color: #a78bfa;
+            border-bottom-color: #a78bfa;
+        }
+        .macro-badge-sample {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+/* ==========================================================================
            CHRONOSMATCH CORPORATE ACTIONS SIMULATOR STYLES
            ========================================================================== */
         .ca-subnav {
@@ -2890,6 +2935,14 @@
                             <span class="sidebar-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">SIM</span>
                         </button>
                     </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-macro" onclick="switchView('macro')">
+                            <span class="nav-icon">🌐</span>
+                            <span class="nav-text">Macro Simulator</span>
+                            <span class="sidebar-badge" style="background: rgba(139, 92, 246, 0.2); color: #a78bfa;">ECON</span>
+                        </button>
+                    </li>
+
 <li>
                         <button type="button" class="nav-link-btn" id="nav-btn-playground" onclick="switchView('playground')">
                             <span class="nav-icon">⚡</span>
@@ -6464,6 +6517,361 @@
             </div>
 
 
+                    <!-- ==========================================================================
+                 CHRONOSMATCH MACROECONOMIC SIMULATOR & ECONOMIC EVENTS TERMINAL
+                 ========================================================================== -->
+            <div class="view-panel" id="view-macro">
+                <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--border);">
+                    <!-- Header Banner -->
+                    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; background: rgba(17, 24, 39, 0.7);">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span class="card-title" style="font-size: 16px; font-weight: 800; color: #f3f4f6;">🌐 Macroeconomic Simulator & Events Terminal</span>
+                                <span class="macro-badge-sample">[SAMPLE & SIMULATED DATA]</span>
+                                <span style="font-size: 10px; padding: 2px 7px; border-radius: 4px; background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); font-weight: 700;">Cross-Asset Sensitivity Engine</span>
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; max-width: 860px; line-height: 1.4;">
+                                Model how central bank rate decisions, unexpected inflation, crude oil spikes, and currency movements cascade across Indian equities, global indices, key economic sectors, gold, and crypto. All scenarios are deterministic simulations for financial education.
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.resetShocks()" style="font-size: 11px; padding: 6px 12px; font-weight: 700;">
+                                ↺ Reset to Baseline
+                            </button>
+                            <button type="button" class="btn btn-buy" onclick="ChronosMacroSimulator.promptSaveScenario()" style="font-size: 11px; padding: 6px 12px; font-weight: 700; background: #7c3aed;">
+                                💾 Save Scenario
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Subnav Tabs -->
+                    <div class="macro-subnav">
+                        <button type="button" class="macro-subnav-btn active" id="macro-tab-events" onclick="ChronosMacroSimulator.switchSubTab('events')">
+                            <span>📊</span> Economic Events Dashboard
+                        </button>
+                        <button type="button" class="macro-subnav-btn" id="macro-tab-simulator" onclick="ChronosMacroSimulator.switchSubTab('simulator')">
+                            <span>⚡</span> Macro Scenario Simulator
+                        </button>
+                        <button type="button" class="macro-subnav-btn" id="macro-tab-map" onclick="ChronosMacroSimulator.switchSubTab('map')">
+                            <span>🗺️</span> Cross-Asset Impact Map
+                        </button>
+                        <button type="button" class="macro-subnav-btn" id="macro-tab-comparison" onclick="ChronosMacroSimulator.switchSubTab('comparison')">
+                            <span>🔍</span> Scenario Comparison
+                        </button>
+                        <button type="button" class="macro-subnav-btn" id="macro-tab-learning" onclick="ChronosMacroSimulator.switchSubTab('learning')">
+                            <span>🎓</span> Macro Learning Academy
+                        </button>
+                    </div>
+
+                    <!-- Sub-panel Container -->
+                    <div style="padding: 20px;">
+                        <!-- 1. Economic Events Dashboard Sub-panel -->
+                        <div id="macro-subpanel-events" class="macro-sub-panel">
+                            <!-- Filter Toolbar -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                    <span style="font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase;">Filter:</span>
+                                    <button type="button" class="btn btn-secondary active-filter" id="macro-filter-all" onclick="ChronosMacroSimulator.filterEvents('ALL')" style="font-size: 11px; padding: 4px 10px;">All (10)</button>
+                                    <button type="button" class="btn btn-secondary" id="macro-filter-India" onclick="ChronosMacroSimulator.filterEvents('India')" style="font-size: 11px; padding: 4px 10px;">🇮🇳 India</button>
+                                    <button type="button" class="btn btn-secondary" id="macro-filter-US" onclick="ChronosMacroSimulator.filterEvents('United States')" style="font-size: 11px; padding: 4px 10px;">🇺🇸 United States</button>
+                                    <button type="button" class="btn btn-secondary" id="macro-filter-Global" onclick="ChronosMacroSimulator.filterEvents('Global')" style="font-size: 11px; padding: 4px 10px;">🌍 Commodities & Forex</button>
+                                    <button type="button" class="btn btn-secondary" id="macro-filter-HIGH" onclick="ChronosMacroSimulator.filterEvents('HIGH')" style="font-size: 11px; padding: 4px 10px;">🔥 High Impact</button>
+                                </div>
+                                <div style="font-size: 11px; color: #a78bfa; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 6px; padding: 4px 10px;">
+                                    ℹ️ Curated educational indicators & upcoming schedule
+                                </div>
+                            </div>
+
+                            <!-- Events Table -->
+                            <div style="overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;">
+                                <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 12px;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid var(--border); background: #090d16; color: var(--text-sub); font-size: 11px; text-transform: uppercase;">
+                                            <th style="padding: 10px 14px;">Indicator / Event</th>
+                                            <th style="padding: 10px 12px;">Region</th>
+                                            <th style="padding: 10px 12px;">Freq</th>
+                                            <th style="padding: 10px 12px;">Previous</th>
+                                            <th style="padding: 10px 12px;">Forecast</th>
+                                            <th style="padding: 10px 12px;">Actual</th>
+                                            <th style="padding: 10px 12px;">Surprise</th>
+                                            <th style="padding: 10px 12px;">Importance</th>
+                                            <th style="padding: 10px 12px;">Release Date</th>
+                                            <th style="padding: 10px 14px; text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="macro-events-tbody">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 2. Macro Scenario Simulator Sub-panel -->
+                        <div id="macro-subpanel-simulator" class="macro-sub-panel" style="display: none;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+                                <!-- Left Column: Shock Controllers -->
+                                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>⚙️ Macro Shock Controller</span>
+                                        <span class="macro-badge-sample">[SIMULATOR]</span>
+                                    </div>
+
+                                    <!-- Preset Scenarios Quick Select -->
+                                    <div style="margin-bottom: 16px;">
+                                        <label style="font-size: 10px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 6px;">1-Click Preset Scenarios:</label>
+                                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.loadPreset('HAWKISH_SHOCK')" style="font-size: 11px; padding: 4px 8px;">🦅 Hawkish Shock</button>
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.loadPreset('DOVISH_EASING')" style="font-size: 11px; padding: 4px 8px;">🕊️ Dovish Easing</button>
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.loadPreset('OIL_SURGE')" style="font-size: 11px; padding: 4px 8px;">🛢️ Oil +30%</button>
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.loadPreset('STAGFLATION')" style="font-size: 11px; padding: 4px 8px;">📉 Stagflation</button>
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.loadPreset('INDIA_GROWTH_BOOM')" style="font-size: 11px; padding: 4px 8px;">🚀 Growth Boom</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sliders Form -->
+                                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                                        <!-- 1. RBI Repo Rate -->
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 4px;">
+                                                <span style="color: #f3f4f6;">🇮🇳 RBI Repo Rate Shift</span>
+                                                <span class="mono" id="val-rbi-bps" style="color: #a78bfa;">+0 bps</span>
+                                            </div>
+                                            <input type="range" id="slider-rbi-bps" min="-100" max="200" step="25" value="0" oninput="ChronosMacroSimulator.onSliderChange('rbi_rate_bps', this.value)" style="width: 100%; accent-color: #7c3aed;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-sub);">
+                                                <span>-100 bps (Aggressive Cut)</span>
+                                                <span>0 (Neutral)</span>
+                                                <span>+200 bps (Severe Hike)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 2. US Fed Funds Rate -->
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 4px;">
+                                                <span style="color: #f3f4f6;">🇺🇸 US Fed Funds Rate Shift</span>
+                                                <span class="mono" id="val-fed-bps" style="color: #60a5fa;">+0 bps</span>
+                                            </div>
+                                            <input type="range" id="slider-fed-bps" min="-150" max="200" step="25" value="0" oninput="ChronosMacroSimulator.onSliderChange('fed_rate_bps', this.value)" style="width: 100%; accent-color: #3b82f6;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-sub);">
+                                                <span>-150 bps (Emergency Cuts)</span>
+                                                <span>0</span>
+                                                <span>+200 bps (Aggressive Tightening)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 3. Brent Crude Oil -->
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 4px;">
+                                                <span style="color: #f3f4f6;">🛢️ Brent Crude Oil Shock</span>
+                                                <span class="mono" id="val-oil-pct" style="color: #fbbf24;">+0.0%</span>
+                                            </div>
+                                            <input type="range" id="slider-oil-pct" min="-40" max="60" step="5" value="0" oninput="ChronosMacroSimulator.onSliderChange('crude_oil_pct', this.value)" style="width: 100%; accent-color: #f59e0b;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-sub);">
+                                                <span>-40% ($45/bbl)</span>
+                                                <span>0 ($75/bbl)</span>
+                                                <span>+60% ($120/bbl)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 4. CPI Inflation Surprise -->
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 4px;">
+                                                <span style="color: #f3f4f6;">📈 CPI Inflation Surprise</span>
+                                                <span class="mono" id="val-cpi-pct" style="color: #f87171;">+0.00%</span>
+                                            </div>
+                                            <input type="range" id="slider-cpi-pct" min="-2.0" max="3.5" step="0.25" value="0" oninput="ChronosMacroSimulator.onSliderChange('cpi_inflation_pct', this.value)" style="width: 100%; accent-color: #ef4444;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-sub);">
+                                                <span>-2.0% (Deflationary Cool)</span>
+                                                <span>0 (As Expected)</span>
+                                                <span>+3.5% (Severe Spike)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 5. GDP Growth Deviation -->
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 4px;">
+                                                <span style="color: #f3f4f6;">🏭 GDP Growth Deviation</span>
+                                                <span class="mono" id="val-gdp-pct" style="color: #34d399;">+0.00%</span>
+                                            </div>
+                                            <input type="range" id="slider-gdp-pct" min="-3.0" max="3.0" step="0.25" value="0" oninput="ChronosMacroSimulator.onSliderChange('gdp_growth_pct', this.value)" style="width: 100%; accent-color: #10b981;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-sub);">
+                                                <span>-3.0% (Recession Shock)</span>
+                                                <span>0</span>
+                                                <span>+3.0% (High Capex Boom)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 6. USD/INR Currency Shock -->
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 4px;">
+                                                <span style="color: #f3f4f6;">💵 USD / INR Currency Shift</span>
+                                                <span class="mono" id="val-usdinr-pct" style="color: #38bdf8;">+0.00%</span>
+                                            </div>
+                                            <input type="range" id="slider-usdinr-pct" min="-6.0" max="10.0" step="0.5" value="0" oninput="ChronosMacroSimulator.onSliderChange('usdinr_change_pct', this.value)" style="width: 100%; accent-color: #0284c7;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-sub);">
+                                                <span>-6.0% (Rupee Stronger)</span>
+                                                <span>0 (₹84.0)</span>
+                                                <span>+10.0% (Rupee Depreciation)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bottom Buttons -->
+                                    <div style="display: flex; gap: 8px; margin-top: 18px;">
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.resetShocks()" style="flex: 1; font-size: 11px; padding: 8px;">
+                                            ↺ Reset All
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.promptSaveScenario()" style="flex: 1; font-size: 11px; padding: 8px; border-color: rgba(139, 92, 246, 0.4); color: #c4b5fd;">
+                                            💾 Save to Workbench
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Market Impact Visualization -->
+                                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+                                        <div>
+                                            <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">📈 Estimated Cross-Asset Impacts</span>
+                                            <div style="font-size: 11px; color: var(--text-sub);">Deterministic transmission model based on empirical beta sensitivities</div>
+                                        </div>
+                                        <div>
+                                            <span id="macro-active-regime-pill" style="font-size: 10px; padding: 3px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-weight: 800; text-transform: uppercase;">
+                                                MACRO NEUTRAL / RANGEBOUND
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Visual Bar Chart Container -->
+                                    <div id="macro-visual-bars-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;">
+                                        <!-- Rendered via JS -->
+                                    </div>
+
+                                    <!-- Top Winners & Losers Quick Bar -->
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                                        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px;">
+                                            <div style="font-size: 10px; font-weight: 700; color: #34d399; text-transform: uppercase; margin-bottom: 4px;">Top Outperforming Beneficiaries:</div>
+                                            <div id="macro-top-winners-list" style="font-size: 11px; color: #f3f4f6;">-</div>
+                                        </div>
+                                        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 10px;">
+                                            <div style="font-size: 10px; font-weight: 700; color: #f87171; text-transform: uppercase; margin-bottom: 4px;">Most Impacted / Lagging Assets:</div>
+                                            <div id="macro-top-losers-list" style="font-size: 11px; color: #f3f4f6;">-</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Detailed Matrix Table -->
+                                    <div style="overflow-x: auto; max-height: 240px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px;">
+                                        <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 11px;">
+                                            <thead>
+                                                <tr style="border-bottom: 1px solid var(--border); background: #090d16; color: var(--text-sub); text-transform: uppercase; font-size: 10px;">
+                                                    <th style="padding: 6px 10px;">Asset / Sector</th>
+                                                    <th style="padding: 6px 8px;">Est. Impact</th>
+                                                    <th style="padding: 6px 8px;">Stance</th>
+                                                    <th style="padding: 6px 10px;">Primary Transmission Driver</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="macro-matrix-tbody">
+                                                <!-- Populated via JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Simulation Disclaimer -->
+                                    <div style="margin-top: 12px; font-size: 10px; color: var(--text-sub); line-height: 1.4; display: flex; align-items: flex-start; gap: 6px;">
+                                        <span>⚠️</span>
+                                        <span><strong>Disclaimer:</strong> Every simulation is a hypothetical educational scenario. Real-world financial markets involve liquidity shocks, geopolitical surprises, and non-linear animal spirits that can diverge from historical empirical models.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Cross-Asset Impact Map Sub-panel -->
+                        <div id="macro-subpanel-map" class="macro-sub-panel" style="display: none;">
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                                    <div>
+                                        <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">🗺️ Cross-Asset Transmission Dependency Map</span>
+                                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                            Explore how a single macroeconomic catalyst propagates step-by-step through interest rates, banking margins, corporate valuations, and foreign exchange.
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button type="button" class="btn btn-secondary active-filter" id="btn-flow-rate" onclick="ChronosMacroSimulator.switchFlowMap('rate_hike')" style="font-size: 11px; padding: 4px 10px;">Interest Rate Transmission</button>
+                                        <button type="button" class="btn btn-secondary" id="btn-flow-oil" onclick="ChronosMacroSimulator.switchFlowMap('oil_shock')" style="font-size: 11px; padding: 4px 10px;">Crude Oil Supply Shock</button>
+                                    </div>
+                                </div>
+
+                                <!-- Flow Diagram Container -->
+                                <div id="macro-flow-diagram-container" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                                    <!-- Populated via JS -->
+                                </div>
+
+                                <!-- Node Explanation Box -->
+                                <div id="macro-node-detail-box" style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: #d1d5db; line-height: 1.5;">
+                                    <div style="font-weight: 800; color: #a78bfa; margin-bottom: 4px;">Click any transmission step above to inspect its financial channel mechanics.</div>
+                                    <div>Central bank interest rate decisions ripple through short-term money markets, bank lending spreads, corporate discount rates, and exchange rates sequentially over 3 to 18 months.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Scenario Comparison Sub-panel -->
+                        <div id="macro-subpanel-comparison" class="macro-sub-panel" style="display: none;">
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                                    <div>
+                                        <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">🔍 Multi-Scenario Comparison Workbench</span>
+                                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                            Compare projected cross-asset returns and sector winners/losers across saved macroeconomic scenarios.
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.promptSaveScenario()" style="font-size: 11px; padding: 6px 12px; font-weight: 700;">+ Save Active Sliders</button>
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.resetSavedScenarios()" style="font-size: 11px; padding: 6px 12px; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">↺ Restore Presets</button>
+                                    </div>
+                                </div>
+
+                                <!-- Multi-Scenario Table -->
+                                <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px;">
+                                    <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 11px;">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid var(--border); background: #090d16; color: var(--text-sub); font-size: 10px; text-transform: uppercase;">
+                                                <th style="padding: 8px 12px;">Scenario Name</th>
+                                                <th style="padding: 8px 10px;">Macro Assumptions</th>
+                                                <th style="padding: 8px 10px;">Nifty 50</th>
+                                                <th style="padding: 8px 10px;">S&P 500</th>
+                                                <th style="padding: 8px 10px;">Banks</th>
+                                                <th style="padding: 8px 10px;">IT</th>
+                                                <th style="padding: 8px 10px;">Energy</th>
+                                                <th style="padding: 8px 10px;">Gold</th>
+                                                <th style="padding: 8px 10px;">Crypto</th>
+                                                <th style="padding: 8px 10px; text-align: right;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="macro-comparison-tbody">
+                                            <!-- Rendered via JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Scenario Divergence Calculator -->
+                                <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+                                    <div style="font-weight: 800; font-size: 12px; color: #f3f4f6; margin-bottom: 8px;">Divergence & Sensitivity Analysis:</div>
+                                    <div id="macro-divergence-summary" style="font-size: 11px; color: var(--text-sub); line-height: 1.5;">
+                                        <!-- Rendered via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Macro Learning Academy Sub-panel -->
+                        <div id="macro-subpanel-learning" class="macro-sub-panel" style="display: none;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="macro-learning-grid">
+                                <!-- Populated dynamically with 6 educational modules -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </main>
     </div>
 
@@ -6911,6 +7319,8 @@
                 initPlaygroundView();
             } else if (viewName === 'corporate') {
                 initCorporateActionsView();
+            } else if (viewName === 'macro') {
+                initMacroSimulatorView();
             }
         }
 
@@ -18430,6 +18840,849 @@ const ChronosCorporateActions = {
 function initCorporateActionsView() {
     ChronosCorporateActions.init();
 }
+
+const ChronosMacroSimulator = {
+    activeSubTab: 'events',
+    currentFilter: 'ALL',
+    activeFlowMap: 'rate_hike',
+    selectedFlowNode: null,
+
+    currentShocks: {
+        rbi_rate_bps: 0.0,
+        fed_rate_bps: 0.0,
+        crude_oil_pct: 0.0,
+        cpi_inflation_pct: 0.0,
+        gdp_growth_pct: 0.0,
+        usdinr_change_pct: 0.0
+    },
+
+    events: [
+        {
+            id: 'EVT-RBI-REPO-2026',
+            name: 'RBI Monetary Policy Committee (MPC) Rate Decision',
+            category: 'Interest Rates',
+            region: 'India',
+            flag: '🇮🇳',
+            frequency: 'Bi-monthly',
+            previous: '6.50%',
+            expected: '6.50%',
+            actual: '6.50%',
+            surprise: '0.00%',
+            importance: 'HIGH',
+            release_date: '2026-10-09',
+            description: 'Guides commercial lending rates (MCLR), home loans, and fixed income yields across India.',
+            defaultShock: { rbi_rate_bps: 25.0 }
+        },
+        {
+            id: 'EVT-FED-FUNDS-2026',
+            name: 'US Federal Reserve FOMC Interest Rate Decision',
+            category: 'Interest Rates',
+            region: 'United States',
+            flag: '🇺🇸',
+            frequency: '6-8 weeks',
+            previous: '5.50%',
+            expected: '5.25%',
+            actual: '5.25%',
+            surprise: '-0.25%',
+            importance: 'HIGH',
+            release_date: '2026-09-18',
+            description: 'The global risk-free rate anchor. Direct driver of foreign institutional (FII) capital flows.',
+            defaultShock: { fed_rate_bps: -25.0 }
+        },
+        {
+            id: 'EVT-IN-CPI-2026',
+            name: 'India Consumer Price Index (CPI) Inflation YoY',
+            category: 'Inflation',
+            region: 'India',
+            flag: '🇮🇳',
+            frequency: 'Monthly',
+            previous: '5.49%',
+            expected: '5.20%',
+            actual: '5.10%',
+            surprise: '-0.10%',
+            importance: 'HIGH',
+            release_date: '2026-10-14',
+            description: 'Monitored within RBI\'s 4% (+/-2%) tolerance band. Dictates rate pause or cut likelihood.',
+            defaultShock: { cpi_inflation_pct: 0.5 }
+        },
+        {
+            id: 'EVT-US-CPI-2026',
+            name: 'US Consumer Price Index (CPI) Inflation YoY',
+            category: 'Inflation',
+            region: 'United States',
+            flag: '🇺🇸',
+            frequency: 'Monthly',
+            previous: '2.90%',
+            expected: '2.60%',
+            actual: '2.50%',
+            surprise: '-0.10%',
+            importance: 'HIGH',
+            release_date: '2026-10-10',
+            description: 'Key price pressures gauge driving US 10-year Treasury yields and tech stock multiples.',
+            defaultShock: { cpi_inflation_pct: -0.3 }
+        },
+        {
+            id: 'EVT-IN-GDP-2026',
+            name: 'India Real GDP Growth Rate YoY',
+            category: 'Economic Growth',
+            region: 'India',
+            flag: '🇮🇳',
+            frequency: 'Quarterly',
+            previous: '6.70%',
+            expected: '7.00%',
+            actual: '7.20%',
+            surprise: '+0.20%',
+            importance: 'HIGH',
+            release_date: '2026-08-30',
+            description: 'Comprehensive pace of economic activity driving corporate revenue growth and bank credit.',
+            defaultShock: { gdp_growth_pct: 1.0 }
+        },
+        {
+            id: 'EVT-US-GDP-2026',
+            name: 'US GDP Annualized Growth Rate',
+            category: 'Economic Growth',
+            region: 'United States',
+            flag: '🇺🇸',
+            frequency: 'Quarterly',
+            previous: '2.80%',
+            expected: '3.00%',
+            actual: '3.00%',
+            surprise: '0.00%',
+            importance: 'HIGH',
+            release_date: '2026-09-26',
+            description: 'Macro health indicator for export demand and Indian IT enterprise software budgets.',
+            defaultShock: { gdp_growth_pct: 0.5 }
+        },
+        {
+            id: 'EVT-CRUDE-OIL-2026',
+            name: 'Brent Crude Oil ($/Barrel)',
+            category: 'Commodities',
+            region: 'Global',
+            flag: '🌍',
+            frequency: 'Daily',
+            previous: '$74.50',
+            expected: '$76.00',
+            actual: '$75.20',
+            surprise: '-$0.80',
+            importance: 'MEDIUM',
+            release_date: '2026-10-24',
+            description: 'India imports ~85% of crude needs; higher oil expands CAD and creates import inflation.',
+            defaultShock: { crude_oil_pct: 20.0 }
+        },
+        {
+            id: 'EVT-USD-INR-2026',
+            name: 'USD / INR Currency Exchange Rate',
+            category: 'Forex',
+            region: 'Global',
+            flag: '💵',
+            frequency: 'Daily',
+            previous: '₹83.95',
+            expected: '₹84.10',
+            actual: '₹84.05',
+            surprise: '-₹0.05',
+            importance: 'MEDIUM',
+            release_date: '2026-10-24',
+            description: 'Rupee depreciation expands IT profit margins while making oil/electronics imports dearer.',
+            defaultShock: { usdinr_change_pct: 2.0 }
+        },
+        {
+            id: 'EVT-IN-MFG-PMI-2026',
+            name: 'India HSBC Manufacturing PMI',
+            category: 'Business Activity',
+            region: 'India',
+            flag: '🇮🇳',
+            frequency: 'Monthly',
+            previous: '58.1',
+            expected: '58.5',
+            actual: '58.9',
+            surprise: '+0.4',
+            importance: 'MEDIUM',
+            release_date: '2026-10-01',
+            description: 'Factory production and order books barometer (>50 represents healthy industrial expansion).',
+            defaultShock: { gdp_growth_pct: 0.4 }
+        },
+        {
+            id: 'EVT-US-UNEMPLOYMENT-2026',
+            name: 'US Unemployment Rate (U-3)',
+            category: 'Labor Market',
+            region: 'United States',
+            flag: '🇺🇸',
+            frequency: 'Monthly',
+            previous: '4.30%',
+            expected: '4.20%',
+            actual: '4.10%',
+            surprise: '-0.10%',
+            importance: 'HIGH',
+            release_date: '2026-10-04',
+            description: 'Labor market tightness determining consumer strength and Fed policy patience.',
+            defaultShock: { fed_rate_bps: 25.0 }
+        }
+    ],
+
+    presets: {
+        'HAWKISH_SHOCK': {
+            name: '🦅 Hawkish Central Bank Hikes',
+            description: 'RBI +50 bps, US Fed +75 bps, and CPI +1.0%. Stiff discount rate headwinds.',
+            shocks: { rbi_rate_bps: 50.0, fed_rate_bps: 75.0, crude_oil_pct: 5.0, cpi_inflation_pct: 1.0, gdp_growth_pct: -0.4, usdinr_change_pct: 1.2 }
+        },
+        'DOVISH_EASING': {
+            name: '🕊️ Dovish Monetary Easing',
+            description: 'RBI -50 bps, US Fed -75 bps, and inflation cooling -1.2%. Strong liquidity tailwind.',
+            shocks: { rbi_rate_bps: -50.0, fed_rate_bps: -75.0, crude_oil_pct: -8.0, cpi_inflation_pct: -1.2, gdp_growth_pct: 0.6, usdinr_change_pct: -1.0 }
+        },
+        'OIL_SURGE': {
+            name: '🛢️ Geopolitical Oil Shock (+30%)',
+            description: 'Brent Crude spikes +30%, expanding India\'s trade deficit and driving USD/INR up +3.5%.',
+            shocks: { rbi_rate_bps: 25.0, fed_rate_bps: 25.0, crude_oil_pct: 30.0, cpi_inflation_pct: 1.8, gdp_growth_pct: -0.8, usdinr_change_pct: 3.5 }
+        },
+        'STAGFLATION': {
+            name: '📉 Stagflation Squeeze',
+            description: 'GDP growth slumps -1.5% while CPI inflation spikes +2.2% alongside +20% crude oil.',
+            shocks: { rbi_rate_bps: 50.0, fed_rate_bps: 50.0, crude_oil_pct: 20.0, cpi_inflation_pct: 2.2, gdp_growth_pct: -1.5, usdinr_change_pct: 2.8 }
+        },
+        'INDIA_GROWTH_BOOM': {
+            name: '🚀 India Capex & Growth Boom',
+            description: 'Domestic GDP growth surges +1.5% above expectations with strong manufacturing activity.',
+            shocks: { rbi_rate_bps: 0.0, fed_rate_bps: -25.0, crude_oil_pct: -5.0, cpi_inflation_pct: -0.5, gdp_growth_pct: 1.5, usdinr_change_pct: -1.8 }
+        }
+    },
+
+    getStorageKey: function() {
+        return 'chronos_macro_scenarios_' + (currentUser ? encodeURIComponent(currentUser.email) : 'guest');
+    },
+
+    getSavedScenarios: function() {
+        try {
+            const raw = localStorage.getItem(this.getStorageKey());
+            if (raw) return JSON.parse(raw);
+        } catch (e) {}
+
+        // Fallback to default presets
+        return Object.keys(this.presets).map(k => ({
+            id: k,
+            name: this.presets[k].name,
+            description: this.presets[k].description,
+            shocks: { ...this.presets[k].shocks }
+        }));
+    },
+
+    saveScenariosList: function(list) {
+        try {
+            localStorage.setItem(this.getStorageKey(), JSON.stringify(list));
+        } catch (e) {}
+    },
+
+    init: function() {
+        this.renderEventsTable();
+        this.updateSimulationVisuals();
+        this.renderFlowMap();
+        this.renderComparisonWorkbench();
+        this.renderLearningMode();
+    },
+
+    switchSubTab: function(tabName) {
+        this.activeSubTab = tabName;
+        const subpanels = ['events', 'simulator', 'map', 'comparison', 'learning'];
+        subpanels.forEach(p => {
+            const el = document.getElementById('macro-subpanel-' + p);
+            const btn = document.getElementById('macro-tab-' + p);
+            if (el) el.style.display = (p === tabName) ? 'block' : 'none';
+            if (btn) btn.classList.toggle('active', p === tabName);
+        });
+
+        if (tabName === 'simulator') {
+            this.updateSimulationVisuals();
+        } else if (tabName === 'map') {
+            this.renderFlowMap();
+        } else if (tabName === 'comparison') {
+            this.renderComparisonWorkbench();
+        }
+    },
+
+    filterEvents: function(category) {
+        this.currentFilter = category;
+        const btns = ['all', 'India', 'US', 'Global', 'HIGH'];
+        btns.forEach(b => {
+            const el = document.getElementById('macro-filter-' + b);
+            if (el) {
+                const isMatch = (b === 'all' && category === 'ALL') ||
+                                (b === 'US' && category === 'United States') ||
+                                (b === category);
+                el.classList.toggle('active-filter', isMatch);
+            }
+        });
+        this.renderEventsTable();
+    },
+
+    renderEventsTable: function() {
+        const tbody = document.getElementById('macro-events-tbody');
+        if (!tbody) return;
+
+        const filtered = this.events.filter(e => {
+            if (this.currentFilter === 'ALL') return true;
+            if (this.currentFilter === 'HIGH') return e.importance === 'HIGH';
+            return e.region === this.currentFilter;
+        });
+
+        tbody.innerHTML = filtered.map(ev => {
+            const surpriseVal = parseFloat(ev.surprise) || 0;
+            const surpriseColor = surpriseVal > 0 ? '#34d399' : (surpriseVal < 0 ? '#f87171' : 'var(--text-sub)');
+            const impColor = ev.importance === 'HIGH' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)';
+            const impText = ev.importance === 'HIGH' ? '#f87171' : '#60a5fa';
+
+            return `
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.15s ease;">
+                    <td style="padding: 10px 14px;">
+                        <div style="font-weight: 700; color: #f3f4f6;">${ev.name}</div>
+                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">${ev.description}</div>
+                    </td>
+                    <td style="padding: 10px 12px; white-space: nowrap;">
+                        <span>${ev.flag}</span> <span style="color: var(--text-sub);">${ev.region}</span>
+                    </td>
+                    <td style="padding: 10px 12px; color: var(--text-sub);">${ev.frequency}</td>
+                    <td style="padding: 10px 12px; font-weight: 600; color: #94a3b8;" class="mono">${ev.previous}</td>
+                    <td style="padding: 10px 12px; font-weight: 600; color: #94a3b8;" class="mono">${ev.expected}</td>
+                    <td style="padding: 10px 12px; font-weight: 800; color: #f3f4f6;" class="mono">${ev.actual}</td>
+                    <td style="padding: 10px 12px; font-weight: 700; color: ${surpriseColor};" class="mono">${ev.surprise}</td>
+                    <td style="padding: 10px 12px;">
+                        <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: ${impColor}; color: ${impText}; font-weight: 700;">
+                            ${ev.importance}
+                        </span>
+                    </td>
+                    <td style="padding: 10px 12px; color: var(--text-sub); white-space: nowrap;">${ev.release_date}</td>
+                    <td style="padding: 10px 14px; text-align: right;">
+                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.simulateSingleEvent('${ev.id}')" style="font-size: 11px; padding: 4px 10px; font-weight: 700;">
+                            ⚡ Simulate Shock
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    simulateSingleEvent: function(eventId) {
+        const ev = this.events.find(e => e.id === eventId);
+        if (!ev) return;
+
+        this.resetShocks(false);
+        if (ev.defaultShock) {
+            Object.assign(this.currentShocks, ev.defaultShock);
+        }
+        this.updateSliderUI();
+        this.switchSubTab('simulator');
+        showToast(`⚡ Loaded shock parameters for ${ev.name}`, 'info');
+    },
+
+    loadPreset: function(key) {
+        const p = this.presets[key];
+        if (!p) return;
+
+        this.currentShocks = { ...p.shocks };
+        this.updateSliderUI();
+        this.updateSimulationVisuals();
+        showToast(`⚡ Applied scenario: ${p.name}`, 'info');
+    },
+
+    onSliderChange: function(key, val) {
+        this.currentShocks[key] = parseFloat(val) || 0.0;
+        this.updateSliderBadge(key, this.currentShocks[key]);
+        this.updateSimulationVisuals();
+    },
+
+    updateSliderBadge: function(key, val) {
+        if (key === 'rbi_rate_bps') {
+            const el = document.getElementById('val-rbi-bps');
+            if (el) el.innerText = (val >= 0 ? '+' : '') + val + ' bps';
+        } else if (key === 'fed_rate_bps') {
+            const el = document.getElementById('val-fed-bps');
+            if (el) el.innerText = (val >= 0 ? '+' : '') + val + ' bps';
+        } else if (key === 'crude_oil_pct') {
+            const el = document.getElementById('val-oil-pct');
+            if (el) el.innerText = (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
+        } else if (key === 'cpi_inflation_pct') {
+            const el = document.getElementById('val-cpi-pct');
+            if (el) el.innerText = (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+        } else if (key === 'gdp_growth_pct') {
+            const el = document.getElementById('val-gdp-pct');
+            if (el) el.innerText = (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+        } else if (key === 'usdinr_change_pct') {
+            const el = document.getElementById('val-usdinr-pct');
+            if (el) el.innerText = (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+        }
+    },
+
+    updateSliderUI: function() {
+        const s = this.currentShocks;
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        };
+        setVal('slider-rbi-bps', s.rbi_rate_bps);
+        setVal('slider-fed-bps', s.fed_rate_bps);
+        setVal('slider-oil-pct', s.crude_oil_pct);
+        setVal('slider-cpi-pct', s.cpi_inflation_pct);
+        setVal('slider-gdp-pct', s.gdp_growth_pct);
+        setVal('slider-usdinr-pct', s.usdinr_change_pct);
+
+        this.updateSliderBadge('rbi_rate_bps', s.rbi_rate_bps);
+        this.updateSliderBadge('fed_rate_bps', s.fed_rate_bps);
+        this.updateSliderBadge('crude_oil_pct', s.crude_oil_pct);
+        this.updateSliderBadge('cpi_inflation_pct', s.cpi_inflation_pct);
+        this.updateSliderBadge('gdp_growth_pct', s.gdp_growth_pct);
+        this.updateSliderBadge('usdinr_change_pct', s.usdinr_change_pct);
+    },
+
+    resetShocks: function(triggerToast = true) {
+        this.currentShocks = {
+            rbi_rate_bps: 0.0,
+            fed_rate_bps: 0.0,
+            crude_oil_pct: 0.0,
+            cpi_inflation_pct: 0.0,
+            gdp_growth_pct: 0.0,
+            usdinr_change_pct: 0.0
+        };
+        this.updateSliderUI();
+        this.updateSimulationVisuals();
+        if (triggerToast) showToast('↺ Macro shocks reset to neutral baseline.', 'info');
+    },
+
+    calculateImpact: function(shocks) {
+        const rbi_bps = shocks.rbi_rate_bps || 0.0;
+        const fed_bps = shocks.fed_rate_bps || 0.0;
+        const oil_pct = shocks.crude_oil_pct || 0.0;
+        const cpi_pct = shocks.cpi_inflation_pct || 0.0;
+        const gdp_pct = shocks.gdp_growth_pct || 0.0;
+        const usdinr_pct = shocks.usdinr_change_pct || 0.0;
+
+        // 1. Nifty 50
+        const nifty = (-0.022 * rbi_bps) + (-0.014 * fed_bps) + (-0.140 * oil_pct) + (-1.400 * cpi_pct) + (2.100 * gdp_pct) + (-0.180 * usdinr_pct);
+        // 2. S&P 500
+        const sp500 = (-0.032 * fed_bps) + (-0.070 * oil_pct) + (-1.800 * cpi_pct) + (2.300 * gdp_pct) + (0.050 * usdinr_pct);
+        // 3. Crypto
+        const crypto = (-0.075 * fed_bps) + (-0.030 * rbi_bps) + (-0.150 * oil_pct) + (-2.200 * cpi_pct) + (1.500 * gdp_pct);
+        // 4. Banking
+        const rbi_bank_factor = (Math.abs(rbi_bps) <= 75) ? (0.016 * rbi_bps) : (0.016 * 75 - 0.020 * (Math.abs(rbi_bps) - 75));
+        const bank = rbi_bank_factor + (3.100 * gdp_pct) + (-1.300 * cpi_pct) + (-0.080 * oil_pct) + (-0.120 * usdinr_pct);
+        // 5. IT Services
+        const it = (-0.035 * fed_bps) + (0.850 * usdinr_pct) + (1.900 * gdp_pct) + (-0.600 * cpi_pct);
+        // 6. Energy
+        const energy = (0.420 * oil_pct) + (0.800 * gdp_pct) + (-0.008 * rbi_bps) + (0.150 * usdinr_pct);
+        // 7. Gold
+        const gold = (-0.018 * fed_bps) + (1.750 * cpi_pct) + (0.160 * oil_pct) + (0.920 * usdinr_pct) + (-0.400 * gdp_pct);
+        // 8. USD/INR
+        const usdinr = (0.010 * fed_bps) + (-0.008 * rbi_bps) + (0.110 * oil_pct) + (0.600 * cpi_pct) + (-0.400 * gdp_pct) + (1.0 * usdinr_pct);
+
+        const classifyStance = (v) => {
+            if (v >= 2.5) return 'Strongly Bullish';
+            if (v >= 0.8) return 'Moderately Bullish';
+            if (v > -0.8) return 'Neutral';
+            if (v > -2.5) return 'Moderately Bearish';
+            return 'Strongly Bearish';
+        };
+
+        const assets = [
+            { id: 'NIFTY50', name: 'Indian Equities (Nifty 50)', icon: '🇮🇳', impact_pct: Math.round(nifty * 100) / 100, stance: classifyStance(nifty), driver: 'Cost of capital discount rate & growth outlook', risk: 'FII outflows & crude import bill' },
+            { id: 'SP500', name: 'US Equities (S&P 500)', icon: '🇺🇸', impact_pct: Math.round(sp500 * 100) / 100, stance: classifyStance(sp500), driver: 'Fed funds discount rate & tech multiples', risk: 'Terminal rate expectations' },
+            { id: 'BANK_NIFTY', name: 'Banking Sector (Bank Nifty)', icon: '🏦', impact_pct: Math.round(bank * 100) / 100, stance: classifyStance(bank), driver: 'Net interest margins (NIMs) vs loan demand', risk: 'Asset quality on high borrowing costs' },
+            { id: 'NIFTY_IT', name: 'IT Services Sector', icon: '💻', impact_pct: Math.round(it * 100) / 100, stance: classifyStance(it), driver: 'USD/INR translation tailwind vs US tech capex', risk: 'US recession corporate budget cuts' },
+            { id: 'ENERGY', name: 'Energy & Oil Sector', icon: '⚡', impact_pct: Math.round(energy * 100) / 100, stance: classifyStance(energy), driver: 'Upstream crude realization per barrel', risk: 'Windfall tax & fuel price caps' },
+            { id: 'GOLD', name: 'Gold & Precious Metals', icon: '🪙', impact_pct: Math.round(gold * 100) / 100, stance: classifyStance(gold), driver: 'Inflation hedge, real yields & USD/INR price', risk: 'Spike in inflation-adjusted real yields' },
+            { id: 'CRYPTO', name: 'Cryptocurrency (BTC/ETH)', icon: '₿', impact_pct: Math.round(crypto * 100) / 100, stance: classifyStance(crypto), driver: 'Global central bank liquidity & risk appetite', risk: 'Aggressive quantitative tightening' },
+            { id: 'USDINR', name: 'Currency (USD / INR)', icon: '💵', impact_pct: Math.round(usdinr * 100) / 100, stance: usdinr > 0.5 ? 'Rupee Depreciating' : (usdinr < -0.5 ? 'Rupee Strengthening' : 'Rangebound'), driver: 'Interest rate differential & crude import bill', risk: 'RBI forex reserve defense' }
+        ];
+
+        let regime = 'Macro Neutral / Rangebound';
+        if (rbi_bps > 25 && fed_bps > 25 && cpi_pct >= 0) regime = 'Hawkish Monetary Tightening';
+        else if (rbi_bps < -25 && fed_bps < -25) regime = 'Global Liquidity Easing';
+        else if (oil_pct > 15.0 && cpi_pct > 0.8) regime = 'Cost-Push Inflationary Shock';
+        else if (gdp_pct < -0.8 && cpi_pct > 1.0) regime = 'Stagflationary Pressure';
+        else if (gdp_pct > 0.8 && Math.abs(cpi_pct) <= 0.5) regime = 'Reflationary Growth Expansion';
+
+        const nonForex = assets.filter(a => a.id !== 'USDINR');
+        const sorted = [...nonForex].sort((a, b) => b.impact_pct - a.impact_pct);
+
+        return {
+            regime: regime,
+            assets: assets,
+            topWinners: sorted.filter(a => a.impact_pct > 0).slice(0, 3),
+            topLosers: sorted.filter(a => a.impact_pct < 0).reverse().slice(0, 3)
+        };
+    },
+
+    updateSimulationVisuals: function() {
+        const result = this.calculateImpact(this.currentShocks);
+
+        // Update Regime Pill
+        const pill = document.getElementById('macro-active-regime-pill');
+        if (pill) {
+            pill.innerText = result.regime;
+            if (result.regime.includes('Hawkish') || result.regime.includes('Stagflation')) {
+                pill.style.background = 'rgba(239, 68, 68, 0.15)';
+                pill.style.color = '#f87171';
+            } else if (result.regime.includes('Easing') || result.regime.includes('Expansion')) {
+                pill.style.background = 'rgba(16, 185, 129, 0.15)';
+                pill.style.color = '#34d399';
+            } else if (result.regime.includes('Cost-Push')) {
+                pill.style.background = 'rgba(245, 158, 11, 0.15)';
+                pill.style.color = '#fbbf24';
+            } else {
+                pill.style.background = 'rgba(59, 130, 246, 0.15)';
+                pill.style.color = '#60a5fa';
+            }
+        }
+
+        // Render Visual Bars
+        const barsContainer = document.getElementById('macro-visual-bars-container');
+        if (barsContainer) {
+            // Find max absolute percentage for proportional bar width
+            const maxVal = Math.max(5.0, ...result.assets.map(a => Math.abs(a.impact_pct)));
+
+            barsContainer.innerHTML = result.assets.map(a => {
+                const isPositive = a.impact_pct >= 0;
+                const widthPct = Math.min(100, (Math.abs(a.impact_pct) / maxVal) * 50);
+                const color = a.id === 'USDINR' ? '#38bdf8' : (isPositive ? '#34d399' : '#f87171');
+                const sign = a.impact_pct > 0 ? '+' : '';
+
+                return `
+                    <div style="display: grid; grid-template-columns: 140px 1fr 65px; align-items: center; gap: 8px; font-size: 11px;">
+                        <div style="color: #f3f4f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span>${a.icon}</span> <strong>${a.id}</strong>
+                        </div>
+                        <div style="position: relative; height: 16px; background: rgba(255, 255, 255, 0.05); border-radius: 4px; overflow: hidden; display: flex; align-items: center;">
+                            <!-- Center line -->
+                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, 0.2); z-index: 2;"></div>
+                            <!-- Bar -->
+                            ${isPositive ? 
+                                `<div style="position: absolute; left: 50%; width: ${widthPct}%; height: 100%; background: ${color}; border-radius: 0 3px 3px 0; opacity: 0.85;"></div>` : 
+                                `<div style="position: absolute; right: 50%; width: ${widthPct}%; height: 100%; background: ${color}; border-radius: 3px 0 0 3px; opacity: 0.85;"></div>`
+                            }
+                        </div>
+                        <div class="mono" style="text-align: right; font-weight: 800; color: ${color};">
+                            ${sign}${a.impact_pct.toFixed(2)}%
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Top Winners & Losers
+        const winList = document.getElementById('macro-top-winners-list');
+        const loseList = document.getElementById('macro-top-losers-list');
+        if (winList) {
+            winList.innerHTML = result.topWinners.length > 0 ?
+                result.topWinners.map(w => `<span style="display: inline-block; margin-right: 8px;">${w.icon} ${w.name.split(' ')[0]} (<strong>+${w.impact_pct}%</strong>)</span>`).join('') :
+                '<span style="color: var(--text-sub);">None (Broad market headwinds)</span>';
+        }
+        if (loseList) {
+            loseList.innerHTML = result.topLosers.length > 0 ?
+                result.topLosers.map(l => `<span style="display: inline-block; margin-right: 8px;">${l.icon} ${l.name.split(' ')[0]} (<strong>${l.impact_pct}%</strong>)</span>`).join('') :
+                '<span style="color: var(--text-sub);">None (Broad market expansion)</span>';
+        }
+
+        // Detailed Matrix Table
+        const tbody = document.getElementById('macro-matrix-tbody');
+        if (tbody) {
+            tbody.innerHTML = result.assets.map(a => {
+                const isPos = a.impact_pct >= 0;
+                const badgeColor = a.id === 'USDINR' ? 'rgba(56, 189, 248, 0.2)' : (isPos ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)');
+                const textColor = a.id === 'USDINR' ? '#38bdf8' : (isPos ? '#34d399' : '#f87171');
+
+                return `
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+                        <td style="padding: 6px 10px; font-weight: 700; color: #f3f4f6;">
+                            <span>${a.icon}</span> ${a.name}
+                        </td>
+                        <td style="padding: 6px 8px; font-weight: 800; color: ${textColor};" class="mono">
+                            ${a.impact_pct > 0 ? '+' : ''}${a.impact_pct.toFixed(2)}%
+                        </td>
+                        <td style="padding: 6px 8px;">
+                            <span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: ${badgeColor}; color: ${textColor}; font-weight: 700;">
+                                ${a.stance}
+                            </span>
+                        </td>
+                        <td style="padding: 6px 10px; color: var(--text-sub);">${a.driver}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    },
+
+    switchFlowMap: function(type) {
+        this.activeFlowMap = type;
+        const btnRate = document.getElementById('btn-flow-rate');
+        const btnOil = document.getElementById('btn-flow-oil');
+        if (btnRate) btnRate.classList.toggle('active-filter', type === 'rate_hike');
+        if (btnOil) btnOil.classList.toggle('active-filter', type === 'oil_shock');
+        this.selectedFlowNode = null;
+        this.renderFlowMap();
+    },
+
+    renderFlowMap: function() {
+        const container = document.getElementById('macro-flow-diagram-container');
+        if (!container) return;
+
+        const isRate = this.activeFlowMap === 'rate_hike';
+        const steps = isRate ? [
+            { step: 1, title: 'Central Bank Policy Shock', sub: 'RBI hikes Repo by 50 bps / Fed hikes 75 bps', icon: '🏛️', detail: 'Central banks raise the policy rate to curb sticky inflation. Overnight call money and repo lending rates jump immediately, increasing funding cost for banks.' },
+            { step: 2, title: 'Commercial Lending Spreads', sub: 'Bank MCLR & deposit rates rise', icon: '🏦', detail: 'Banks pass through the hike into Marginal Cost of Funds lending rates (MCLR). Home loans, vehicle loans, and corporate working capital borrowing costs increase, dampening discretionary loan demand.' },
+            { step: 3, title: 'Corporate Multiple Compression', sub: 'DCF discount rates rise; P/E ratios contract', icon: '📉', detail: 'Higher risk-free yields directly inflate the denominator in discounted cash flow (DCF) valuation models. Fast-growing companies with distant cash flows experience aggressive P/E de-rating.' },
+            { step: 4, title: 'Currency & Capital Equilibrium', sub: 'Forex stabilization vs growth moderation', icon: '💵', detail: 'The rate hike narrows the interest rate gap with the US, checking speculative currency depreciation. Domestic equities face short-term consolidation before establishing valuation support.' }
+        ] : [
+            { step: 1, title: 'Crude Geopolitical Shock', sub: 'Brent Crude surges +25% ($75 ➔ $95)', icon: '🛢️', detail: 'Supply outages or geopolitical tensions restrict global supply. Crude futures rally sharply, impacting all petroleum-consuming economies.' },
+            { step: 2, title: 'Import Bill & Trade Deficit', sub: 'Higher outflow of USD for oil imports', icon: '🚢', detail: 'Because India imports over 85% of crude requirements, the national import bill expands by ~$2.5 Billion per month for every $10/bbl price rise, putting immediate depreciation pressure on the Indian Rupee.' },
+            { step: 3, title: 'Inflation Passthrough to Margins', sub: 'Diesel freight costs elevate CPI & reduce margins', icon: '📈', detail: 'Higher freight and petrochemical feedstock costs depress operating margins for automotive, paint, logistics, and FMCG manufacturers, while headline retail CPI inflation rises.' },
+            { step: 4, title: 'Asset Reallocation & Winners', sub: 'Energy & Gold gain; Rate-sensitives lag', icon: '⚡', detail: 'Capital shifts into upstream energy producers (ONGC, Oil India) and inflation-hedges (Gold bullion), while consumer discretionary and transportation sectors face multiple compression.' }
+        ];
+
+        container.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+                ${steps.map((st, i) => `
+                    <div class="ca-card" onclick="ChronosMacroSimulator.onFlowNodeClick(${st.step})" style="cursor: pointer; padding: 12px; background: ${this.selectedFlowNode === st.step ? 'rgba(124, 58, 237, 0.2)' : 'var(--bg-card)'}; border-color: ${this.selectedFlowNode === st.step ? '#a78bfa' : 'var(--border)'};">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                            <span style="font-size: 16px;">${st.icon}</span>
+                            <span style="font-size: 10px; font-weight: 800; color: #a78bfa; background: rgba(139, 92, 246, 0.15); padding: 1px 6px; border-radius: 4px;">Step ${st.step}</span>
+                        </div>
+                        <div style="font-weight: 800; font-size: 12px; color: #f3f4f6; margin-bottom: 2px;">${st.title}</div>
+                        <div style="font-size: 10px; color: var(--text-sub); line-height: 1.3;">${st.sub}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    },
+
+    onFlowNodeClick: function(stepNum) {
+        this.selectedFlowNode = stepNum;
+        this.renderFlowMap();
+
+        const box = document.getElementById('macro-node-detail-box');
+        if (!box) return;
+
+        const isRate = this.activeFlowMap === 'rate_hike';
+        const details = isRate ? {
+            1: { title: 'Step 1: Interbank Liquidity & Repo Rates', text: 'When the RBI raises the Repo Rate, commercial banks pay more to borrow reserves overnight. Interbank call rates (MIBOR) jump immediately. The sovereign bond yield curve shifts upward, causing mark-to-market losses on bank treasury bond holdings.' },
+            2: { title: 'Step 2: Commercial Credit & Cost of Funds', text: 'Banks adjust the Marginal Cost of Funds Based Lending Rate (MCLR) and External Benchmark Lending Rate (EBLR). Floating-rate home loans and working capital credit see interest rates adjust higher. Initial bank net interest margins (NIMs) expand, but high rates eventually dampen retail loan growth.' },
+            3: { title: 'Step 3: Equity Multiple De-rating & PE Compression', text: 'The Weighted Average Cost of Capital (WACC) rises for all corporations. Institutional equity analysts increase their discount rate assumptions in DCF models. High-PE tech and consumer growth equities de-rate as the value of future earnings is discounted more heavily.' },
+            4: { title: 'Step 4: Foreign Exchange & Macro Equilibrium', text: 'By defending the interest rate differential against the US Federal Reserve, the rate hike prevents speculative currency depreciation and capital outflows. Once market participants price in the peak terminal rate, equities establish a durable foundation.' }
+        } : {
+            1: { title: 'Step 1: Crude Oil Commodity Shock', text: 'Crude supply disruptions immediately raise spot and futures prices for Brent crude. Global refiners face higher acquisition costs, and commodity trading desks bid up energy derivatives.' },
+            2: { title: 'Step 2: Trade Deficit & Currency Pressure', text: 'India imports ~85% of its crude requirements and ~50% of natural gas. Every $10/bbl surge in crude prices expands the annual Current Account Deficit by approximately $14-15 Billion, creating structural dollar demand that pressures the USD/INR exchange rate higher.' },
+            3: { title: 'Step 3: Input Cost Squeeze on Non-Energy Sectors', text: 'Crude derivatives are primary feedstocks for petrochemicals, plastics, paints, tires, and packaging. Elevated diesel costs increase nationwide logistics expenses, compressing operating profit margins for consumer, aviation, and manufacturing companies.' },
+            4: { title: 'Step 4: Sectoral Divergence (Winners vs Losers)', text: 'Upstream exploration and production companies (ONGC, Oil India) enjoy expanded realizations per barrel. Safe-haven assets like physical gold gain from inflation-hedging demand. Rate-sensitive equities (auto, consumer discretionary) face multiple headwinds.' }
+        };
+
+        const d = details[stepNum] || details[1];
+        box.innerHTML = `
+            <div style="font-weight: 800; color: #a78bfa; margin-bottom: 4px;">${d.title}</div>
+            <div style="color: #f3f4f6; line-height: 1.5;">${d.text}</div>
+        `;
+    },
+
+    promptSaveScenario: function() {
+        const name = prompt('Enter a name for this custom macroeconomic scenario:', 'Custom Macro Shock ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        if (!name) return;
+
+        const list = this.getSavedScenarios();
+        const newScenario = {
+            id: 'SC-' + Date.now(),
+            name: name,
+            description: `RBI: ${this.currentShocks.rbi_rate_bps} bps | Fed: ${this.currentShocks.fed_rate_bps} bps | Oil: ${this.currentShocks.crude_oil_pct}% | CPI: ${this.currentShocks.cpi_inflation_pct}%`,
+            shocks: { ...this.currentShocks }
+        };
+
+        list.push(newScenario);
+        this.saveScenariosList(list);
+        showToast(`💾 Scenario "${name}" saved to comparison workbench!`, 'success');
+        this.renderComparisonWorkbench();
+    },
+
+    resetSavedScenarios: function() {
+        if (!confirm('Restore default macroeconomic scenarios? Custom saved scenarios will be cleared.')) return;
+        localStorage.removeItem(this.getStorageKey());
+        showToast('↺ Restored default preset scenarios.', 'info');
+        this.renderComparisonWorkbench();
+    },
+
+    deleteScenario: function(id) {
+        let list = this.getSavedScenarios();
+        list = list.filter(s => s.id !== id);
+        this.saveScenariosList(list);
+        showToast('Scenario deleted.', 'info');
+        this.renderComparisonWorkbench();
+    },
+
+    loadSavedScenarioIntoSimulator: function(id) {
+        const list = this.getSavedScenarios();
+        const sc = list.find(s => s.id === id);
+        if (!sc) return;
+
+        this.currentShocks = { ...sc.shocks };
+        this.updateSliderUI();
+        this.updateSimulationVisuals();
+        this.switchSubTab('simulator');
+        showToast(`⚡ Loaded "${sc.name}" into simulator!`, 'info');
+    },
+
+    renderComparisonWorkbench: function() {
+        const tbody = document.getElementById('macro-comparison-tbody');
+        const divSummary = document.getElementById('macro-divergence-summary');
+        if (!tbody) return;
+
+        const list = this.getSavedScenarios();
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" style="padding: 20px; text-align: center; color: var(--text-sub);">No saved scenarios found. Click "Save to Workbench" in the simulator to add scenarios.</td></tr>`;
+            return;
+        }
+
+        const evaluated = list.map(sc => {
+            const impact = this.calculateImpact(sc.shocks);
+            const aMap = {};
+            impact.assets.forEach(a => aMap[a.id] = a.impact_pct);
+            return {
+                id: sc.id,
+                name: sc.name,
+                description: sc.description,
+                shocks: sc.shocks,
+                regime: impact.regime,
+                assets: aMap
+            };
+        });
+
+        tbody.innerHTML = evaluated.map(sc => {
+            const getValCell = (val) => {
+                const isPos = val >= 0;
+                const color = isPos ? '#34d399' : '#f87171';
+                return `<td style="padding: 8px 10px; font-weight: 700; color: ${color};" class="mono">${val > 0 ? '+' : ''}${val.toFixed(2)}%</td>`;
+            };
+
+            return `
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+                    <td style="padding: 8px 12px;">
+                        <div style="font-weight: 800; color: #f3f4f6;">${sc.name}</div>
+                        <div style="font-size: 10px; color: #a78bfa;">${sc.regime}</div>
+                    </td>
+                    <td style="padding: 8px 10px; color: var(--text-sub); font-size: 10px;">${sc.description}</td>
+                    ${getValCell(sc.assets['NIFTY50'] || 0)}
+                    ${getValCell(sc.assets['SP500'] || 0)}
+                    ${getValCell(sc.assets['BANK_NIFTY'] || 0)}
+                    ${getValCell(sc.assets['NIFTY_IT'] || 0)}
+                    ${getValCell(sc.assets['ENERGY'] || 0)}
+                    ${getValCell(sc.assets['GOLD'] || 0)}
+                    ${getValCell(sc.assets['CRYPTO'] || 0)}
+                    <td style="padding: 8px 10px; text-align: right; white-space: nowrap;">
+                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.loadSavedScenarioIntoSimulator('${sc.id}')" style="font-size: 10px; padding: 2px 6px; font-weight: 700;">Open</button>
+                        <button type="button" class="btn btn-secondary" onclick="ChronosMacroSimulator.deleteScenario('${sc.id}')" style="font-size: 10px; padding: 2px 6px; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">✕</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        // Calculate divergence across scenarios
+        if (divSummary && evaluated.length > 1) {
+            const keys = ['NIFTY50', 'SP500', 'BANK_NIFTY', 'NIFTY_IT', 'ENERGY', 'GOLD', 'CRYPTO'];
+            let maxSpread = 0;
+            let highestSpreadAsset = 'NIFTY50';
+
+            keys.forEach(k => {
+                const vals = evaluated.map(e => e.assets[k] || 0);
+                const spread = Math.max(...vals) - Math.min(...vals);
+                if (spread > maxSpread) {
+                    maxSpread = spread;
+                    highestSpreadAsset = k;
+                }
+            });
+
+            divSummary.innerHTML = `
+                Across your <strong>${evaluated.length}</strong> evaluated scenarios, 
+                <strong style="color: #fbbf24;">${highestSpreadAsset}</strong> exhibits the highest cross-scenario divergence with an outcome spread of <strong style="color: #34d399;">${maxSpread.toFixed(2)}%</strong> between best-case and worst-case macroeconomic regimes.
+                High-beta assets (Crypto and Tech IT) show the greatest sensitivity to global monetary policy shifts.
+            `;
+        }
+    },
+
+    renderLearningMode: function() {
+        const grid = document.getElementById('macro-learning-grid');
+        if (!grid) return;
+
+        const modules = [
+            {
+                title: '🏛️ Central Bank Interest Rates (Repo & Fed Funds)',
+                subtitle: 'The Core Anchor of Global Asset Valuations',
+                meaning: 'The interest rate at which commercial banks borrow short-term money from the central bank. It establishes the baseline cost of credit for the entire financial system.',
+                why: 'Central banks raise rates to cool overheating demand and curb inflation; they lower rates to stimulate borrowing, investment, and job creation during economic slowdowns.',
+                effect: 'Rate hikes increase debt service costs for home buyers and businesses, and raise the discount rate used to value future equity cash flows, exerting downward pressure on equity multiples.',
+                example: 'In 2022-2023, the US Federal Reserve raised rates from 0.25% to 5.50% to fight 9% inflation. High-valuation tech stocks contracted 30%+ before stabilizing as inflation receded.'
+            },
+            {
+                title: '📈 Inflation Dynamics (CPI & Cost-Push Spikes)',
+                subtitle: 'Purchasing Power Erosion & Policy Headwinds',
+                meaning: 'Consumer Price Index (CPI) tracks the weighted average percentage price change of a representative basket of consumer goods and services (food, housing, transport).',
+                why: 'Mild inflation (2-4%) is healthy for an expanding economy, but rapid unexpected inflation destroys real wages, increases input costs for firms, and forces aggressive central bank rate hikes.',
+                effect: 'Headline inflation hurts consumer discretionary stocks (autos, retail) because families spend more on essential groceries and fuel, leaving less for non-essentials.',
+                example: 'When crude oil and food commodities surged in early 2022, India\'s CPI touched 7.79%, prompting the RBI to deliver unscheduled rate hikes totaling 250 bps.'
+            },
+            {
+                title: '🏭 Gross Domestic Product (Real GDP Growth)',
+                subtitle: 'The Fundamental Engine of Corporate Earnings',
+                meaning: 'The total monetary value of all finished goods and services produced within a nation over a quarter or year, adjusted for inflation.',
+                why: 'GDP measures economic health and prosperity. Rising GDP indicates robust industrial production, steady business profits, and growing employment.',
+                effect: 'Every 1% acceleration in real GDP typically translates to 2.5% - 4.0% growth in corporate earnings for cyclicals like banks, infrastructure, capital goods, and cement.',
+                example: 'India\'s real GDP expanded by 8.2% in FY 2023-24, fueling record capital expenditure by corporations and driving the Nifty 50 to all-time highs.'
+            },
+            {
+                title: '🛢️ Crude Oil & Commodities Vulnerability',
+                subtitle: 'The Lifeline of Transportation & Petchem Margins',
+                meaning: 'Crude oil is the world\'s most actively traded commodity, serving as fuel for transport, power, and raw feedstock for plastics, paints, chemicals, and fertilizers.',
+                why: 'India imports approximately 85% of its crude requirements. An oil price surge immediately widens the national trade deficit and drains foreign exchange reserves.',
+                effect: 'Higher crude benefits upstream exploration companies (ONGC, Oil India) while compressing profit margins for airlines (IndiGo), paint companies (Asian Paints), and tire makers.',
+                example: 'A $10/barrel jump in crude prices widens India\'s Current Account Deficit (CAD) by ~$15 Billion and adds roughly 0.5% to domestic headline retail inflation.'
+            },
+            {
+                title: '💵 Currency Dynamics (USD / INR & Dollar Index DXY)',
+                subtitle: 'Capital Inflows, Importers vs Exporters',
+                meaning: 'The exchange rate measures how many Indian Rupees are required to purchase one US Dollar. The US Dollar Index (DXY) measures the dollar against major world currencies.',
+                why: 'Currency values shift based on interest rate differentials, trade balances, inflation disparities, and foreign institutional investor (FII) equity portfolio flows.',
+                effect: 'A weaker rupee increases the landed cost of imported electronics and crude oil, but provides an immediate revenue translation boost to export-heavy IT software services and pharma.',
+                example: 'Indian IT firms (TCS, Infosys) bill ~60% of their revenues in US Dollars but pay software engineer salaries in Rupees. A 1% rupee depreciation expands operating margins by ~30-40 bps.'
+            },
+            {
+                title: '📖 Macroeconomic Terminology Glossary',
+                subtitle: 'Essential Concepts Every Trader Must Understand',
+                meaning: 'Key terms used by central bankers, institutional economists, and global macro portfolio managers.',
+                why: 'Understanding financial terminology allows traders to interpret FOMC statements, RBI policy resolutions, and bond yield curve movements accurately.',
+                effect: 'Enables rational risk management rather than emotional overreaction to economic headlines.',
+                example: '• Hawkish: Prioritizing inflation control via rate hikes.\n• Dovish: Prioritizing growth and employment via rate cuts.\n• Stagflation: Toxic mix of stagnant GDP growth and high inflation.\n• Yield Curve Inversion: Short-term yields exceeding long-term yields, historically signaling an upcoming recession.'
+            }
+        ];
+
+        grid.innerHTML = modules.map(m => `
+            <div class="ca-card">
+                <div style="font-size: 14px; font-weight: 800; color: #a78bfa; margin-bottom: 2px;">${m.title}</div>
+                <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 12px; font-weight: 600;">${m.subtitle}</div>
+
+                <div style="font-size: 11px; line-height: 1.5; color: #d1d5db; margin-bottom: 10px;">
+                    <strong style="color: #f3f4f6;">What it means:</strong> ${m.meaning}
+                </div>
+
+                <div style="font-size: 11px; line-height: 1.5; color: #d1d5db; margin-bottom: 10px;">
+                    <strong style="color: #60a5fa;">Why investors watch it:</strong> ${m.why}
+                </div>
+
+                <div style="font-size: 11px; line-height: 1.5; color: #d1d5db; margin-bottom: 10px;">
+                    <strong style="color: #34d399;">Market transmission:</strong> ${m.effect}
+                </div>
+
+                <div style="background: #090d16; border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; line-height: 1.4; color: #94a3b8; white-space: pre-line;">
+                    <strong style="color: #fbbf24;">Real-World Case Study:</strong>\n${m.example}
+                </div>
+            </div>
+        `).join('');
+    }
+};
+
+function initMacroSimulatorView() {
+    ChronosMacroSimulator.init();
+}
+
 
 
 
