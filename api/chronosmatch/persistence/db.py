@@ -306,6 +306,22 @@ class Database:
                     PRIMARY KEY (email, id),
                     FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
                 );
+                CREATE TABLE IF NOT EXISTS surveillance_investigations (
+                    investigation_id TEXT PRIMARY KEY,
+                    alert_id TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    primary_pattern TEXT NOT NULL,
+                    rule_id TEXT NOT NULL,
+                    severity TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'NEW',
+                    detected_at TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    notes TEXT,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
+                );
+
 
             """)
 
@@ -1294,4 +1310,90 @@ class Database:
 
 
 # Global default instance
+
+    def save_surveillance_investigation(self, email: str, data: dict) -> dict:
+        """Save or update an investigation record for a user."""
+        email = email.strip().lower()
+        inv_id = data.get("investigation_id") or f"INV-2026-{uuid.uuid4().hex[:6].upper()}"
+        alert_id = data.get("alert_id") or f"ALT-2026-{uuid.uuid4().hex[:4].upper()}"
+        symbol = data.get("symbol", "RELIANCE")
+        pattern = data.get("primary_pattern", "Unknown")
+        rule_id = data.get("rule_id", "RULE-01")
+        severity = data.get("severity", "WARNING")
+        status = data.get("status", "NEW")
+        detected_at = data.get("detected_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        notes = data.get("notes", "")
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO surveillance_investigations (investigation_id, alert_id, email, symbol, primary_pattern, rule_id, severity, status, detected_at, payload_json, notes, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                "ON CONFLICT(investigation_id) DO UPDATE SET status = excluded.status, notes = excluded.notes, updated_at = excluded.updated_at",
+                (inv_id, alert_id, email, symbol, pattern, rule_id, severity, status, detected_at, json.dumps(data), notes, now),
+            )
+            conn.commit()
+
+        return {
+            "investigation_id": inv_id,
+            "alert_id": alert_id,
+            "status": status,
+            "updated_at": now,
+        }
+
+    def get_surveillance_investigations(self, email: str) -> list:
+        """Retrieve all surveillance investigations for a user."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT investigation_id, alert_id, email, symbol, primary_pattern, rule_id, severity, status, detected_at, payload_json, notes, updated_at "
+                "FROM surveillance_investigations WHERE email = ? ORDER BY detected_at DESC",
+                (email,),
+            )
+            rows = cursor.fetchall()
+            results = []
+            for r in rows:
+                payload = {}
+                try:
+                    payload = json.loads(r["payload_json"])
+                except Exception:
+                    pass
+                results.append({
+                    "investigation_id": r["investigation_id"],
+                    "alert_id": r["alert_id"],
+                    "email": r["email"],
+                    "symbol": r["symbol"],
+                    "primary_pattern": r["primary_pattern"],
+                    "rule_id": r["rule_id"],
+                    "severity": r["severity"],
+                    "status": r["status"],
+                    "detected_at": r["detected_at"],
+                    "payload": payload,
+                    "notes": r["notes"],
+                    "updated_at": r["updated_at"],
+                })
+            return results
+
+    def update_surveillance_investigation_status(self, email: str, investigation_id: str, new_status: str, notes: str = None) -> bool:
+        """Update workflow status of an investigation."""
+        email = email.strip().lower()
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if notes is not None:
+                cursor.execute(
+                    "UPDATE surveillance_investigations SET status = ?, notes = ?, updated_at = ? WHERE email = ? AND investigation_id = ?",
+                    (new_status, notes, now, email, investigation_id),
+                )
+            else:
+                cursor.execute(
+                    "UPDATE surveillance_investigations SET status = ?, updated_at = ? WHERE email = ? AND investigation_id = ?",
+                    (new_status, now, email, investigation_id),
+                )
+            conn.commit()
+            return cursor.rowcount > 0
+
+
 db = Database()

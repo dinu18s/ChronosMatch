@@ -125,6 +125,32 @@
   - **Macro Learning Academy**:
     - Comprehensive educational guides covering Central Bank Interest Rates, Inflation Dynamics, GDP Growth, Crude Oil Vulnerabilities, Currency Mechanics, and a beginner-friendly Macro Glossary.
 
+- **🛡️ Market Surveillance & Fraud Detection Lab**:
+  > **REGULATORY DISCLAIMER:** All surveillance telemetry alerts, participant identifiers, and market manipulation scenarios are **simulated for educational financial integrity training**. Findings represent deterministic mathematical pattern matching against simulated market microstructure events and do not constitute real-world legal accusations.
+  - **Surveillance Control Center**:
+    - Live dashboard tracking total market events monitored, suspicious alerts flagged, active investigations under review, resolved dockets, and benchmark detection accuracy (98.6%).
+    - Real-time simulated telemetry feed streaming order entries, cancels, executions, and volume spikes with severity classifications (`CRITICAL`, `HIGH`, `WARNING`, `BENIGN`).
+    - One-click "Investigate" action to route any live event directly into the investigation workspace.
+  - **Suspicious Activity Detection Engines**:
+    - **Spoofing (`SPOOF-01`)**: Large non-bona fide orders placed to create misleading supply/demand, rapidly cancelled prior to execution (Order Size Ratio >= 3.0x, Cancel Latency <= 1,500ms, Fill Rate <= 5.0%).
+    - **Order Book Layering (`LAYER-02`)**: Laddered multi-tier quotes entered across depth levels with high cancellation rate while trading on the contra-side (Stacked Tiers >= 3, Cancel Rate >= 80%).
+    - **Wash Trading (`WASH-03`)**: Circular matched trades executed between coordinated sub-accounts with near-zero change in beneficial ownership or net delta (Round Trips >= 2, Net Delta <= 5%, Price Variance <= 0.20%).
+    - **Pump and Dump (`PUMP-04`)**: Rapid artificial price markup followed by heavy distribution and liquidity withdrawal (Price Runup >= 8%, Reversal >= 70% within 300s).
+    - **Unusual Volume (`VOL-05`)**: Trading volume surges exceeding rolling 20-period moving average baseline without depth absorption (Volume Multiplier >= 4.0x).
+    - **Abnormal Price Movement (`PRICE-06`)**: Sudden volatility bursts exceeding 3 standard deviations in ultra-short intervals (Sigma Deviation >= 3.0 within 30s).
+  - **Investigation Workspace & Traceable Audit Trail**:
+    - Interactive docket management with workflow statuses: `NEW`, `UNDER_REVIEW`, `FALSE_POSITIVE`, `CONFIRMED_SIMULATION`, and `RESOLVED`.
+    - **Explainable Detection Engine**: 6 structured behavioral questions answering what was detected, which rule was triggered, supporting evidence, microstructural impact, required corroboration, and false positive risks.
+    - Chronological reconstruction timeline with sub-second timestamps (`T+000ms`, `T+140ms`, `T+280ms`).
+    - Exchange audit trail table with order IDs, timestamps, accounts, sides, prices, quantities, and order lifecycle states.
+    - Interactive microstructure evidence bar charts comparing observed ratios against exchange thresholds.
+  - **Downloadable Reports & Compliance Dossiers**:
+    - RFC 4180 CSV export containing case metadata, order logs, and timeline steps.
+    - Print-friendly compliance dossier view with one-click browser print integration.
+  - **Surveillance Academy & Investigator Challenges**:
+    - 4 in-depth lessons covering Surveillance Fundamentals, Order Book Deception, Wash Trading, and the False Positive Dilemma.
+    - 5 interactive case study challenges (Beginner to Advanced) scoring points for evidence-based decisions and false-positive discernment (up to 720 points).
+
 
 
 ---

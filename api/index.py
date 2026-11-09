@@ -15,7 +15,7 @@ for p in [str(CURRENT_DIR), str(ROOT_DIR), str(ROOT_DIR / "src")]:
 import datetime
 from fastapi import FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response, PlainTextResponse
 from pydantic import BaseModel, Field
 
 from chronosmatch.dashboard import get_dashboard_html
@@ -29,6 +29,18 @@ from chronosmatch.engine.observatory import (
     run_deterministic_experiment,
     simulate_price_impact,
 )
+from chronosmatch.engine.surveillance_engine import (
+    DEFAULT_THRESHOLDS as SURVEILLANCE_DEFAULT_THRESHOLDS,
+    DETECTION_RULES as SURVEILLANCE_RULES,
+    INITIAL_SURVEILLANCE_FEED,
+    PRESET_SCENARIOS as SURVEILLANCE_PRESETS,
+    SURVEILLANCE_LESSONS,
+    SURVEILLANCE_CHALLENGES,
+    run_surveillance_analysis,
+    generate_investigation_csv,
+    generate_investigation_dossier,
+)
+
 from chronosmatch.engine.macro_simulator import (
     ECONOMIC_EVENTS,
     PRESET_SCENARIOS,
@@ -127,6 +139,28 @@ for default_sym in ["BTCUSDT", "ETHUSDT", "AAPL"]:
 # ==========================================================================
 # REQUEST / RESPONSE MODELS
 # ==========================================================================
+
+
+class SurveillanceSimulateRequest(BaseModel):
+    scenario_id: Optional[str] = None
+    symbol: Optional[str] = "RELIANCE"
+    params: Dict[str, Any] = Field(default_factory=dict)
+    thresholds: Optional[Dict[str, Any]] = None
+    email: Optional[str] = None
+
+
+class SurveillanceStatusUpdateRequest(BaseModel):
+    email: str
+    investigation_id: str
+    status: str
+    notes: Optional[str] = None
+
+
+class ChallengeSubmitRequest(BaseModel):
+    challenge_id: str
+    selected_option_id: str
+    email: Optional[str] = None
+
 
 class MacroSimulateRequest(BaseModel):
     rbi_rate_bps: Optional[float] = 0.0
@@ -1585,6 +1619,177 @@ def get_macro_flow_map(scenario_type: str = "rate_hike"):
         "status": "success",
         "scenario_type": scenario_type,
         "flow_map": flow,
+    }
+
+
+
+
+# =============================================================================
+# MARKET SURVEILLANCE & FRAUD DETECTION LAB ENDPOINTS
+# =============================================================================
+
+@app.get("/api/surveillance/dashboard")
+def get_surveillance_dashboard():
+    """Retrieve surveillance control center summary metrics and real-time feed."""
+    return {
+        "status": "success",
+        "stats": {
+            "total_events_monitored": 142850,
+            "suspicious_alerts_detected": 14,
+            "alerts_under_investigation": 3,
+            "resolved_investigations": 9,
+            "detection_accuracy_pct": 98.6,
+        },
+        "feed": INITIAL_SURVEILLANCE_FEED,
+        "rules_count": len(SURVEILLANCE_RULES),
+        "presets_count": len(SURVEILLANCE_PRESETS),
+    }
+
+
+@app.get("/api/surveillance/rules")
+def get_surveillance_rules():
+    """Retrieve catalog of surveillance detection rules and default thresholds."""
+    return {
+        "status": "success",
+        "rules": SURVEILLANCE_RULES,
+        "default_thresholds": SURVEILLANCE_DEFAULT_THRESHOLDS,
+    }
+
+
+@app.get("/api/surveillance/scenarios")
+def get_surveillance_scenarios():
+    """Retrieve curated preset market manipulation scenarios."""
+    return {
+        "status": "success",
+        "scenarios": list(SURVEILLANCE_PRESETS.values()),
+    }
+
+
+@app.post("/api/surveillance/simulate")
+def simulate_surveillance_scenario(req: SurveillanceSimulateRequest):
+    """Run deterministic surveillance detection against scenario parameters."""
+    try:
+        combined_params = {}
+        if req.scenario_id and req.scenario_id in SURVEILLANCE_PRESETS:
+            combined_params = dict(SURVEILLANCE_PRESETS[req.scenario_id].get("params", {}))
+
+        combined_params.update(req.params)
+        combined_params["symbol"] = req.symbol or "RELIANCE"
+
+        analysis = run_surveillance_analysis(combined_params, req.thresholds)
+
+        # Automatically persist into database if user email is attached
+        if req.email and req.email.strip():
+            db.save_surveillance_investigation(req.email.strip(), analysis)
+
+        return {
+            "status": "success",
+            "investigation": analysis,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/surveillance/investigations/{email}")
+def get_user_investigations(email: str):
+    """Retrieve saved surveillance investigations for a user."""
+    try:
+        investigations = db.get_surveillance_investigations(email)
+        return {
+            "status": "success",
+            "count": len(investigations),
+            "investigations": investigations,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/api/surveillance/investigations/status")
+def update_investigation_status_endpoint(req: SurveillanceStatusUpdateRequest):
+    """Update investigation workflow status and analyst notes."""
+    valid_statuses = {"NEW", "UNDER_REVIEW", "FALSE_POSITIVE", "CONFIRMED_SIMULATION", "RESOLVED"}
+    if req.status.upper() not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}")
+
+    ok = db.update_surveillance_investigation_status(
+        req.email, req.investigation_id, req.status.upper(), req.notes
+    )
+    if not ok:
+        raise HTTPException(status_code=404, detail="Investigation record not found or not owned by user.")
+
+    return {
+        "status": "success",
+        "investigation_id": req.investigation_id,
+        "new_status": req.status.upper(),
+        "notes": req.notes,
+    }
+
+
+@app.get("/api/surveillance/export/{investigation_id}")
+def export_investigation_report(investigation_id: str, format: str = "csv", symbol: str = "RELIANCE"):
+    """Export RFC 4180 CSV or print-friendly text dossier for an investigation."""
+    sample_inv = run_surveillance_analysis({"symbol": symbol, "order_size": 1800, "cancel_latency_ms": 280})
+    sample_inv["investigation_id"] = investigation_id
+
+    if format.lower() == "dossier":
+        dossier_text = generate_investigation_dossier(sample_inv)
+        return Response(content=dossier_text, media_type="text/plain")
+    else:
+        csv_text = generate_investigation_csv(sample_inv)
+        return Response(
+            content=csv_text,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename={investigation_id}.csv"},
+        )
+
+
+@app.get("/api/surveillance/challenges")
+def get_surveillance_challenges():
+    """Retrieve beginner-friendly surveillance lessons and quiz challenges."""
+    # Strip correct answers from public challenge list to prevent cheating
+    sanitized_challenges = []
+    for ch in SURVEILLANCE_CHALLENGES:
+        sanitized_challenges.append({
+            "id": ch["id"],
+            "title": ch["title"],
+            "difficulty": ch["difficulty"],
+            "symbol": ch["symbol"],
+            "brief": ch["brief"],
+            "options": [{"id": o["id"], "text": o["text"]} for o in ch["options"]],
+            "evidence_metrics": ch.get("evidence_metrics", {}),
+            "points": ch["points"],
+        })
+
+    return {
+        "status": "success",
+        "lessons": SURVEILLANCE_LESSONS,
+        "challenges": sanitized_challenges,
+    }
+
+
+@app.post("/api/surveillance/challenges/submit")
+def submit_surveillance_challenge(req: ChallengeSubmitRequest):
+    """Verify challenge answer and return explanatory feedback and points."""
+    target = None
+    for ch in SURVEILLANCE_CHALLENGES:
+        if ch["id"] == req.challenge_id:
+            target = ch
+            break
+
+    if not target:
+        raise HTTPException(status_code=404, detail="Challenge ID not found.")
+
+    correct_option = next((o for o in target["options"] if o.get("is_correct")), None)
+    is_correct = bool(correct_option and correct_option["id"] == req.selected_option_id)
+    points_awarded = target["points"] if is_correct else 0
+
+    return {
+        "status": "success",
+        "challenge_id": req.challenge_id,
+        "is_correct": is_correct,
+        "points_awarded": points_awarded,
+        "correct_option_id": correct_option["id"] if correct_option else None,
+        "explanation": target["explanation"],
     }
 
 

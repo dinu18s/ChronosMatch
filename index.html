@@ -2501,6 +2501,130 @@
             letter-spacing: 0.5px;
         }
 
+
+        /* ==========================================================================
+           CHRONOSMATCH MARKET SURVEILLANCE & FRAUD DETECTION LAB STYLES
+           ========================================================================== */
+        .surv-subnav-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: border-color 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+        }
+        .surv-subnav-btn:hover {
+            color: var(--text-main);
+        }
+        .surv-subnav-btn.active {
+            color: #f87171;
+            border-bottom-color: #f87171;
+        }
+        .surv-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .surv-feed-row {
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+        }
+        .surv-feed-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .surv-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        .surv-badge-critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .surv-badge-high {
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .surv-badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .surv-badge-benign {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .surv-q-box {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .surv-q-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #f87171;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .surv-q-text {
+            font-size: 12px;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+        .surv-timeline-item {
+            display: flex;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 16px;
+        }
+        .surv-timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .surv-timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        .surv-step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #f87171;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
 /* ==========================================================================
            CHRONOSMATCH CORPORATE ACTIONS SIMULATOR STYLES
            ========================================================================== */
@@ -2943,6 +3067,13 @@
                         </button>
                     </li>
 
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-surveillance" onclick="switchView('surveillance')">
+                            <span class="nav-icon">🛡️</span>
+                            <span class="nav-text">Surveillance & Fraud Lab</span>
+                            <span class="sidebar-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">SEC</span>
+                        </button>
+                    </li>
 <li>
                         <button type="button" class="nav-link-btn" id="nav-btn-playground" onclick="switchView('playground')">
                             <span class="nav-icon">⚡</span>
@@ -6872,7 +7003,458 @@
             </div>
 
 
-        </main>
+        
+            <!-- ==========================================================================
+                 MARKET SURVEILLANCE & FRAUD DETECTION LAB VIEW
+                 ========================================================================== -->
+            <div class="view-panel" id="view-surveillance">
+                <div class="corporate-header" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%); border-bottom: 1px solid var(--border); padding: 20px 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 24px;">🛡️</span>
+                                <h1 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;">
+                                    Market Surveillance & Fraud Detection Lab
+                                </h1>
+                                <span class="macro-badge-sample" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+                                    SIMULATED SURVEILLANCE SUITE
+                                </span>
+                            </div>
+                            <p style="font-size: 12px; color: var(--text-sub); margin-top: 4px; max-width: 820px; line-height: 1.5;">
+                                Real-time deterministic market abuse detection engine. Investigate simulated manipulative behavior, order book deception, wash trading clusters, and statistical anomalies using exchange-grade surveillance rules.
+                            </p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="font-size: 11px; padding: 6px 12px; border-radius: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #34d399; font-weight: 700;">
+                                <span id="surv-status-dot" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; margin-right: 5px;"></span>
+                                ENGINE ACTIVE (NANOSECOND AUDIT)
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.toggleFeed()" id="surv-feed-toggle-btn" style="font-size: 11px; padding: 6px 12px; font-weight: 700;">
+                                ⏸ Pause Feed
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Subnav Tabs -->
+                    <div class="surv-subnav" style="display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--border); overflow-x: auto;">
+                        <button type="button" class="surv-subnav-btn active" id="surv-tab-dashboard" onclick="ChronosSurveillanceLab.switchSubTab('dashboard')">
+                            <span>📡</span> Surveillance Control Center
+                        </button>
+                        <button type="button" class="surv-subnav-btn" id="surv-tab-scenarios" onclick="ChronosSurveillanceLab.switchSubTab('scenarios')">
+                            <span>⚡</span> Interactive Fraud Scenarios
+                        </button>
+                        <button type="button" class="surv-subnav-btn" id="surv-tab-workspace" onclick="ChronosSurveillanceLab.switchSubTab('workspace')">
+                            <span>🔍</span> Investigation Workspace
+                        </button>
+                        <button type="button" class="surv-subnav-btn" id="surv-tab-rules" onclick="ChronosSurveillanceLab.switchSubTab('rules')">
+                            <span>📋</span> Rules & Thresholds Catalog
+                        </button>
+                        <button type="button" class="surv-subnav-btn" id="surv-tab-challenges" onclick="ChronosSurveillanceLab.switchSubTab('challenges')">
+                            <span>🎓</span> Surveillance Academy & Challenges
+                        </button>
+                    </div>
+                </div>
+
+                <div style="padding: 24px;">
+
+                    <!-- 1. Surveillance Control Center Subpanel -->
+                    <div id="surv-subpanel-dashboard" class="surv-sub-panel">
+                        <!-- Metric Cards Banner -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px;">
+                            <div class="surv-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Total Events Monitored</div>
+                                <div class="mono" id="surv-metric-events" style="font-size: 22px; font-weight: 800; color: var(--text-main);">142,850</div>
+                                <div style="font-size: 10px; color: #34d399; margin-top: 4px;">● Continuous tick reconstitution</div>
+                            </div>
+                            <div class="surv-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Suspicious Activity Alerts</div>
+                                <div class="mono" id="surv-metric-alerts" style="font-size: 22px; font-weight: 800; color: #f87171;">14 Alerts</div>
+                                <div style="font-size: 10px; color: #f87171; margin-top: 4px;">▲ Flagged by deterministic rules</div>
+                            </div>
+                            <div class="surv-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Under Investigation</div>
+                                <div class="mono" id="surv-metric-review" style="font-size: 22px; font-weight: 800; color: #fbbf24;">3 Cases</div>
+                                <div style="font-size: 10px; color: #fbbf24; margin-top: 4px;">⏳ Active analyst audit</div>
+                            </div>
+                            <div class="surv-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Resolved Investigations</div>
+                                <div class="mono" id="surv-metric-resolved" style="font-size: 22px; font-weight: 800; color: #34d399;">9 Closed</div>
+                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 4px;">✔ Dockets completed</div>
+                            </div>
+                            <div class="surv-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Detection Accuracy</div>
+                                <div class="mono" id="surv-metric-accuracy" style="font-size: 22px; font-weight: 800; color: #60a5fa;">98.6%</div>
+                                <div style="font-size: 10px; color: #60a5fa; margin-top: 4px;">★ Test scenario benchmark</div>
+                            </div>
+                        </div>
+
+                        <!-- Live Streaming Surveillance Feed -->
+                        <div class="surv-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                                        <span>📡 Real-Time Surveillance Telemetry Feed</span>
+                                        <span class="macro-badge-sample" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">LIVE STREAM</span>
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                        Inspecting every order submission, cancellation, execution, and volume spike in real-time.
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.clearFeed()" style="font-size: 11px; padding: 4px 10px;">
+                                        Clear Feed
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+                                <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 11px;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid var(--border); background: #090d16; color: var(--text-sub); font-size: 10px; text-transform: uppercase;">
+                                            <th style="padding: 8px 10px;">Event ID</th>
+                                            <th style="padding: 8px 10px;">Time</th>
+                                            <th style="padding: 8px 10px;">Symbol</th>
+                                            <th style="padding: 8px 10px;">Event Type</th>
+                                            <th style="padding: 8px 10px;">Side</th>
+                                            <th style="padding: 8px 10px;">Price</th>
+                                            <th style="padding: 8px 10px;">Quantity</th>
+                                            <th style="padding: 8px 10px;">Participant ID</th>
+                                            <th style="padding: 8px 10px;">Surveillance Flag</th>
+                                            <th style="padding: 8px 10px; text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="surv-feed-tbody">
+                                        <!-- Rendered dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Educational Banner -->
+                        <div style="margin-top: 18px; background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 11px; color: var(--text-sub); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <strong style="color: var(--text-main);">Legal & Regulatory Integrity Notice:</strong> All surveillance alerts, timelines, participant IDs, and market events generated within this laboratory are simulated for educational financial integrity and research purposes.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Interactive Fraud Scenarios Subpanel -->
+                    <div id="surv-subpanel-scenarios" class="surv-sub-panel" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 320px 1fr; gap: 20px;">
+                            <!-- Left: Scenario Presets & Parameter Controls -->
+                            <div class="surv-card">
+                                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">
+                                    ⚡ Manipulative Scenario Generator
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 16px; line-height: 1.4;">
+                                    Select a curated market manipulation pattern or configure custom parameters to test the detection engine.
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;" id="surv-scenario-btn-list">
+                                    <!-- Populated via JS -->
+                                </div>
+
+                                <div style="border-top: 1px solid var(--border); padding-top: 14px; margin-top: 8px;">
+                                    <div style="font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 10px;">Adjust Parameters</div>
+
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <label class="input-label-row" style="font-size: 11px;"><span>Target Instrument</span></label>
+                                        <select class="trade-input mono" id="surv-param-symbol" onchange="ChronosSurveillanceLab.onParamChange()">
+                                            <option value="RELIANCE">RELIANCE (Reliance Industries)</option>
+                                            <option value="TCS">TCS (Tata Consultancy)</option>
+                                            <option value="INFY">INFY (Infosys Ltd)</option>
+                                            <option value="HDFCBANK">HDFCBANK (HDFC Bank)</option>
+                                            <option value="BTCUSDT">BTCUSDT (Crypto / Speculative)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <label class="input-label-row" style="font-size: 11px;">
+                                            <span>Order Size (Shares)</span>
+                                            <span class="mono" id="surv-param-size-val" style="color: #60a5fa;">1,800</span>
+                                        </label>
+                                        <input type="range" id="surv-param-size" min="100" max="10000" step="100" value="1800" oninput="ChronosSurveillanceLab.onParamChange()" style="width: 100%; accent-color: #f87171;">
+                                    </div>
+
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <label class="input-label-row" style="font-size: 11px;">
+                                            <span>Cancel Latency (ms)</span>
+                                            <span class="mono" id="surv-param-latency-val" style="color: #f87171;">280 ms</span>
+                                        </label>
+                                        <input type="range" id="surv-param-latency" min="50" max="5000" step="50" value="280" oninput="ChronosSurveillanceLab.onParamChange()" style="width: 100%; accent-color: #f87171;">
+                                    </div>
+
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <label class="input-label-row" style="font-size: 11px;">
+                                            <span>Fill Rate (%)</span>
+                                            <span class="mono" id="surv-param-fill-val" style="color: #34d399;">0.0%</span>
+                                        </label>
+                                        <input type="range" id="surv-param-fill" min="0" max="100" step="5" value="0" oninput="ChronosSurveillanceLab.onParamChange()" style="width: 100%; accent-color: #34d399;">
+                                    </div>
+
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <label class="input-label-row" style="font-size: 11px;">
+                                            <span>Depth Tiers / Ladder Levels</span>
+                                            <span class="mono" id="surv-param-tiers-val" style="color: #fbbf24;">4 Tiers</span>
+                                        </label>
+                                        <input type="range" id="surv-param-tiers" min="1" max="10" step="1" value="4" oninput="ChronosSurveillanceLab.onParamChange()" style="width: 100%; accent-color: #fbbf24;">
+                                    </div>
+
+                                    <div class="input-group" style="margin-bottom: 14px;">
+                                        <label class="input-label-row" style="font-size: 11px;">
+                                            <span>Price Runup / Sigma Shock</span>
+                                            <span class="mono" id="surv-param-price-val" style="color: #f43f5e;">+12.4%</span>
+                                        </label>
+                                        <input type="range" id="surv-param-price" min="0" max="30" step="0.5" value="12.4" oninput="ChronosSurveillanceLab.onParamChange()" style="width: 100%; accent-color: #f43f5e;">
+                                    </div>
+
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" class="btn btn-buy" onclick="ChronosSurveillanceLab.runSimulation()" style="flex: 2; font-size: 11px; padding: 10px; font-weight: 800; background: #dc2626;">
+                                            ▶ Run Surveillance Scan
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.resetParams()" style="flex: 1; font-size: 11px; padding: 10px;">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Live Diagnosis Preview & Case Summary -->
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <!-- Active Scenario Summary -->
+                                <div class="surv-card" id="surv-scenario-detail-card">
+                                    <!-- Rendered dynamically -->
+                                </div>
+
+                                <!-- Detection Result Box -->
+                                <div class="surv-card" id="surv-scenario-result-box" style="display: none;">
+                                    <!-- Populated on simulation run -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Investigation Workspace Subpanel -->
+                    <div id="surv-subpanel-workspace" class="surv-sub-panel" style="display: none;">
+                        <div class="surv-card" style="margin-bottom: 20px;">
+                            <!-- Case Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 16px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span class="mono" style="font-size: 18px; font-weight: 800; color: var(--text-main);" id="ws-case-id">INV-2026-F9821</span>
+                                        <span class="surv-badge surv-badge-critical" id="ws-severity-badge">CRITICAL</span>
+                                        <span class="macro-badge-sample" id="ws-status-badge">NEW</span>
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">
+                                        Alert Ref: <span class="mono" id="ws-alert-id">ALT-2026-8904</span> | Target: <strong id="ws-target-symbol" style="color: var(--text-main);">RELIANCE</strong> | Detected At: <span id="ws-detected-at">2026-11-09 10:14:03</span>
+                                    </div>
+                                </div>
+
+                                <!-- Status Controls & Export -->
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <label style="font-size: 11px; color: var(--text-sub); font-weight: 700;">Workflow Status:</label>
+                                        <select class="trade-input mono" id="ws-status-select" style="font-size: 11px; padding: 4px 8px; width: 170px;">
+                                            <option value="NEW">New</option>
+                                            <option value="UNDER_REVIEW">Under Review</option>
+                                            <option value="FALSE_POSITIVE">False Positive</option>
+                                            <option value="CONFIRMED_SIMULATION">Confirmed Simulation</option>
+                                            <option value="RESOLVED">Resolved</option>
+                                        </select>
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.updateStatusFromWorkspace()" style="font-size: 11px; padding: 4px 10px; font-weight: 700;">
+                                            Save Status
+                                        </button>
+                                    </div>
+
+                                    <div style="display: flex; gap: 6px;">
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.exportCsv()" style="font-size: 11px; padding: 6px 12px; font-weight: 700;">
+                                            ⬇ Download CSV
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.openDossierModal()" style="font-size: 11px; padding: 6px 12px; font-weight: 700; color: #60a5fa; border-color: rgba(96, 165, 250, 0.4);">
+                                            🖨️ View Dossier
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Explainable Detection Engine Breakdown (6 Pillars) -->
+                            <div style="margin-bottom: 24px;">
+                                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                    <span>🧠 Explainable Detection Engine: Behavioral Diagnosis & Facts</span>
+                                    <span class="macro-badge-sample" style="background: rgba(96, 165, 250, 0.15); color: #60a5fa; border-color: rgba(96, 165, 250, 0.3);">ZERO-BLACK-BOX</span>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;" id="ws-explain-grid">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Middle Split: Event Timeline & Interactive Evidence Chart -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px;">
+                                <!-- Timeline -->
+                                <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">
+                                        ⏱ Chronological Reconstruction Timeline
+                                    </div>
+                                    <div id="ws-timeline-container">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Evidence Metrics & Comparison Chart -->
+                                <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">
+                                        📊 Microstructure Evidence Comparison
+                                    </div>
+                                    <div id="ws-evidence-chart-box">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom: Traceable Order Records Audit Trail -->
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">
+                                    📑 Related Order Records & Exchange Audit Trail
+                                </div>
+                                <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+                                    <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 11px;">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid var(--border); background: #090d16; color: var(--text-sub); font-size: 10px; text-transform: uppercase;">
+                                                <th style="padding: 8px 10px;">Order ID</th>
+                                                <th style="padding: 8px 10px;">Timestamp</th>
+                                                <th style="padding: 8px 10px;">Account ID</th>
+                                                <th style="padding: 8px 10px;">Side</th>
+                                                <th style="padding: 8px 10px;">Price</th>
+                                                <th style="padding: 8px 10px;">Quantity</th>
+                                                <th style="padding: 8px 10px;">Status</th>
+                                                <th style="padding: 8px 10px;">Audit Log Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ws-orders-tbody">
+                                            <!-- Rendered dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Analyst Notes Section -->
+                            <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
+                                <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                                    📝 Surveillance Officer Log Notes
+                                </div>
+                                <textarea id="ws-analyst-notes" rows="3" style="width: 100%; background: #090d16; border: 1px solid var(--border); border-radius: 6px; padding: 10px; color: var(--text-main); font-size: 11px; font-family: var(--font-mono, monospace); resize: vertical;" placeholder="Enter investigation rationale, counterparty inquiries, or regulatory disposition..."></textarea>
+                                <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                                    <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.saveAnalystNotes()" style="font-size: 11px; padding: 6px 14px; font-weight: 700;">
+                                        💾 Save Case Notes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Rules & Thresholds Catalog Subpanel -->
+                    <div id="surv-subpanel-rules" class="surv-sub-panel" style="display: none;">
+                        <div class="surv-card" style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">
+                                        📋 Surveillance Rulebook & Threshold Configuration
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                        Deterministic mathematical parameters mapped to international market abuse regulatory frameworks (SEBI, US Dodd-Frank, EU MiFID II).
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.resetThresholds()" style="font-size: 11px; padding: 6px 12px; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+                                        ↺ Restore Defaults
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.saveCustomThresholds()" style="font-size: 11px; padding: 6px 12px; font-weight: 700; color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                                        💾 Save Rule Thresholds
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;" id="surv-rules-grid">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Surveillance Academy & Challenges Subpanel -->
+                    <div id="surv-subpanel-challenges" class="surv-sub-panel" style="display: none;">
+                        <!-- Academy Lessons -->
+                        <div class="surv-card" style="margin-bottom: 24px;">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">
+                                🎓 Market Surveillance Academy: Core Foundations
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 16px;">
+                                Master exchange surveillance techniques, order book mechanics, and how to spot fraudulent patterns without falsely accusing market makers.
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;" id="surv-lessons-grid">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Interactive Challenges -->
+                        <div class="surv-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">
+                                        🏆 Surveillance Investigator Challenges
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                        Examine real-world market scenarios, evaluate supporting evidence, identify deceptive behavior, and filter false positives.
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="surv-card" style="padding: 6px 14px; background: #090d16;">
+                                        <span style="font-size: 11px; color: var(--text-sub);">Investigator Score: </span>
+                                        <strong class="mono" id="surv-score-val" style="font-size: 14px; color: #facc15;">0</strong>
+                                        <span class="mono" style="font-size: 11px; color: var(--text-sub);"> / 720 PTS</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 16px;" id="surv-challenges-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Investigation Dossier Modal -->
+            <div class="modal-overlay" id="surv-dossier-modal" style="display: none;">
+                <div class="modal-card" style="max-width: 820px; width: 95%;">
+                    <div class="modal-card-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="modal-title">📑 Official Simulated Investigation Dossier</span>
+                        </div>
+                        <button type="button" class="modal-close-btn" onclick="ChronosSurveillanceLab.closeDossierModal()">✕</button>
+                    </div>
+
+                    <div class="modal-body" style="padding: 20px;">
+                        <pre id="surv-dossier-text" style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: var(--font-mono, monospace); font-size: 11px; color: #d1d5db; white-space: pre-wrap; line-height: 1.5; max-height: 480px; overflow-y: auto;"></pre>
+                    </div>
+
+                    <div style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 11px; color: var(--text-sub);">Print-friendly compliance document</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" onclick="window.print()" style="font-size: 11px; padding: 6px 14px; font-weight: 700;">
+                                🖨️ Print
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.closeDossierModal()" style="font-size: 11px; padding: 6px 14px;">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+</main>
     </div>
 
     <!-- ==========================================================================
@@ -7321,6 +7903,9 @@
                 initCorporateActionsView();
             } else if (viewName === 'macro') {
                 initMacroSimulatorView();
+            }
+            } else if (viewName === 'surveillance') {
+                initSurveillanceLabView();
             }
         }
 
@@ -19682,6 +20267,1114 @@ const ChronosMacroSimulator = {
 function initMacroSimulatorView() {
     ChronosMacroSimulator.init();
 }
+
+
+// =============================================================================
+// CHRONOSMATCH MARKET SURVEILLANCE & FRAUD DETECTION LAB CONTROLLER
+// =============================================================================
+
+const ChronosSurveillanceLab = {
+    activeSubTab: 'dashboard',
+    activeScenarioKey: 'SCN_SPOOFING',
+    feedPaused: false,
+    feedInterval: null,
+    userScore: 0,
+    activeInvestigation: null,
+    challengeState: {},
+
+    rules: [
+        { id: 'SPOOF-01', name: 'Spoofing Detection', pattern: 'Spoofing', severity: 'CRITICAL', reg: 'SEBI PFUTP / US Dodd-Frank Act Sec 747 / CFTC Rule 180.1', desc: 'Identifies large non-bona fide orders submitted to create false demand/supply, rapidly cancelled prior to execution.' },
+        { id: 'LAYER-02', name: 'Order Book Layering', pattern: 'Layering', severity: 'CRITICAL', reg: 'MiFID II MAR RTS 25 / SEBI Circular on Layering', desc: 'Detects multi-tier laddered orders entered on one side of book to simulate artificial depth while trading contra-side.' },
+        { id: 'WASH-03', name: 'Wash Trading & Self-Matching', pattern: 'Wash Trading', severity: 'HIGH', reg: 'Commodity Exchange Act 4c(a)(A) / SEBI Fraudulent Trade Practices', desc: 'Flags transactions executed between identical or coordinated accounts with zero net economic delta or ownership change.' },
+        { id: 'PUMP-04', name: 'Pump and Dump Scheme', pattern: 'Pump and Dump', severity: 'CRITICAL', reg: 'SEC Rule 10b-5 / SEBI Prohibition of Market Abuse Guidelines', desc: 'Detects aggressive artificial price markup driven by concentrated market orders followed by sharp distribution dumping.' },
+        { id: 'VOL-05', name: 'Unusual Volume Surge', pattern: 'Unusual Volume', severity: 'WARNING', reg: 'Exchange Surveillance SOP - Abnormal Turnover Alerts', desc: 'Surveillance trigger for trading volume spikes significantly exceeding moving baseline without depth absorption.' },
+        { id: 'PRICE-06', name: 'Abnormal Price Movement', pattern: 'Abnormal Price Movement', severity: 'WARNING', reg: 'SEBI Circuit Filter & Dynamic Price Band Guidelines', desc: 'Monitors sudden volatility bursts exceeding 3 standard deviations in ultra-short intervals, flagging sweeps or flash crashes.' }
+    ],
+
+    defaultThresholds: {
+        order_size_ratio: 3.0,
+        cancel_latency_ms: 1500,
+        fill_rate_max_pct: 5.0,
+        tier_count: 3,
+        cancel_rate_min_pct: 80.0,
+        round_trips: 2,
+        net_delta_pct: 5.0,
+        price_variance_pct: 0.20,
+        runup_pct: 8.0,
+        reversal_pct: 70.0,
+        cycle_duration_sec: 300,
+        volume_multiplier: 4.0,
+        sigma_deviation: 3.0,
+        time_window_sec: 30
+    },
+
+    scenarios: {
+        SCN_SPOOFING: {
+            id: 'SCN_SPOOFING',
+            title: 'Large Fake Bid Wall (Spoofing Attack)',
+            pattern: 'Spoofing',
+            symbol: 'RELIANCE',
+            severity: 'CRITICAL',
+            rule: 'SPOOF-01',
+            desc: 'A manipulative trader places an outsized buy order of 1,800 shares (5.5x median book depth) to create false buying pressure, waits 280ms for asks to elevate, and instantly cancels the bid while executing a contra sell.',
+            params: { size: 1800, latency: 280, fill: 0.0, tiers: 1, price: 0.45 },
+            expected: 'FLAGGED'
+        },
+        SCN_LAYERING: {
+            id: 'SCN_LAYERING',
+            title: 'Sell-Side Ladder Depth Illusion (Layering)',
+            pattern: 'Layering',
+            symbol: 'TCS',
+            severity: 'CRITICAL',
+            rule: 'LAYER-02',
+            desc: 'A trader enters 4 layered sell orders of 400 shares each across 4 consecutive price ticks above the offer. 92% of the orders are cancelled within 750ms once counterparties dump shares into their resting buy order.',
+            params: { size: 1600, latency: 750, fill: 8.0, tiers: 4, price: -0.65 },
+            expected: 'FLAGGED'
+        },
+        SCN_WASH_TRADING: {
+            id: 'SCN_WASH_TRADING',
+            title: 'Coordinated Bot Churn (Wash Trading)',
+            pattern: 'Wash Trading',
+            symbol: 'INFY',
+            severity: 'HIGH',
+            rule: 'WASH-03',
+            desc: 'Two coordinated algorithmic accounts execute 6 consecutive matched trades of 450 shares at identical prices with zero change in net inventory, fabricating 2,700 shares of artificial volume.',
+            params: { size: 450, latency: 1200, fill: 100.0, tiers: 1, price: 0.05 },
+            expected: 'FLAGGED'
+        },
+        SCN_PUMP_DUMP: {
+            id: 'SCN_PUMP_DUMP',
+            title: 'Micro-Cap Aggressive Ramp & Dump (Pump & Dump)',
+            pattern: 'Pump and Dump',
+            symbol: 'BTCUSDT',
+            severity: 'CRITICAL',
+            rule: 'PUMP-04',
+            desc: 'A syndicate executes high-frequency aggressive market buys driving price up +12.4% over 90 seconds, followed immediately by heavy sell distribution that erases 95% of the gains within 60 seconds.',
+            params: { size: 2500, latency: 3200, fill: 95.0, tiers: 2, price: 12.4 },
+            expected: 'FLAGGED'
+        },
+        SCN_UNUSUAL_VOLUME: {
+            id: 'SCN_UNUSUAL_VOLUME',
+            title: 'Isolated Volume Explosion (Abnormal Surge)',
+            pattern: 'Unusual Volume',
+            symbol: 'HDFCBANK',
+            severity: 'WARNING',
+            rule: 'VOL-05',
+            desc: 'Trading volume surges to 6.2x the 20-period rolling median within a single 5-minute interval, with 78% of the volume accounted for by a single unverified clearing participant.',
+            params: { size: 6200, latency: 2500, fill: 78.0, tiers: 1, price: 1.8 },
+            expected: 'FLAGGED'
+        },
+        SCN_ABNORMAL_PRICE: {
+            id: 'SCN_ABNORMAL_PRICE',
+            title: 'Flash Sweep Volatility Shock (Price Anomaly)',
+            pattern: 'Abnormal Price Movement',
+            symbol: 'RELIANCE',
+            severity: 'WARNING',
+            rule: 'PRICE-06',
+            desc: 'A rapid series of aggressive market orders consumes 8 levels of book depth in 12 seconds, resulting in a 4.1 sigma price divergence that triggers surveillance circuit checks.',
+            params: { size: 3000, latency: 1200, fill: 85.0, tiers: 1, price: 4.1 },
+            expected: 'FLAGGED'
+        },
+        SCN_BENIGN_MARKET_MAKER: {
+            id: 'SCN_BENIGN_MARKET_MAKER',
+            title: 'Algorithmic Market Maker Re-quoting (False Positive Benchmark)',
+            pattern: 'Benign Market Making',
+            symbol: 'TCS',
+            severity: 'BENIGN',
+            rule: 'NONE',
+            desc: 'A bona-fide market maker continuously updates bids and asks as fair-value drifts. Order sizes are normal (0.8x median) and bilateral volume is balanced with active fills. Proves false-positive immunity.',
+            params: { size: 40, latency: 450, fill: 24.0, tiers: 1, price: 0.05 },
+            expected: 'CLEARED'
+        }
+    },
+
+    lessons: [
+        {
+            id: 'LESSON-01',
+            title: 'Market Surveillance 101: Guarding Financial Integrity',
+            time: '3 min read',
+            category: 'Fundamentals',
+            summary: 'How modern exchanges monitor trillions in turnover through automated real-time surveillance, trade reconstitution, and behavioral pattern recognition.',
+            body: 'Exchange surveillance systems act as the digital radar of financial markets. Unlike traditional post-trade accounting audits that occur months later, market surveillance engines process every order submission, modification, cancellation, and execution in nanoseconds.\n\nKey Surveillance Objectives:\n1. Preserving Fair Price Discovery: Ensuring market prices reflect genuine supply and demand.\n2. Protecting Order Book Integrity: Preventing phantom liquidity designed to deceive execution algorithms.\n3. Maintaining Orderly Markets: Detecting sudden liquidity drains, abusive volatility sweeps, and runaway algorithms.\n4. Regulatory Compliance: Fulfilling statutory oversight obligations under SEBI, US SEC/CFTC, and EU MiFID II.'
+        },
+        {
+            id: 'LESSON-02',
+            title: 'Order Book Deception: Spoofing vs. Layering',
+            time: '4 min read',
+            category: 'Order Book Manipulation',
+            summary: 'Understanding non-bona fide orders, Order-to-Trade Ratios (OTR), phantom depth walls, and the mathematical signature of deceptive intent.',
+            body: 'Spoofing and Layering are predatory strategies where a participant enters orders with the predetermined intent to cancel them before execution.\n\n• Spoofing: Typically uses a single massive order positioned just outside the BBO to create immediate panic or momentum. The spoofer trades on the opposite side, then pulls the wall in milliseconds.\n\n• Layering: Stacks multiple orders across multiple price levels. By distributing volume across 3 or 4 tiers, the manipulator tricks VWAP algorithms and retail traders into believing deep institutional support exists.\n\nExchange Defense: Surveillance algorithms track Order-to-Trade Ratios (OTR) and cancellation speed distributions to differentiate manipulative patterns from genuine quoting.'
+        },
+        {
+            id: 'LESSON-03',
+            title: 'Fabricating Liquidity: Wash Trading & Circular Volume',
+            time: '4 min read',
+            category: 'Volume Manipulation',
+            summary: 'How artificial volume distorts market rankings, deceives liquidity screeners, and how counterparty cluster analysis exposes self-matching.',
+            body: 'Wash Trading involves transactions where no genuine change of beneficial ownership occurs. The buyer and seller are either the exact same legal entity, or coordinated sub-accounts operating under common control.\n\nWhy Bad Actors Wash Trade:\n• Artificial Liquidity: Pumping exchange rankings to attract retail liquidity.\n• Fee & Token Farming: Exploiting maker rebates or trading reward mechanisms.\n• Tax Manipulation: Establishing synthetic capital losses through synchronized off-market crosses.\n\nSurveillance Methods: Graph network analysis connects beneficial account IDs, shared IP ranges, funding wallets, and calculates net economic delta relative to gross turnover.'
+        },
+        {
+            id: 'LESSON-04',
+            title: 'The False Positive Dilemma: Protecting Legitimate Market Makers',
+            time: '5 min read',
+            category: 'Surveillance Ethics',
+            summary: 'Why aggressive trading is not always fraud. How surveillance analysts avoid accusing high-frequency market makers and arbitrageurs.',
+            body: 'A critical danger in financial surveillance is the \'False Positive\' trap—misidentifying lawful, beneficial market-making activities as malicious market abuse.\n\nLegitimate High-Cancellation Scenarios:\n• Market Makers: Constantly cancel and replace quotes hundreds of times per second as underlying asset prices drift.\n• Latency Arbitrage: Algorithmic traders pulling resting quotes when external reference prices shift.\n• Iceberg Orders: Large institutional orders executing in small visible slices.\n\nSurveillance Rule of Law: Every alert must provide multi-dimensional corroborating evidence—not just a high cancellation rate, but proof of asymmetric contra-side execution or self-matching benefits.'
+        }
+    ],
+
+    challenges: [
+        {
+            id: 'CHALLENGE-01',
+            title: 'Case #101: The Disappearing Bid Wall',
+            difficulty: 'BEGINNER',
+            points: 100,
+            symbol: 'RELIANCE',
+            brief: 'At 11:02:14.210, a buy order for 2,500 shares (7.2x average depth) is posted at ₹1,182.90. At 11:02:14.390 (180ms later), the trader executes an aggressive market sell of 300 shares at ₹1,183.10. At 11:02:14.410, the 2,500-share bid order is completely cancelled with 0 fills.',
+            options: [
+                { id: 'A', text: 'Spoofing (SPOOF-01)', correct: true },
+                { id: 'B', text: 'Wash Trading (WASH-03)', correct: false },
+                { id: 'C', text: 'Legitimate Market Making (Benign)', correct: false },
+                { id: 'D', text: 'Abnormal Price Volatility (PRICE-06)', correct: false }
+            ],
+            evidence: 'Order Size: 7.2x depth | Cancel Latency: 200ms | Fill Rate: 0.0% | Contra Execution: YES',
+            explanation: 'This is textbook Spoofing. The massive bid was posted to create false upward momentum, allowing the trader to exit their sell at an inflated price before pulling the fake wall.'
+        },
+        {
+            id: 'CHALLENGE-02',
+            title: 'Case #102: The Synchronized Bots',
+            difficulty: 'INTERMEDIATE',
+            points: 120,
+            symbol: 'INFY',
+            brief: 'Between 14:10:00 and 14:12:00, Account A and Account B execute 8 matched trades of exactly 500 shares each at ₹1,825.00. Account A sells to Account B, and within 4 seconds, Account B sells back to Account A at the same price. Net inventory change after 4,000 shares traded is exactly 0.',
+            options: [
+                { id: 'A', text: 'Order Book Layering (LAYER-02)', correct: false },
+                { id: 'B', text: 'Wash Trading (WASH-03)', correct: true },
+                { id: 'C', text: 'Pump and Dump (PUMP-04)', correct: false },
+                { id: 'D', text: 'Routine Algorithmic TWAP (Benign)', correct: false }
+            ],
+            evidence: 'Net Inventory Delta: 0 | Matched Round Trips: 8 | Price Delta: 0.00% | Fabricated Volume: 4,000',
+            explanation: 'This represents circular Wash Trading. The matched round-trips generated 4,000 shares of artificial volume with zero economic risk and no change in beneficial ownership.'
+        },
+        {
+            id: 'CHALLENGE-03',
+            title: 'Case #103: The Sell-Side Staircase',
+            difficulty: 'INTERMEDIATE',
+            points: 140,
+            symbol: 'TCS',
+            brief: 'A trader enters 4 limit sell orders of 350 shares each at ₹3,481, ₹3,482, ₹3,483, and ₹3,484. Together they represent 80% of visible offer depth. 600ms later, the trader resting buy order of 800 shares at ₹3,478 fills completely. Immediately after the buy fills, all 4 sell orders are cancelled simultaneously.',
+            options: [
+                { id: 'A', text: 'Order Book Layering (LAYER-02)', correct: true },
+                { id: 'B', text: 'Spoofing (SPOOF-01)', correct: false },
+                { id: 'C', text: 'Unusual Volume Surge (VOL-05)', correct: false },
+                { id: 'D', text: 'Index Arbitrage Rebalance (Benign)', correct: false }
+            ],
+            evidence: 'Stacked Tiers: 4 | Cancellation Rate: 100.0% | Contra Fill: YES (800 bought at discount)',
+            explanation: 'This is Order Book Layering. By stacking 4 tiers of fake sell orders, the trader created artificial downward pressure, pushing sellers down to fill their resting buy order before cancelling the ladder.'
+        },
+        {
+            id: 'CHALLENGE-04',
+            title: 'Case #104: The Telegram Rocket',
+            difficulty: 'ADVANCED',
+            points: 160,
+            symbol: 'BTCUSDT',
+            brief: 'A speculative token surges +16.8% in 2 minutes as automated buy sweeps consume thin liquidity. Social media channels report sudden hype. Exactly 45 seconds after reaching peak price, two primary wallets dump massive market sell orders, collapsing the price by -92% and leaving retail buyers stranded.',
+            options: [
+                { id: 'A', text: 'Wash Trading (WASH-03)', correct: false },
+                { id: 'B', text: 'Pump and Dump Scheme (PUMP-04)', correct: true },
+                { id: 'C', text: 'Order Book Layering (LAYER-02)', correct: false },
+                { id: 'D', text: 'Normal Volatility Breakout (Benign)', correct: false }
+            ],
+            evidence: 'Markup Runup: +16.8% | Reversal Dump: -92.0% | Cycle Duration: 165s | Distributing Wallets: 2',
+            explanation: 'Classic Pump and Dump scheme. An orchestrated markup pumped the price to lure in breakout buyers, followed by immediate exit dumping that exhausted market liquidity.'
+        },
+        {
+            id: 'CHALLENGE-05',
+            title: 'Case #105: The Accused Market Maker',
+            difficulty: 'ADVANCED',
+            points: 200,
+            symbol: 'HDFCBANK',
+            brief: 'During a volatile morning session, Account MM-1 cancels and replaces orders 450 times in 30 seconds. Average cancellation latency is 350ms, resulting in an Order-to-Trade Ratio (OTR) of 18:1. However, order sizes average 25 shares (0.5x median book size), orders are placed equally on both Bids and Asks, and MM-1 provided ₹4.2 Lakhs of two-sided execution fills.',
+            options: [
+                { id: 'A', text: 'Spoofing Attack (SPOOF-01)', correct: false },
+                { id: 'B', text: 'Order Book Layering (LAYER-02)', correct: false },
+                { id: 'C', text: 'Legitimate Market Making (FALSE POSITIVE)', correct: true },
+                { id: 'D', text: 'Wash Trading (WASH-03)', correct: false }
+            ],
+            evidence: 'Order Size: 0.5x median | Two-Sided Quoting: YES | Fills Executed: 25 | Liquidity: ₹4.2 Lakhs',
+            explanation: 'EXCELLENT ANALYSIS: This is a FALSE POSITIVE. The high cancellation rate and low latency reflect lawful algorithmic market-making adapting to shifting fair values, not manipulation.'
+        }
+    ],
+
+    feedEvents: [
+        { id: 'EVT-8901', time: '10:14:02.120', sym: 'RELIANCE', type: 'ORDER_ENTRY', side: 'BUY', price: '1,183.05', qty: 25, acc: 'ACC-HFT-801', flag: 'BENIGN', notes: 'Routine limit order posted to bid ladder.' },
+        { id: 'EVT-8902', time: '10:14:02.340', sym: 'RELIANCE', type: 'ORDER_EXEC', side: 'SELL', price: '1,183.15', qty: 10, acc: 'ACC-RET-412', flag: 'BENIGN', notes: 'Retail market order executed against ask.' },
+        { id: 'EVT-8903', time: '10:14:03.010', sym: 'TCS', type: 'ORDER_ENTRY', side: 'BUY', price: '3,480.00', qty: 1200, acc: 'ACC-UNK-994', flag: 'CRITICAL', notes: 'Outsized buy order (8.4x median) posted.' },
+        { id: 'EVT-8904', time: '10:14:03.245', sym: 'TCS', type: 'ORDER_CANCEL', side: 'BUY', price: '3,480.00', qty: 1200, acc: 'ACC-UNK-994', flag: 'CRITICAL', notes: 'Cancelled in 235ms with 0 fills (Spoofing).' },
+        { id: 'EVT-8905', time: '10:14:04.100', sym: 'INFY', type: 'TRADE_MATCH', side: 'CROSS', price: '1,820.50', qty: 500, acc: 'ACC-BOT-01 -> 02', flag: 'HIGH', notes: 'Matched cross between paired sub-accounts.' },
+        { id: 'EVT-8906', time: '10:14:05.500', sym: 'HDFCBANK', type: 'VOL_SPIKE', side: 'BUY', price: '1,650.00', qty: 15000, acc: 'MULTIPLE', flag: 'WARNING', notes: 'Block trade rebalance crossing at benchmark.' }
+    ],
+
+    init() {
+        this.loadStorage();
+        if (!this.activeInvestigation) {
+            this.buildDefaultInvestigation('SCN_SPOOFING');
+        }
+        this.renderDashboard();
+        this.renderScenarios();
+        this.renderWorkspace();
+        this.renderRules();
+        this.renderChallenges();
+        this.startFeed();
+    },
+
+    loadStorage() {
+        try {
+            const sc = localStorage.getItem('chronos_surveillance_score');
+            if (sc) this.userScore = parseInt(sc, 10) || 0;
+            const ch = localStorage.getItem('chronos_surveillance_challenges');
+            if (ch) this.challengeState = JSON.parse(ch) || {};
+        } catch (e) {}
+    },
+
+    saveStorage() {
+        try {
+            localStorage.setItem('chronos_surveillance_score', this.userScore);
+            localStorage.setItem('chronos_surveillance_challenges', JSON.stringify(this.challengeState));
+        } catch (e) {}
+    },
+
+    switchSubTab(tabName) {
+        this.activeSubTab = tabName;
+        document.querySelectorAll('.surv-subnav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.surv-sub-panel').forEach(p => p.style.display = 'none');
+
+        const btn = document.getElementById(`surv-tab-${tabName}`);
+        const panel = document.getElementById(`surv-subpanel-${tabName}`);
+        if (btn) btn.classList.add('active');
+        if (panel) panel.style.display = 'block';
+
+        if (tabName === 'workspace') {
+            this.renderWorkspace();
+        } else if (tabName === 'dashboard') {
+            this.renderDashboard();
+        }
+    },
+
+    startFeed() {
+        if (this.feedInterval) clearInterval(this.feedInterval);
+        const symbols = ['RELIANCE', 'TCS', 'INFY', 'HDFCBANK', 'BTCUSDT'];
+        const types = ['ORDER_ENTRY', 'ORDER_EXEC', 'ORDER_CANCEL', 'TRADE_MATCH'];
+
+        this.feedInterval = setInterval(() => {
+            if (this.feedPaused) return;
+
+            const sym = symbols[Math.floor(Math.random() * symbols.length)];
+            const typ = types[Math.floor(Math.random() * types.length)];
+            const side = Math.random() > 0.5 ? 'BUY' : 'SELL';
+            const price = (sym === 'RELIANCE' ? 1183.0 : (sym === 'TCS' ? 3480.0 : 1820.0)) + (Math.random() * 2 - 1);
+            const qty = Math.floor(Math.random() * 80) + 5;
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+            const idNum = Math.floor(Math.random() * 8999) + 1000;
+
+            const newEvt = {
+                id: `EVT-${idNum}`,
+                time: timeStr,
+                sym: sym,
+                type: typ,
+                side: side,
+                price: price.toFixed(2),
+                qty: qty,
+                acc: `ACC-TR-${Math.floor(Math.random() * 900) + 100}`,
+                flag: 'BENIGN',
+                notes: 'Standard bilateral order matching.'
+            };
+
+            this.feedEvents.unshift(newEvt);
+            if (this.feedEvents.length > 25) this.feedEvents.pop();
+
+            if (this.activeSubTab === 'dashboard') {
+                this.renderDashboardTable();
+            }
+        }, 2800);
+    },
+
+    toggleFeed() {
+        this.feedPaused = !this.feedPaused;
+        const btn = document.getElementById('surv-feed-toggle-btn');
+        const dot = document.getElementById('surv-status-dot');
+        if (btn) {
+            btn.innerHTML = this.feedPaused ? '▶ Resume Feed' : '⏸ Pause Feed';
+            btn.style.color = this.feedPaused ? '#34d399' : 'inherit';
+        }
+        if (dot) {
+            dot.style.background = this.feedPaused ? '#fbbf24' : '#34d399';
+        }
+        showToast(this.feedPaused ? 'Surveillance feed paused' : 'Surveillance feed resumed');
+    },
+
+    clearFeed() {
+        this.feedEvents = [];
+        this.renderDashboardTable();
+        showToast('Surveillance telemetry feed cleared');
+    },
+
+    renderDashboard() {
+        const elEvents = document.getElementById('surv-metric-events');
+        const elAlerts = document.getElementById('surv-metric-alerts');
+        if (elEvents) elEvents.innerText = (142850 + this.feedEvents.length * 12).toLocaleString();
+        if (elAlerts) elAlerts.innerText = '14 Alerts';
+        this.renderDashboardTable();
+    },
+
+    renderDashboardTable() {
+        const tbody = document.getElementById('surv-feed-tbody');
+        if (!tbody) return;
+
+        if (this.feedEvents.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="padding: 24px; text-align: center; color: var(--text-sub);">Telemetry feed buffer empty. Waiting for incoming ticks...</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = this.feedEvents.map(ev => {
+            const badgeClass = ev.flag === 'CRITICAL' ? 'surv-badge-critical' : (ev.flag === 'HIGH' ? 'surv-badge-high' : (ev.flag === 'WARNING' ? 'surv-badge-warning' : 'surv-badge-benign'));
+            const sideColor = ev.side === 'BUY' ? 'var(--green, #10b981)' : (ev.side === 'SELL' ? 'var(--red, #ef4444)' : '#60a5fa');
+
+            return `
+                <tr class="surv-feed-row">
+                    <td style="padding: 8px 10px; font-weight: 700; color: #94a3b8;">${ev.id}</td>
+                    <td style="padding: 8px 10px; color: var(--text-sub);">${ev.time}</td>
+                    <td style="padding: 8px 10px; font-weight: 800; color: var(--text-main);">${ev.sym}</td>
+                    <td style="padding: 8px 10px; color: #d1d5db;">${ev.type}</td>
+                    <td style="padding: 8px 10px; font-weight: 800; color: ${sideColor};">${ev.side}</td>
+                    <td style="padding: 8px 10px; font-weight: 700; color: var(--text-main);">₹${ev.price}</td>
+                    <td style="padding: 8px 10px;">${ev.qty}</td>
+                    <td style="padding: 8px 10px; color: #a78bfa;">${ev.acc}</td>
+                    <td style="padding: 8px 10px;"><span class="surv-badge ${badgeClass}">${ev.flag}</span></td>
+                    <td style="padding: 8px 10px; text-align: right;">
+                        <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.investigateFeedEvent('${ev.id}')" style="font-size: 10px; padding: 2px 8px; font-weight: 700;">
+                            Investigate
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    investigateFeedEvent(eventId) {
+        const ev = this.feedEvents.find(e => e.id === eventId);
+        if (!ev) return;
+
+        // If benign, create benign case, otherwise spoofing
+        if (ev.flag === 'BENIGN') {
+            this.buildDefaultInvestigation('SCN_BENIGN_MARKET_MAKER', ev.sym);
+        } else {
+            this.buildDefaultInvestigation('SCN_SPOOFING', ev.sym);
+        }
+        this.switchSubTab('workspace');
+        showToast(`Loaded ${eventId} into Investigation Workspace`);
+    },
+
+    renderScenarios() {
+        const btnContainer = document.getElementById('surv-scenario-btn-list');
+        if (!btnContainer) return;
+
+        btnContainer.innerHTML = Object.keys(this.scenarios).map(key => {
+            const sc = this.scenarios[key];
+            const isAct = key === this.activeScenarioKey;
+            const badgeClass = sc.severity === 'CRITICAL' ? 'surv-badge-critical' : (sc.severity === 'HIGH' ? 'surv-badge-high' : (sc.severity === 'WARNING' ? 'surv-badge-warning' : 'surv-badge-benign'));
+
+            return `
+                <div onclick="ChronosSurveillanceLab.selectScenario('${key}')" style="cursor: pointer; padding: 10px 12px; border-radius: 8px; border: 1px solid ${isAct ? '#f87171' : 'var(--border)'}; background: ${isAct ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-subtle)'}; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 12px; font-weight: 800; color: ${isAct ? '#f87171' : 'var(--text-main)'};">${sc.pattern}</div>
+                        <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">${sc.rule} • ${sc.symbol}</div>
+                    </div>
+                    <span class="surv-badge ${badgeClass}">${sc.severity}</span>
+                </div>
+            `;
+        }).join('');
+
+        this.renderScenarioDetailCard();
+    },
+
+    selectScenario(key) {
+        this.activeScenarioKey = key;
+        const sc = this.scenarios[key];
+        if (!sc) return;
+
+        // Populate controls
+        const elSym = document.getElementById('surv-param-symbol');
+        const elSize = document.getElementById('surv-param-size');
+        const elLat = document.getElementById('surv-param-latency');
+        const elFill = document.getElementById('surv-param-fill');
+        const elTiers = document.getElementById('surv-param-tiers');
+        const elPrice = document.getElementById('surv-param-price');
+
+        if (elSym) elSym.value = sc.symbol;
+        if (elSize) elSize.value = sc.params.size;
+        if (elLat) elLat.value = sc.params.latency;
+        if (elFill) elFill.value = sc.params.fill;
+        if (elTiers) elTiers.value = sc.params.tiers;
+        if (elPrice) elPrice.value = Math.abs(sc.params.price);
+
+        this.updateParamLabels();
+        this.renderScenarios();
+        document.getElementById('surv-scenario-result-box').style.display = 'none';
+    },
+
+    onParamChange() {
+        this.updateParamLabels();
+    },
+
+    updateParamLabels() {
+        const elSize = document.getElementById('surv-param-size');
+        const elLat = document.getElementById('surv-param-latency');
+        const elFill = document.getElementById('surv-param-fill');
+        const elTiers = document.getElementById('surv-param-tiers');
+        const elPrice = document.getElementById('surv-param-price');
+
+        if (elSize) document.getElementById('surv-param-size-val').innerText = parseInt(elSize.value).toLocaleString();
+        if (elLat) document.getElementById('surv-param-latency-val').innerText = `${elLat.value} ms`;
+        if (elFill) document.getElementById('surv-param-fill-val').innerText = `${elFill.value}%`;
+        if (elTiers) document.getElementById('surv-param-tiers-val').innerText = `${elTiers.value} Tiers`;
+        if (elPrice) document.getElementById('surv-param-price-val').innerText = `+${elPrice.value}%`;
+    },
+
+    resetParams() {
+        this.selectScenario(this.activeScenarioKey);
+        showToast('Parameters reset to scenario preset defaults');
+    },
+
+    renderScenarioDetailCard() {
+        const card = document.getElementById('surv-scenario-detail-card');
+        const sc = this.scenarios[this.activeScenarioKey];
+        if (!card || !sc) return;
+
+        const badgeClass = sc.severity === 'CRITICAL' ? 'surv-badge-critical' : (sc.severity === 'HIGH' ? 'surv-badge-high' : (sc.severity === 'WARNING' ? 'surv-badge-warning' : 'surv-badge-benign'));
+
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="font-size: 14px; font-weight: 800; color: var(--text-main);">${sc.title}</div>
+                <span class="surv-badge ${badgeClass}">${sc.severity}</span>
+            </div>
+            <p style="font-size: 12px; color: #d1d5db; line-height: 1.5; margin-bottom: 14px;">
+                ${sc.desc}
+            </p>
+            <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 11px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
+                    <div><span style="color: var(--text-sub);">Detection Rule:</span> <strong style="color: #f87171;">${sc.rule}</strong></div>
+                    <div><span style="color: var(--text-sub);">Instrument:</span> <strong style="color: var(--text-main);">${sc.symbol}</strong></div>
+                    <div><span style="color: var(--text-sub);">Expected Outcome:</span> <strong style="color: ${sc.expected === 'FLAGGED' ? '#f87171' : '#34d399'};">${sc.expected}</strong></div>
+                </div>
+            </div>
+        `;
+    },
+
+    runSimulation() {
+        const sc = this.scenarios[this.activeScenarioKey];
+        const sym = document.getElementById('surv-param-symbol').value;
+        const size = parseFloat(document.getElementById('surv-param-size').value);
+        const lat = parseFloat(document.getElementById('surv-param-latency').value);
+        const fill = parseFloat(document.getElementById('surv-param-fill').value);
+        const tiers = parseInt(document.getElementById('surv-param-tiers').value, 10);
+        const price = parseFloat(document.getElementById('surv-param-price').value);
+
+        const medianDepth = 300.0;
+        const sizeRatio = size / medianDepth;
+
+        // Deterministic detection rules
+        let flagged = false;
+        let ruleId = 'NONE';
+        let pattern = sc.pattern;
+        let severity = 'BENIGN';
+        let what = 'Normal trading activity within standard statistical parameters.';
+        let why = 'Order sizes, cancellation speed, and bilateral fills conform to bona fide liquidity provision.';
+        let corroboration = 'None required. Activity cleared.';
+        let falseRisk = 'N/A - Legitimate trading pattern.';
+
+        if (this.activeScenarioKey === 'SCN_SPOOFING' || (sizeRatio >= 3.0 && lat <= 1500 && fill <= 5.0)) {
+            flagged = true;
+            ruleId = 'SPOOF-01';
+            pattern = 'Spoofing';
+            severity = 'CRITICAL';
+            what = `Outsized order (${size} units / ${sizeRatio.toFixed(1)}x median) entered and cancelled in ${lat}ms with ${fill}% fill rate.`;
+            why = 'Fabricates non-bona fide liquidity to manipulate quotes and trap counterparties into dislocated prices.';
+            corroboration = 'Corroborating contra-side trades on affiliated accounts within 500ms; gateway FIX audit logs.';
+            falseRisk = 'Low risk. Legitimate institutional orders may cancel quickly on breaking macroeconomic news.';
+        } else if (this.activeScenarioKey === 'SCN_LAYERING' || (tiers >= 3 && lat <= 2000)) {
+            flagged = true;
+            ruleId = 'LAYER-02';
+            pattern = 'Layering';
+            severity = 'CRITICAL';
+            what = `${tiers} laddered limit orders entered across multiple ticks with high cancellation frequency.`;
+            why = 'Creates false impression of deep order book resistance to drive price toward trader resting contra order.';
+            corroboration = 'Opposite-side fill records and simultaneous multi-tier cancel messages from same user session.';
+            falseRisk = 'Algorithmic grid-trading strategies adjusting spreads during high volatility.';
+        } else if (this.activeScenarioKey === 'SCN_WASH_TRADING') {
+            flagged = true;
+            ruleId = 'WASH-03';
+            pattern = 'Wash Trading';
+            severity = 'HIGH';
+            what = 'Circular matched trades executed between coordinated sub-accounts with zero net position delta.';
+            why = 'Fabricates trading volume without economic risk or genuine change in beneficial ownership.';
+            corroboration = 'KYC documentation, shared IP/device fingerprints, banking settlement ties.';
+            falseRisk = 'Unintentional internal self-crosses by independent desks at large financial institutions.';
+        } else if (this.activeScenarioKey === 'SCN_PUMP_DUMP') {
+            flagged = true;
+            ruleId = 'PUMP-04';
+            pattern = 'Pump and Dump';
+            severity = 'CRITICAL';
+            what = `Sharp price runup (+${price.toFixed(1)}%) driven by market orders followed by aggressive selling.`;
+            why = 'Artificially ramps price to dump inventory onto retail momentum traders before withdrawing liquidity.';
+            corroboration = 'Social media chat timestamps, historic inventory accumulation trails of dumping entities.';
+            falseRisk = 'Legitimate biotechnology clinical trial releases or unexpected earnings surprises.';
+        } else if (this.activeScenarioKey === 'SCN_UNUSUAL_VOLUME') {
+            flagged = true;
+            ruleId = 'VOL-05';
+            pattern = 'Unusual Volume';
+            severity = 'WARNING';
+            what = `Turnover surge (${(size/1000).toFixed(1)}x baseline) with high participant concentration (${fill}%).`;
+            why = 'Uncharacteristic volume without broader market correlation can signal insider pre-announcement positioning.';
+            corroboration = 'Company disclosures, insider trading registries, derivatives positioning.';
+            falseRisk = 'Index rebalancing events, large block crossing trades, or ETF creation/redemption activity.';
+        } else if (this.activeScenarioKey === 'SCN_ABNORMAL_PRICE') {
+            flagged = true;
+            ruleId = 'PRICE-06';
+            pattern = 'Abnormal Price Movement';
+            severity = 'WARNING';
+            what = `Price excursion of ${price.toFixed(1)} sigma executed in ultra-short duration (${lat}ms).`;
+            why = 'Sharp dislocation bypassing market depth indicating potential order book vacuum or aggressive sweep.';
+            corroboration = 'Full L3 tick sequence, cascade stop triggers, broker connectivity outages.';
+            falseRisk = 'Geopolitical breaking news or sovereign debt yield shocks.';
+        }
+
+        const invId = `INV-2026-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        const altId = `ALT-2026-${Math.floor(Math.random() * 8999) + 1000}`;
+        const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+        this.activeInvestigation = {
+            id: invId,
+            alertId: altId,
+            symbol: sym,
+            pattern: pattern,
+            ruleId: ruleId,
+            severity: severity,
+            status: flagged ? 'CONFIRMED_SIMULATION' : 'FALSE_POSITIVE',
+            detectedAt: nowStr,
+            flagged: flagged,
+            what: what,
+            why: why,
+            corroboration: corroboration,
+            falseRisk: falseRisk,
+            ruleTriggered: flagged ? `${ruleId} (Threshold Met: Size Ratio ${sizeRatio.toFixed(1)}x, Latency ${lat}ms, Fill ${fill}%)` : 'NONE (All rules evaluated clean)',
+            metrics: {
+                size: size,
+                sizeRatio: sizeRatio.toFixed(1),
+                latency: lat,
+                fillRate: fill,
+                tiers: tiers,
+                price: price
+            },
+            orders: this.generateOrders(sym, pattern, size),
+            timeline: this.generateTimeline(pattern, lat, fill)
+        };
+
+        // Render result box in Scenarios tab
+        const resBox = document.getElementById('surv-scenario-result-box');
+        if (resBox) {
+            resBox.style.display = 'block';
+            resBox.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="font-size: 14px; font-weight: 800; color: ${flagged ? '#f87171' : '#34d399'};">
+                        ${flagged ? '🚨 SURVEILLANCE ALERT TRIGGERED' : '✔ BENIGN ACTIVITY - CLEARED (FALSE POSITIVE)'}
+                    </div>
+                    <span class="surv-badge ${flagged ? 'surv-badge-critical' : 'surv-badge-benign'}">${this.activeInvestigation.status}</span>
+                </div>
+                <div style="font-size: 12px; color: #d1d5db; line-height: 1.5; margin-bottom: 14px;">
+                    <strong>Diagnosis:</strong> ${what}
+                </div>
+                <div style="background: #090d16; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 11px; margin-bottom: 14px;">
+                    <div><span style="color: var(--text-sub);">Rule Triggered:</span> <strong style="color: #f87171;">${this.activeInvestigation.ruleTriggered}</strong></div>
+                    <div style="margin-top: 4px;"><span style="color: var(--text-sub);">Investigation ID:</span> <strong class="mono" style="color: #60a5fa;">${invId}</strong></div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-buy" onclick="ChronosSurveillanceLab.switchSubTab('workspace')" style="font-size: 11px; padding: 8px 16px; font-weight: 800; background: #2563eb;">
+                        🔍 Open Case in Investigation Workspace
+                    </button>
+                </div>
+            `;
+        }
+
+        // Also add to feed table
+        this.feedEvents.unshift({
+            id: altId,
+            time: new Date().toTimeString().split(' ')[0],
+            sym: sym,
+            type: flagged ? 'SURVEILLANCE_FLAG' : 'CLEARED_SCAN',
+            side: 'BUY',
+            price: (sym === 'RELIANCE' ? 1183.0 : 3480.0).toFixed(2),
+            qty: size,
+            acc: 'SIM-ACC-TARGET',
+            flag: flagged ? severity : 'BENIGN',
+            notes: what
+        });
+        this.renderDashboardTable();
+
+        showToast(flagged ? `Alert ${ruleId} generated: ${pattern}` : 'Scan completed: Benign activity confirmed');
+    },
+
+    buildDefaultInvestigation(scenarioKey, targetSymbol) {
+        const sc = this.scenarios[scenarioKey] || this.scenarios.SCN_SPOOFING;
+        const sym = targetSymbol || sc.symbol;
+        const isBenign = sc.severity === 'BENIGN';
+
+        this.activeInvestigation = {
+            id: `INV-2026-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+            alertId: `ALT-2026-${Math.floor(Math.random() * 8999) + 1000}`,
+            symbol: sym,
+            pattern: sc.pattern,
+            ruleId: sc.rule,
+            severity: sc.severity,
+            status: isBenign ? 'FALSE_POSITIVE' : 'CONFIRMED_SIMULATION',
+            detectedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            flagged: !isBenign,
+            what: isBenign ? 'Normal high-frequency quoting with balanced two-sided depth provision.' : `Large non-bona fide buy order (1,800 shares) entered and rapidly cancelled in 280ms with 0 fills.`,
+            why: isBenign ? 'Activity conforms to algorithmic market making adapting to shifting fair values.' : 'Creates phantom buy pressure to induce contra-side market executions at dislocated prices.',
+            corroboration: isBenign ? 'Bilateral inventory delta remains within risk mandate.' : 'Corroborating contra-side trades on affiliated accounts within 500ms; gateway FIX audit logs.',
+            falseRisk: isBenign ? 'Correctly identified as false positive.' : 'Sudden headline news causing legitimate cancel.',
+            ruleTriggered: isBenign ? 'NONE (All rules evaluated clean)' : `${sc.rule} (Order Size Ratio >= 3.0x AND Cancel Latency <= 1500ms AND Fill Rate <= 5%)`,
+            metrics: {
+                size: sc.params.size,
+                sizeRatio: (sc.params.size / 300.0).toFixed(1),
+                latency: sc.params.latency,
+                fillRate: sc.params.fill,
+                tiers: sc.params.tiers,
+                price: sc.params.price
+            },
+            orders: this.generateOrders(sym, sc.pattern, sc.params.size),
+            timeline: this.generateTimeline(sc.pattern, sc.params.latency, sc.params.fill)
+        };
+    },
+
+    generateOrders(sym, pattern, size) {
+        const base = sym === 'RELIANCE' ? 1183.0 : (sym === 'TCS' ? 3480.0 : 1820.0);
+        if (pattern === 'Spoofing') {
+            return [
+                { id: 'ORD-SP-101', time: '10:14:02.100', acc: 'ACC-SUSP-77', side: 'BUY', price: base.toFixed(2), qty: size, status: 'SUBMITTED', notes: 'Large non-bona fide bid wall posted' },
+                { id: 'ORD-LG-202', time: '10:14:02.240', acc: 'ACC-SUSP-77', side: 'SELL', price: (base + 0.35).toFixed(2), qty: 150, status: 'FILLED', notes: 'Contra sell filled into retail buy orders' },
+                { id: 'ORD-SP-101', time: '10:14:02.380', acc: 'ACC-SUSP-77', side: 'BUY', price: base.toFixed(2), qty: size, status: 'CANCELLED', notes: 'Bid wall cancelled in 280ms (0 fills)' }
+            ];
+        } else if (pattern === 'Layering') {
+            return [
+                { id: 'ORD-LY-01', time: '10:14:05.100', acc: 'ACC-LAYER-01', side: 'SELL', price: (base + 0.5).toFixed(2), qty: 400, status: 'CANCELLED', notes: 'Layer tier 1 cancelled' },
+                { id: 'ORD-LY-02', time: '10:14:05.120', acc: 'ACC-LAYER-01', side: 'SELL', price: (base + 0.7).toFixed(2), qty: 400, status: 'CANCELLED', notes: 'Layer tier 2 cancelled' },
+                { id: 'ORD-LY-03', time: '10:14:05.140', acc: 'ACC-LAYER-01', side: 'SELL', price: (base + 0.9).toFixed(2), qty: 400, status: 'CANCELLED', notes: 'Layer tier 3 cancelled' },
+                { id: 'ORD-EX-04', time: '10:14:05.350', acc: 'ACC-LAYER-01', side: 'BUY', price: (base - 0.2).toFixed(2), qty: 800, status: 'FILLED', notes: 'Contra buy filled at depressed price' }
+            ];
+        } else if (pattern === 'Wash Trading') {
+            return [
+                { id: 'ORD-WSH-01', time: '10:14:08.010', acc: 'ACC-BOT-ALPHA', side: 'BUY', price: base.toFixed(2), qty: 500, status: 'FILLED', notes: 'Matched against ACC-BOT-BETA' },
+                { id: 'ORD-WSH-02', time: '10:14:08.012', acc: 'ACC-BOT-BETA', side: 'SELL', price: base.toFixed(2), qty: 500, status: 'FILLED', notes: 'Matched against ACC-BOT-ALPHA' },
+                { id: 'ORD-WSH-03', time: '10:14:12.450', acc: 'ACC-BOT-BETA', side: 'BUY', price: base.toFixed(2), qty: 500, status: 'FILLED', notes: 'Round-trip reversal match (Net delta 0)' },
+                { id: 'ORD-WSH-04', time: '10:14:12.452', acc: 'ACC-BOT-ALPHA', side: 'SELL', price: base.toFixed(2), qty: 500, status: 'FILLED', notes: 'Round-trip reversal match (Net delta 0)' }
+            ];
+        } else {
+            return [
+                { id: 'ORD-BN-01', time: '10:14:20.100', acc: 'ACC-MM-01', side: 'BUY', price: (base - 0.05).toFixed(2), qty: 50, status: 'FILLED', notes: 'Normal two-sided passive quote' },
+                { id: 'ORD-BN-02', time: '10:14:20.100', acc: 'ACC-MM-01', side: 'SELL', price: (base + 0.05).toFixed(2), qty: 50, status: 'FILLED', notes: 'Normal two-sided passive quote' },
+                { id: 'ORD-BN-03', time: '10:14:22.300', acc: 'ACC-RET-88', side: 'BUY', price: base.toFixed(2), qty: 20, status: 'FILLED', notes: 'Ordinary retail order execution' }
+            ];
+        }
+    },
+
+    generateTimeline(pattern, lat, fill) {
+        if (pattern === 'Spoofing') {
+            return [
+                { step: 1, time: 'T+000ms', title: 'Large Bid Wall Injected', desc: '1,800-share buy order placed at best bid (5.5x median book depth).' },
+                { step: 2, time: 'T+140ms', title: 'Market Reaction', desc: 'Retail and momentum algorithms lift ask quotes to capture anticipated demand.' },
+                { step: 3, time: 'T+240ms', title: 'Contra Execution', desc: 'Manipulator fills resting sell order for 150 shares at elevated price.' },
+                { step: 4, time: `T+${lat}ms`, title: 'Instant Cancellation', desc: 'Manipulator pulls the 1,800-share bid order with 0 fills. Rule SPOOF-01 triggers.' }
+            ];
+        } else if (pattern === 'Layering') {
+            return [
+                { step: 1, time: 'T+000ms', title: 'Tier 1 Placed', desc: '400 shares offered at ₹3,481.00.' },
+                { step: 2, time: 'T+080ms', title: 'Tiers 2-4 Stacked', desc: 'Consecutive asks placed at ₹3,482, ₹3,483, ₹3,484 creating false sell depth.' },
+                { step: 3, time: 'T+420ms', title: 'Contra Buy Filled', desc: 'Trader fills 800-share buy order at depressed price of ₹3,478.00.' },
+                { step: 4, time: `T+${lat}ms`, title: 'Simultaneous Pull', desc: 'All 4 sell orders cancelled simultaneously. Rule LAYER-02 triggers.' }
+            ];
+        } else if (pattern === 'Wash Trading') {
+            return [
+                { step: 1, time: 'T+000s', title: 'Initial Matched Cross', desc: 'Account Alpha sells 450 shares to Account Beta at ₹1,820.00.' },
+                { step: 2, time: 'T+004s', title: 'Synchronized Reversal', desc: 'Account Beta sells 450 shares back to Account Alpha at identical price.' },
+                { step: 3, time: 'T+012s', title: 'Repeated Cycles', desc: 'Pattern repeats across 6 cycles. Net position delta remains exactly 0 shares.' },
+                { step: 4, time: 'T+020s', title: 'Surveillance Flag', desc: 'Cluster analysis identifies common control and zero risk. Rule WASH-03 triggers.' }
+            ];
+        } else {
+            return [
+                { step: 1, time: 'T+000s', title: 'Order Entry', desc: 'Passive limit order placed within normal inside spread.' },
+                { step: 2, time: 'T+010s', title: 'Passive Execution', desc: 'Quote filled against incoming bona fide retail market order.' },
+                { step: 3, time: 'T+015s', title: 'Surveillance Audit', desc: 'All metrics within 1.0 sigma. Clean status maintained.' }
+            ];
+        }
+    },
+
+    renderWorkspace() {
+        const inv = this.activeInvestigation;
+        if (!inv) return;
+
+        // Header fields
+        document.getElementById('ws-case-id').innerText = inv.id;
+        document.getElementById('ws-alert-id').innerText = inv.alertId;
+        document.getElementById('ws-target-symbol').innerText = inv.symbol;
+        document.getElementById('ws-detected-at').innerText = inv.detectedAt;
+
+        const elSev = document.getElementById('ws-severity-badge');
+        if (elSev) {
+            elSev.innerText = inv.severity;
+            elSev.className = `surv-badge ${inv.severity === 'CRITICAL' ? 'surv-badge-critical' : (inv.severity === 'HIGH' ? 'surv-badge-high' : (inv.severity === 'WARNING' ? 'surv-badge-warning' : 'surv-badge-benign'))}`;
+        }
+
+        const elStat = document.getElementById('ws-status-badge');
+        if (elStat) {
+            elStat.innerText = inv.status;
+            elStat.style.color = inv.status === 'FALSE_POSITIVE' ? '#34d399' : (inv.status === 'RESOLVED' ? '#60a5fa' : '#f87171');
+        }
+
+        const selStatus = document.getElementById('ws-status-select');
+        if (selStatus) selStatus.value = inv.status;
+
+        // 6 Explainable Pillars
+        const grid = document.getElementById('ws-explain-grid');
+        if (grid) {
+            const pillars = [
+                { title: '1. What behaviour was detected?', icon: '🔍', text: inv.what },
+                { title: '2. Which rule was triggered?', icon: '⚖️', text: inv.ruleTriggered },
+                { title: '3. What evidence supports the alert?', icon: '📊', text: `Observed size: ${inv.metrics.size} units (${inv.metrics.sizeRatio}x median depth), latency: ${inv.metrics.latency}ms, fill rate: ${inv.metrics.fillRate}%.` },
+                { title: '4. Why was the activity considered unusual?', icon: '⚠️', text: inv.why },
+                { title: '5. What additional information is required?', icon: '📂', text: inv.corroboration },
+                { title: '6. Could this be a false positive?', icon: '🛡️', text: inv.falseRisk }
+            ];
+
+            grid.innerHTML = pillars.map(p => `
+                <div class="surv-q-box">
+                    <div class="surv-q-title">
+                        <span>${p.icon}</span> ${p.title}
+                    </div>
+                    <div class="surv-q-text">${p.text}</div>
+                </div>
+            `).join('');
+        }
+
+        // Timeline
+        const tmContainer = document.getElementById('ws-timeline-container');
+        if (tmContainer) {
+            tmContainer.innerHTML = inv.timeline.map(st => `
+                <div class="surv-timeline-item">
+                    <div class="surv-step-num">${st.step}</div>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 800; color: #f87171;">${st.time} — ${st.title}</div>
+                        <div style="font-size: 11px; color: #d1d5db; margin-top: 2px;">${st.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Evidence Chart
+        const chartBox = document.getElementById('ws-evidence-chart-box');
+        if (chartBox) {
+            const ratioVal = Math.min(parseFloat(inv.metrics.sizeRatio) * 15, 100);
+            const latVal = Math.min((parseFloat(inv.metrics.latency) / 2000) * 100, 100);
+            const fillVal = Math.min(parseFloat(inv.metrics.fillRate), 100);
+
+            chartBox.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 11px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: var(--text-sub);">Order Size vs Median Book Depth</span>
+                            <strong style="color: #f87171;">${inv.metrics.sizeRatio}x (Threshold: 3.0x)</strong>
+                        </div>
+                        <div style="background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: ${ratioVal}%; height: 100%; background: #ef4444;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: var(--text-sub);">Cancellation Latency</span>
+                            <strong style="color: #fbbf24;">${inv.metrics.latency}ms (Threshold: 1500ms)</strong>
+                        </div>
+                        <div style="background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: ${latVal}%; height: 100%; background: #f59e0b;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: var(--text-sub);">Execution Fill Rate</span>
+                            <strong style="color: #34d399;">${inv.metrics.fillRate}% (Threshold: 5.0%)</strong>
+                        </div>
+                        <div style="background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: ${fillVal}%; height: 100%; background: #10b981;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Orders table
+        const tbody = document.getElementById('ws-orders-tbody');
+        if (tbody) {
+            tbody.innerHTML = inv.orders.map(o => `
+                <tr class="surv-feed-row">
+                    <td style="padding: 8px 10px; font-weight: 700; color: #94a3b8;">${o.id}</td>
+                    <td style="padding: 8px 10px; color: var(--text-sub);">${o.time}</td>
+                    <td style="padding: 8px 10px; color: #a78bfa;">${o.acc}</td>
+                    <td style="padding: 8px 10px; font-weight: 800; color: ${o.side === 'BUY' ? 'var(--green)' : 'var(--red)'};">${o.side}</td>
+                    <td style="padding: 8px 10px; font-weight: 700;">₹${o.price}</td>
+                    <td style="padding: 8px 10px;">${o.qty}</td>
+                    <td style="padding: 8px 10px; font-weight: 700; color: ${o.status === 'CANCELLED' ? '#f87171' : '#34d399'};">${o.status}</td>
+                    <td style="padding: 8px 10px; color: #d1d5db;">${o.notes}</td>
+                </tr>
+            `).join('');
+        }
+    },
+
+    updateStatusFromWorkspace() {
+        const sel = document.getElementById('ws-status-select');
+        if (!sel || !this.activeInvestigation) return;
+        const newStatus = sel.value;
+        this.activeInvestigation.status = newStatus;
+        const elStat = document.getElementById('ws-status-badge');
+        if (elStat) {
+            elStat.innerText = newStatus;
+            elStat.style.color = newStatus === 'FALSE_POSITIVE' ? '#34d399' : (newStatus === 'RESOLVED' ? '#60a5fa' : '#f87171');
+        }
+        showToast(`Investigation workflow status updated to ${newStatus}`);
+    },
+
+    saveAnalystNotes() {
+        const notes = document.getElementById('ws-analyst-notes').value;
+        if (this.activeInvestigation) {
+            this.activeInvestigation.notes = notes;
+        }
+        showToast('Case notes saved to investigation record');
+    },
+
+    exportCsv() {
+        const inv = this.activeInvestigation;
+        if (!inv) return;
+
+        let csv = `INVESTIGATION_ID,ALERT_ID,SYMBOL,PATTERN,SEVERITY,STATUS,DETECTED_AT\n`;
+        csv += `"${inv.id}","${inv.alertId}","${inv.symbol}","${inv.pattern}","${inv.severity}","${inv.status}","${inv.detectedAt}"\n\n`;
+        csv += `ORDER_RECORDS\n`;
+        csv += `ORDER_ID,TIME,ACCOUNT,SIDE,PRICE,QUANTITY,STATUS,NOTES\n`;
+        inv.orders.forEach(o => {
+            csv += `"${o.id}","${o.time}","${o.acc}","${o.side}",${o.price},${o.qty},"${o.status}","${o.notes}"\n`;
+        });
+        csv += `\nTIMELINE_EVENTS\n`;
+        csv += `STEP,TIME,TITLE,DESCRIPTION\n`;
+        inv.timeline.forEach(t => {
+            csv += `${t.step},"${t.time}","${t.title}","${t.desc}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${inv.id}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`Investigation report ${inv.id}.csv exported`);
+    },
+
+    openDossierModal() {
+        const inv = this.activeInvestigation;
+        if (!inv) return;
+
+        const text = `================================================================================
+CHRONOSMATCH MARKET SURVEILLANCE & FRAUD DETECTION LAB
+OFFICIAL SIMULATED INVESTIGATION DOSSIER
+================================================================================
+CASE REFERENCE    : ${inv.id}
+ALERT ID          : ${inv.alertId}
+TARGET SYMBOL     : ${inv.symbol}
+PRIMARY PATTERN   : ${inv.pattern}
+SEVERITY LEVEL    : ${inv.severity}
+CURRENT STATUS    : ${inv.status}
+TIMESTAMP         : ${inv.detectedAt}
+================================================================================
+
+1. EXECUTIVE SUMMARY & BEHAVIORAL DIAGNOSIS:
+--------------------------------------------------------------------------------
+Behavior Detected : ${inv.what}
+Rule Triggered    : ${inv.ruleTriggered}
+Evidence Summary  : Observed size ${inv.metrics.size} units (${inv.metrics.sizeRatio}x median), latency ${inv.metrics.latency}ms, fill ${inv.metrics.fillRate}%.
+
+2. MICROSTRUCTURAL IMPACT & MARKET MECHANICS:
+--------------------------------------------------------------------------------
+Impact Analysis   : ${inv.why}
+Required Corrob.  : ${inv.corroboration}
+False Positive    : ${inv.falseRisk}
+
+3. CHRONOLOGICAL RECONSTRUCTION:
+--------------------------------------------------------------------------------
+${inv.timeline.map(t => `  [${t.time}] Step ${t.step}: ${t.title} - ${t.desc}`).join('\n')}
+
+4. REGULATORY DISCLAIMER:
+--------------------------------------------------------------------------------
+This report is generated by ChronosMatch as an educational financial surveillance
+simulation. Findings represent mathematical pattern matching against simulated
+market microstructure events and do not constitute real-world legal accusations.
+================================================================================`;
+
+        document.getElementById('surv-dossier-text').innerText = text;
+        document.getElementById('surv-dossier-modal').style.display = 'flex';
+    },
+
+    closeDossierModal() {
+        document.getElementById('surv-dossier-modal').style.display = 'none';
+    },
+
+    renderRules() {
+        const grid = document.getElementById('surv-rules-grid');
+        if (!grid) return;
+
+        grid.innerHTML = this.rules.map(r => `
+            <div class="surv-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">${r.name}</div>
+                    <span class="surv-badge surv-badge-critical">${r.id}</span>
+                </div>
+                <div style="font-size: 11px; color: #a78bfa; margin-bottom: 10px; font-weight: 600;">
+                    ${r.reg}
+                </div>
+                <p style="font-size: 11px; color: #d1d5db; line-height: 1.5; margin-bottom: 14px;">
+                    ${r.desc}
+                </p>
+                <div style="background: #090d16; border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px;">
+                    <div style="color: var(--text-sub); margin-bottom: 4px; font-weight: 700;">DEFAULT CONFIGURATION</div>
+                    <div class="mono" style="color: #60a5fa; font-size: 10px;">
+                        ${r.pattern === 'Spoofing' ? 'Size Ratio >= 3.0x | Latency <= 1500ms | Fills <= 5.0%' : (r.pattern === 'Layering' ? 'Stacked Tiers >= 3 | Cancel Rate >= 80%' : (r.pattern === 'Wash Trading' ? 'Round Trips >= 2 | Net Delta <= 5%' : 'Sigma >= 3.0 | Time Window <= 30s'))}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    resetThresholds() {
+        showToast('Rule thresholds restored to exchange defaults');
+    },
+
+    saveCustomThresholds() {
+        showToast('Custom surveillance rule thresholds saved');
+    },
+
+    renderChallenges() {
+        // Lessons
+        const lGrid = document.getElementById('surv-lessons-grid');
+        if (lGrid) {
+            lGrid.innerHTML = this.lessons.map(l => `
+                <div class="surv-card">
+                    <div style="font-size: 10px; color: #a78bfa; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">${l.category} • ${l.time}</div>
+                    <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">${l.title}</div>
+                    <p style="font-size: 11px; color: #d1d5db; line-height: 1.5; margin-bottom: 12px;">${l.summary}</p>
+                    <details style="font-size: 11px; color: #94a3b8; line-height: 1.5; cursor: pointer;">
+                        <summary style="color: #60a5fa; font-weight: 700; outline: none;">Read Full Lesson →</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); white-space: pre-line; color: #cbd5e1;">${l.body}</div>
+                    </details>
+                </div>
+            `).join('');
+        }
+
+        // Challenges
+        const chContainer = document.getElementById('surv-challenges-container');
+        if (chContainer) {
+            const scEl = document.getElementById('surv-score-val');
+            if (scEl) scEl.innerText = this.userScore;
+
+            chContainer.innerHTML = this.challenges.map(ch => {
+                const state = this.challengeState[ch.id];
+                const answered = !!state;
+
+                return `
+                    <div class="surv-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">${ch.title}</div>
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <span class="macro-badge-sample" style="color: #60a5fa;">${ch.difficulty}</span>
+                                <span class="surv-badge surv-badge-warning">+${ch.points} PTS</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; color: #d1d5db; line-height: 1.5; margin-bottom: 12px;">
+                            ${ch.brief}
+                        </div>
+
+                        <div style="background: #090d16; border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: #94a3b8; margin-bottom: 14px;">
+                            <strong style="color: #fbbf24;">Observed Evidence:</strong> ${ch.evidence}
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 10px;">
+                            ${ch.options.map(opt => {
+                                let btnStyle = 'background: var(--bg-card); border-color: var(--border);';
+                                if (answered) {
+                                    if (opt.correct) {
+                                        btnStyle = 'background: rgba(16, 185, 129, 0.2); border-color: #34d399; color: #34d399; font-weight: 800;';
+                                    } else if (state.selectedId === opt.id) {
+                                        btnStyle = 'background: rgba(239, 68, 68, 0.2); border-color: #f87171; color: #f87171;';
+                                    }
+                                }
+
+                                return `
+                                    <button type="button" class="btn btn-secondary" onclick="ChronosSurveillanceLab.submitChallenge('${ch.id}', '${opt.id}')" ${answered ? 'disabled' : ''} style="text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 700; ${btnStyle}">
+                                        <strong>${opt.id}.</strong> ${opt.text}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        ${answered ? `
+                            <div style="background: ${state.isCorrect ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; border: 1px solid ${state.isCorrect ? '#34d399' : '#f87171'}; border-radius: 6px; padding: 10px; font-size: 11px; line-height: 1.4; color: #d1d5db;">
+                                <strong style="color: ${state.isCorrect ? '#34d399' : '#f87171'};">${state.isCorrect ? '✔ CORRECT DECISION (+ ' + ch.points + ' PTS)' : '✖ INCORRECT EVALUATION'}</strong>: ${ch.explanation}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    },
+
+    submitChallenge(challengeId, optionId) {
+        const ch = this.challenges.find(c => c.id === challengeId);
+        if (!ch || this.challengeState[challengeId]) return;
+
+        const opt = ch.options.find(o => o.id === optionId);
+        const isCorrect = opt && opt.correct;
+
+        if (isCorrect) {
+            this.userScore += ch.points;
+            showToast(`Correct! +${ch.points} points awarded.`);
+        } else {
+            showToast('Incorrect decision. Review the evidence rationale.');
+        }
+
+        this.challengeState[challengeId] = {
+            answered: true,
+            isCorrect: isCorrect,
+            selectedId: optionId
+        };
+
+        this.saveStorage();
+        this.renderChallenges();
+    }
+};
+
+function initSurveillanceLabView() {
+    ChronosSurveillanceLab.init();
+}
+
 
 
 
