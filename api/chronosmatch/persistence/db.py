@@ -321,6 +321,26 @@ class Database:
                     updated_at TEXT NOT NULL,
                     FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
                 );
+                CREATE TABLE IF NOT EXISTS ipo_applications (
+                    application_id TEXT PRIMARY KEY,
+                    email TEXT NOT NULL,
+                    ipo_id TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    category TEXT NOT NULL DEFAULT 'RETAIL',
+                    lots_applied INTEGER NOT NULL,
+                    shares_applied INTEGER NOT NULL,
+                    bid_price REAL NOT NULL,
+                    amount_blocked REAL NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING_ALLOTMENT',
+                    lots_allotted INTEGER DEFAULT 0,
+                    shares_allotted INTEGER DEFAULT 0,
+                    amount_utilized REAL DEFAULT 0.0,
+                    amount_refunded REAL DEFAULT 0.0,
+                    applied_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
+                );
+
 
 
             """)
@@ -1394,6 +1414,232 @@ class Database:
                 )
             conn.commit()
             return cursor.rowcount > 0
+
+
+
+    def apply_for_ipo(self, email: str, ipo_id: str, lots: int, category: str = "RETAIL", bid_price: Optional[float] = None) -> Dict[str, Any]:
+        """Submit a virtual IPO application, reserve funds, and persist application record."""
+        from chronosmatch.engine.ipo_simulator import get_ipo_by_id, calculate_ipo_application
+        email = email.strip().lower()
+        ipo = get_ipo_by_id(ipo_id)
+        if not ipo:
+            raise ValueError(f"IPO with ID '{ipo_id}' not found.")
+
+        calc = calculate_ipo_application(ipo, lots, category, bid_price)
+        if not calc["is_valid"]:
+            raise ValueError(calc["errors"][0])
+
+        total_amount = calc["total_amount"]
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        app_id = f"IPO-APP-2026-{uuid.uuid4().hex[:6].upper()}"
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+
+            # Check if pending application already exists for this IPO
+            cursor.execute(
+                "SELECT 1 FROM ipo_applications WHERE email = ? AND ipo_id = ? AND status = 'PENDING_ALLOTMENT'",
+                (email, ipo_id),
+            )
+            if cursor.fetchone():
+                raise ValueError("An active pending application already exists for this IPO.")
+
+            # Check available cash
+            cursor.execute("SELECT cash_balance FROM accounts WHERE email = ?", (email,))
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError(f"Account for user '{email}' not found.")
+            cash_avail = float(row["cash_balance"])
+            if cash_avail < total_amount:
+                raise ValueError(f"Insufficient virtual cash balance (₹{cash_avail:,.2f}) for application (Required: ₹{total_amount:,.2f}).")
+
+            # Reserve funds by debiting cash balance
+            new_cash = round(cash_avail - total_amount, 2)
+            cursor.execute("UPDATE accounts SET cash_balance = ?, updated_at = ? WHERE email = ?", (new_cash, now, email))
+
+            # Insert application
+            cursor.execute(
+                """INSERT INTO ipo_applications (
+                    application_id, email, ipo_id, symbol, category, lots_applied, shares_applied,
+                    bid_price, amount_blocked, status, lots_allotted, shares_allotted, amount_utilized,
+                    amount_refunded, applied_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_ALLOTMENT', 0, 0, 0.0, 0.0, ?, ?)""",
+                (
+                    app_id, email, ipo["id"], ipo["symbol"], calc["category"], calc["lots"],
+                    calc["shares"], calc["bid_price"], total_amount, now, now
+                ),
+            )
+
+            conn.commit()
+
+        return {
+            "application_id": app_id,
+            "email": email,
+            "ipo_id": ipo["id"],
+            "symbol": ipo["symbol"],
+            "category": calc["category"],
+            "lots_applied": calc["lots"],
+            "shares_applied": calc["shares"],
+            "bid_price": calc["bid_price"],
+            "amount_blocked": total_amount,
+            "status": "PENDING_ALLOTMENT",
+            "applied_at": now,
+        }
+
+    def cancel_ipo_application(self, email: str, application_id: str) -> Dict[str, Any]:
+        """Cancel a pending IPO application and refund the reserved virtual cash."""
+        email = email.strip().lower()
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM ipo_applications WHERE email = ? AND application_id = ?",
+                (email, application_id),
+            )
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError(f"Application '{application_id}' not found.")
+            if row["status"] != "PENDING_ALLOTMENT":
+                raise ValueError(f"Application cannot be cancelled (Current status: {row['status']}).")
+
+            blocked = float(row["amount_blocked"])
+
+            # Refund cash
+            cursor.execute(
+                "UPDATE accounts SET cash_balance = cash_balance + ?, updated_at = ? WHERE email = ?",
+                (blocked, now, email),
+            )
+            # Update status
+            cursor.execute(
+                "UPDATE ipo_applications SET status = 'CANCELLED', amount_refunded = ?, updated_at = ? WHERE email = ? AND application_id = ?",
+                (blocked, now, email, application_id),
+            )
+            conn.commit()
+
+        return {
+            "application_id": application_id,
+            "status": "CANCELLED",
+            "amount_refunded": blocked,
+            "cancelled_at": now,
+        }
+
+    def process_ipo_allotment(self, email: str, application_id: str, seed: Optional[int] = None) -> Dict[str, Any]:
+        """Run allotment simulation, refund unallotted balance, and credit shares to holdings."""
+        from chronosmatch.engine.ipo_simulator import get_ipo_by_id, simulate_allotment
+        email = email.strip().lower()
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM ipo_applications WHERE email = ? AND application_id = ?",
+                (email, application_id),
+            )
+            app_row = cursor.fetchone()
+            if not app_row:
+                raise ValueError(f"Application '{application_id}' not found.")
+            if app_row["status"] != "PENDING_ALLOTMENT":
+                raise ValueError(f"Application already processed (Current status: {app_row['status']}).")
+
+            ipo = get_ipo_by_id(app_row["ipo_id"])
+            if not ipo:
+                raise ValueError(f"IPO '{app_row['ipo_id']}' not found in catalog.")
+
+            app_dict = {
+                "application_id": app_row["application_id"],
+                "lots": int(app_row["lots_applied"]),
+                "category": app_row["category"],
+                "bid_price": float(app_row["bid_price"]),
+                "total_amount": float(app_row["amount_blocked"]),
+            }
+
+            allot = simulate_allotment(app_dict, ipo, seed=seed)
+
+            lots_allotted = allot["lots_allotted"]
+            shares_allotted = allot["shares_allotted"]
+            amount_utilized = allot["amount_utilized"]
+            amount_refunded = allot["amount_refunded"]
+            new_status = allot["status"]
+
+            # Refund unallotted cash
+            if amount_refunded > 0:
+                cursor.execute(
+                    "UPDATE accounts SET cash_balance = cash_balance + ?, updated_at = ? WHERE email = ?",
+                    (amount_refunded, now, email),
+                )
+
+            # Credit allotted shares to user holdings
+            if shares_allotted > 0:
+                symbol = ipo["symbol"]
+                issue_price = float(app_row["bid_price"])
+
+                cursor.execute("SELECT quantity, avg_buy_price, total_invested FROM holdings WHERE email = ? AND symbol = ?", (email, symbol))
+                h_row = cursor.fetchone()
+                if h_row:
+                    old_qty = float(h_row["quantity"])
+                    old_inv = float(h_row["total_invested"])
+                    new_qty = round(old_qty + shares_allotted, 4)
+                    new_inv = round(old_inv + amount_utilized, 2)
+                    new_avg = round(new_inv / new_qty, 4)
+                    cursor.execute(
+                        "UPDATE holdings SET quantity = ?, avg_buy_price = ?, total_invested = ?, updated_at = ? WHERE email = ? AND symbol = ?",
+                        (new_qty, new_avg, new_inv, now, email, symbol),
+                    )
+                else:
+                    cursor.execute(
+                        "INSERT INTO holdings (email, symbol, quantity, avg_buy_price, total_invested, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                        (email, symbol, shares_allotted, issue_price, amount_utilized, now),
+                    )
+
+                # Record journal entry
+                j_id = f"IPO-JOURNAL-{uuid.uuid4().hex[:8].upper()}"
+                cursor.execute(
+                    """INSERT INTO journal_entries (
+                        entry_id, email, symbol, order_id, strategy, sentiment, notes, lessons, created_at
+                    ) VALUES (?, ?, ?, ?, 'IPO Allotment', 'BULLISH', ?, 'IPO allotment provides early primary market entry at book-built cut-off price.', ?)""",
+                    (j_id, email, symbol, application_id, f"[IPO ALLOTMENT] {allot['rationale']}", now),
+                )
+
+            # Update application status
+            cursor.execute(
+                """UPDATE ipo_applications SET
+                    status = ?, lots_allotted = ?, shares_allotted = ?, amount_utilized = ?,
+                    amount_refunded = ?, updated_at = ?
+                WHERE email = ? AND application_id = ?""",
+                (new_status, lots_allotted, shares_allotted, amount_utilized, amount_refunded, now, email, application_id),
+            )
+
+            conn.commit()
+
+        return allot
+
+    
+    def get_holdings(self, email: str) -> List[Dict[str, Any]]:
+        """Retrieve active stock holdings for a user."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT symbol, quantity, avg_buy_price, total_invested, updated_at FROM holdings WHERE email = ? AND quantity > 0",
+                (email,),
+            )
+            return [dict(r) for r in cursor.fetchall()]
+
+    def get_user_ipo_applications(self, email: str) -> List[Dict[str, Any]]:
+        """Retrieve all IPO applications submitted by a user."""
+        email = email.strip().lower()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """SELECT application_id, email, ipo_id, symbol, category, lots_applied, shares_applied,
+                          bid_price, amount_blocked, status, lots_allotted, shares_allotted,
+                          amount_utilized, amount_refunded, applied_at, updated_at
+                   FROM ipo_applications WHERE email = ? ORDER BY applied_at DESC""",
+                (email,),
+            )
+            rows = cursor.fetchall()
+            return [dict(r) for r in rows]
 
 
 db = Database()

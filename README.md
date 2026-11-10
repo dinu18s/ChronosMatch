@@ -150,6 +150,48 @@
   - **Surveillance Academy & Investigator Challenges**:
     - 4 in-depth lessons covering Surveillance Fundamentals, Order Book Deception, Wash Trading, and the False Positive Dilemma.
     - 5 interactive case study challenges (Beginner to Advanced) scoring points for evidence-based decisions and false-positive discernment (up to 720 points).
+- **🚀 IPO Launchpad & Listing Simulator**:
+  > **PRIMARY MARKET DISCLAIMER:** All IPO offerings, prospectuses, financial statements, valuations, and grey market premiums (GMP) are **simulated for educational paper trading**. They provide an authentic replica of book-building, fund reservation, and opening-day market dynamics without using real money.
+  - **IPO Discovery Dashboard**:
+    - Interactive offering cards showcasing company logo icon, industry classification, price band (e.g. ₹680 - ₹715), lot size, minimum investment, issue dates, and total issue size in ₹ Cr.
+    - **Fresh Issue vs Offer for Sale (OFS) Breakdown**: Visual proportional meters displaying how much capital enters company reserves vs proceeds transferred to existing promoters.
+    - **Live Subscription Multipliers**: Real-time demand tracking across Retail (e.g. 18.4x), Non-Institutional (NII: 34.2x), and Qualified Institutional Bidders (QIB: 52.8x).
+    - Status filter chips: `All Offerings`, `🟢 Open for Bidding`, `🔵 Upcoming`, `🟡 Closed (Allotment Pending)`, and `🟣 Listed`.
+    - Expected Listing Date & Grey Market Premium (GMP) indicator badge (e.g. `+42.5% Est. Listing Gain`).
+  - **Virtual IPO Application Window**:
+    - Virtual bidding using portfolio balance with ASBA/UPI mandate simulation.
+    - Category selector with strict regulatory rule enforcement:
+      - `RETAIL (RII)`: Enforces statutory ceiling of ₹2,00,000 with computerized lottery draw.
+      - `NON-INSTITUTIONAL (NII / HNI)`: High-value applications exceeding ₹2,00,000 eligible for pro-rata allotment.
+    - Lot counter, dynamic shares calculator, cut-off price locking, available cash validation, and remaining balance projection.
+    - **Fund Reservation & Deadline Cancellation**: Blocks virtual cash while pending allotment, with full 100% refund on pre-deadline cancellation.
+  - **SEBI-Aligned Allotment Engine Simulator**:
+    - Deterministic and reproducible allotment lottery based on SEBI ICDR guidelines:
+      - *Undersubscribed Offerings*: 100% full allotment for all applied lots.
+      - *Oversubscribed Retail Offerings*: Randomized lottery where winners receive exactly 1 lot (20-60 shares), and remainder funds are instantly refunded.
+      - *Oversubscribed NII Offerings*: Pro-rata proportionate share distribution with fractional rounding.
+    - Instant crediting of allotted shares directly to virtual portfolio `holdings` and immediate refunding of unallotted funds to cash balance.
+  - **Listing Day Volatility Simulator**:
+    - Pre-open session price discovery, opening gap %, listing gain/loss in ₹ and %, intraday high, low, VWAP, and volume in shares & Cr turnover.
+    - **4 Macroeconomic Market Scenarios**:
+      - *Strong Listing*: Aggressive buying demand, huge gap-up (+35% to +60%), and continuation.
+      - *Moderate Listing*: Balanced market sentiment (+10% to +20%).
+      - *Weak / Discount Listing*: Overvaluation or bear sentiment (-5% to -18% discount).
+      - *Sudden Volatility*: High gap opening followed by sharp profit-taking and erratic intraday swings.
+    - Interactive 12-candle intraday price chart canvas (09:15 to 15:30) with issue-price baseline.
+    - **Sell Allotted Shares**: Allows users holding allotted shares to exit on listing day, booking realized gains directly into account balance and P&L.
+  - **Fundamental Research & Evaluation Workspace**:
+    - Business model deep dive, operations summary, and sector tailwinds.
+    - Key financial ratios: 3-Year Revenue CAGR %, EBITDA margin %, Net Profit (PAT) margin %, Debt-to-Equity ratio, ROE %, and P/E vs Industry P/E.
+    - Listed Peer Comparison Benchmark table comparing valuations and margins against established competitors.
+    - Moats & competitive strengths vs key investment risk factors.
+    - **100-Point Fundamental Scorecard**: Transparent evaluation across Financial Health (30 pts), Valuation Attractiveness (25 pts), Market Position & Moats (25 pts), and Governance (20 pts) producing actionable ratings (`STRONG SUBSCRIBE`, `SUBSCRIBE`, `NEUTRAL`, `AVOID`).
+  - **Personal IPO Performance Tracker**:
+    - Executive dashboard tracking Total IPO Applications, Allotment Hit Rate %, Blocked Funds in Escrow, Capital Deployed, and Net Listing-Day Gains.
+    - Interactive application audit trail table with status badges and quick action buttons.
+  - **IPO Learning Academy & Certification Quizzes**:
+    - 5 comprehensive modular lessons covering Capital Formation, Fresh vs OFS, Book-Building Price Bands, Allotment Mathematics, and Pre-Open Listing Discovery.
+    - 5 interactive knowledge check quizzes with instant verification, detailed explanations, and 500-point certificate progress tracking.
 
 
 

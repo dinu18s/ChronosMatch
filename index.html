@@ -2908,6 +2908,143 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
+    
+        /* ==========================================================================
+           CHRONOSMATCH IPO LAUNCHPAD & LISTING SIMULATOR STYLES
+           ========================================================================== */
+        .ipo-subnav-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: border-color 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+        }
+        .ipo-subnav-btn:hover {
+            color: var(--text-main);
+        }
+        .ipo-subnav-btn.active {
+            color: #34d399;
+            border-bottom-color: #34d399;
+        }
+        .ipo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .ipo-filter-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-subtle);
+            color: var(--text-sub);
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .ipo-filter-chip.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .ipo-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .ipo-status-open {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .ipo-status-upcoming {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .ipo-status-closed {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .ipo-status-listed {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+        .ipo-meter-track {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            overflow: hidden;
+            display: flex;
+        }
+        .ipo-meter-fresh {
+            background: #34d399;
+            height: 100%;
+        }
+        .ipo-meter-ofs {
+            background: #60a5fa;
+            height: 100%;
+        }
+        .ipo-quiz-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+        .ipo-quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-subtle);
+            margin-top: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .ipo-quiz-option:hover {
+            border-color: rgba(52, 211, 153, 0.5);
+            background: rgba(52, 211, 153, 0.05);
+        }
+        .ipo-quiz-option.selected {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.15);
+        }
+        .ipo-quiz-option.correct {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+        .ipo-quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
     </style>
 </head>
 <body>
@@ -3074,6 +3211,14 @@
                             <span class="sidebar-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">SEC</span>
                         </button>
                     </li>
+                    <li>
+                        <button type="button" class="nav-link-btn" id="nav-btn-ipo" onclick="switchView('ipo')">
+                            <span class="nav-icon">🚀</span>
+                            <span class="nav-text">IPO Launchpad</span>
+                            <span class="sidebar-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">IPO</span>
+                        </button>
+                    </li>
+
 <li>
                         <button type="button" class="nav-link-btn" id="nav-btn-playground" onclick="switchView('playground')">
                             <span class="nav-icon">⚡</span>
@@ -7454,7 +7599,449 @@
                 </div>
             </div>
 
-</main>
+            <!-- ==========================================================================
+                 CHRONOSMATCH IPO LAUNCHPAD & LISTING SIMULATOR
+                 ========================================================================== -->
+            <div class="view-panel" id="view-ipo">
+                <div class="corporate-header" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%); border-bottom: 1px solid var(--border); padding: 20px 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 24px;">🚀</span>
+                                <h1 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;">
+                                    IPO Launchpad & Listing Simulator
+                                </h1>
+                                <span class="macro-badge-sample" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                                    SIMULATED PRIMARY MARKET SUITE
+                                </span>
+                            </div>
+                            <p style="font-size: 12px; color: var(--text-sub); margin-top: 4px; max-width: 840px; line-height: 1.5;">
+                                Virtual primary market capital issuance sandbox. Explore simulated IPO opportunities, calculate retail allotment odds under SEBI book-building rules, stress-test opening day listing volatility, and score company financials.
+                            </p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="font-size: 11px; padding: 6px 12px; border-radius: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #34d399; font-weight: 700;">
+                                <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; margin-right: 5px;"></span>
+                                PRIMARY MARKET ACTIVE
+                            </div>
+                            <div style="font-size: 11px; padding: 6px 12px; border-radius: 6px; background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text-main); font-weight: 700;">
+                                Available Cash: <span class="mono" id="ipo-user-cash-display">₹1,00,000.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subnav Tabs -->
+                    <div class="ipo-subnav" style="display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--border); overflow-x: auto;">
+                        <button type="button" class="ipo-subnav-btn active" id="ipo-tab-discovery" onclick="ChronosIpoLaunchpad.switchSubTab('discovery')">
+                            <span>🏢</span> IPO Discovery Dashboard
+                        </button>
+                        <button type="button" class="ipo-subnav-btn" id="ipo-tab-apply" onclick="ChronosIpoLaunchpad.switchSubTab('apply')">
+                            <span>📝</span> Virtual IPO Application
+                        </button>
+                        <button type="button" class="ipo-subnav-btn" id="ipo-tab-allotment" onclick="ChronosIpoLaunchpad.switchSubTab('allotment')">
+                            <span>🎲</span> Allotment & Listing Simulator
+                        </button>
+                        <button type="button" class="ipo-subnav-btn" id="ipo-tab-research" onclick="ChronosIpoLaunchpad.switchSubTab('research')">
+                            <span>📊</span> IPO Research & Evaluation
+                        </button>
+                        <button type="button" class="ipo-subnav-btn" id="ipo-tab-tracker" onclick="ChronosIpoLaunchpad.switchSubTab('tracker')">
+                            <span>📈</span> Performance Tracker & Academy
+                        </button>
+                    </div>
+                </div>
+
+                <div style="padding: 24px;">
+
+                    <!-- 1. IPO Discovery Dashboard Subpanel -->
+                    <div id="ipo-subpanel-discovery" class="ipo-sub-panel">
+                        <!-- Educational Alert Banner -->
+                        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 18px;">💡</span>
+                                <div style="font-size: 12px; color: var(--text-main);">
+                                    <strong style="color: #34d399;">Simulated Educational Primary Market:</strong> All IPOs, financials, valuations, and grey market premiums (GMP) are simulated paper-trading instruments designed to teach book-building and listing day mechanics.
+                                </div>
+                            </div>
+                            <span class="mono" style="font-size: 11px; color: #34d399; font-weight: 700;">SEBI ICDR GUIDELINES MODEL</span>
+                        </div>
+
+                        <!-- Filter Chips & Discovery Stats -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="ipo-filter-chips-container">
+                                <button type="button" class="ipo-filter-chip active" id="ipo-filter-chip-ALL" onclick="ChronosIpoLaunchpad.filterCatalog('ALL')">All Offerings (6)</button>
+                                <button type="button" class="ipo-filter-chip" id="ipo-filter-chip-OPEN" onclick="ChronosIpoLaunchpad.filterCatalog('OPEN')">🟢 Open for Bidding (3)</button>
+                                <button type="button" class="ipo-filter-chip" id="ipo-filter-chip-UPCOMING" onclick="ChronosIpoLaunchpad.filterCatalog('UPCOMING')">🔵 Upcoming (1)</button>
+                                <button type="button" class="ipo-filter-chip" id="ipo-filter-chip-CLOSED" onclick="ChronosIpoLaunchpad.filterCatalog('CLOSED')">🟡 Allotment Pending (1)</button>
+                                <button type="button" class="ipo-filter-chip" id="ipo-filter-chip-LISTED" onclick="ChronosIpoLaunchpad.filterCatalog('LISTED')">🟣 Listed (1)</button>
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-sub);">
+                                Showing <span id="ipo-visible-count" style="font-weight: 700; color: var(--text-main);">6</span> simulated offerings
+                            </div>
+                        </div>
+
+                        <!-- Dynamic IPO Cards Grid -->
+                        <div id="ipo-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 18px;">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- 2. Virtual IPO Application Subpanel -->
+                    <div id="ipo-subpanel-apply" class="ipo-sub-panel" style="display: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                            <!-- Application Form Card -->
+                            <div class="ipo-card">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--text-main);">
+                                            Virtual IPO Bidding Window
+                                        </h3>
+                                        <span class="ipo-status-badge ipo-status-open">ASBA / UPI SIMULATION</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 18px;">
+                                        Apply for shares using your paper-trading virtual capital. Funds will be reserved until allotment is finalized.
+                                    </p>
+
+                                    <!-- IPO Selection Dropdown -->
+                                    <div style="margin-bottom: 16px;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 6px;">SELECT IPO OFFERING</label>
+                                        <select id="ipo-apply-select" class="form-control" style="width: 100%;" onchange="ChronosIpoLaunchpad.onApplyIpoChange()">
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+
+                                    <!-- Investor Category Selector -->
+                                    <div style="margin-bottom: 16px;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 6px;">INVESTOR CATEGORY</label>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                            <button type="button" class="btn btn-secondary active" id="ipo-cat-retail-btn" onclick="ChronosIpoLaunchpad.selectCategory('RETAIL')" style="text-align: left; padding: 10px;">
+                                                <div style="font-weight: 800; font-size: 12px;">Retail Individual (RII)</div>
+                                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">Max ₹2,00,000 • Lottery Draw</div>
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="ipo-cat-nii-btn" onclick="ChronosIpoLaunchpad.selectCategory('NII')" style="text-align: left; padding: 10px;">
+                                                <div style="font-weight: 800; font-size: 12px;">Non-Institutional (NII)</div>
+                                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">Over ₹2,00,000 • Pro-Rata Share</div>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Lot Size & Counter -->
+                                    <div style="margin-bottom: 16px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                            <label style="font-size: 11px; font-weight: 700; color: var(--text-sub);">NUMBER OF LOTS</label>
+                                            <span style="font-size: 11px; color: var(--text-sub);" id="ipo-apply-shares-count">20 Shares</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.adjustLots(-1)" style="width: 36px; height: 36px; font-size: 16px; font-weight: 800;">-</button>
+                                            <input type="number" id="ipo-apply-lots" class="form-control mono" value="1" min="1" max="100" style="text-align: center; font-weight: 800; font-size: 15px; width: 80px;" onchange="ChronosIpoLaunchpad.updateApplicationCalc()">
+                                            <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.adjustLots(1)" style="width: 36px; height: 36px; font-size: 16px; font-weight: 800;">+</button>
+                                            <input type="range" id="ipo-apply-lots-slider" min="1" max="15" value="1" style="flex: 1;" oninput="ChronosIpoLaunchpad.onSliderChange(this.value)">
+                                        </div>
+                                    </div>
+
+                                    <!-- Price Band & Cut-off Price Selector -->
+                                    <div style="margin-bottom: 18px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                            <label style="font-size: 11px; font-weight: 700; color: var(--text-sub);">BID PRICE (CUT-OFF)</label>
+                                            <span style="font-size: 11px; color: #34d399;" id="ipo-apply-band-label">Band: ₹680 - ₹715</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px;">
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 13px;" id="ipo-apply-bid-price">₹715.00</div>
+                                                <div style="font-size: 10px; color: var(--text-sub);">Cut-off price (recommended for retail maximum allotment chance)</div>
+                                            </div>
+                                            <span style="font-size: 10px; background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 3px 6px; border-radius: 4px; font-weight: 700;">CUT-OFF LOCKED</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Calculations & Balance Validation Card -->
+                                    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 18px;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+                                            <span style="color: var(--text-sub);">Total Application Amount:</span>
+                                            <span class="mono" style="font-weight: 800; font-size: 14px; color: var(--text-main);" id="ipo-apply-total-val">₹14,300.00</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px;">
+                                            <span style="color: var(--text-sub);">Available Virtual Cash:</span>
+                                            <span class="mono" id="ipo-apply-avail-cash">₹1,00,000.00</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px;">
+                                            <span style="color: var(--text-sub);">Cash After Fund Block:</span>
+                                            <span class="mono" id="ipo-apply-remaining-cash">₹85,700.00</span>
+                                        </div>
+                                        <div id="ipo-apply-warning-box" style="display: none; font-size: 11px; padding: 8px 10px; border-radius: 6px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-weight: 600;">
+                                            <!-- Dynamic validation message -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Application Button -->
+                                    <button type="button" class="btn btn-primary" id="ipo-submit-app-btn" onclick="ChronosIpoLaunchpad.submitApplication()" style="width: 100%; padding: 12px; font-weight: 800; font-size: 13px;">
+                                        🚀 Submit Virtual Application & Reserve Funds
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Right Side: Active Applications & Guidelines -->
+                            <div>
+                                <div class="ipo-card" style="margin-bottom: 20px;">
+                                    <h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: var(--text-main);">
+                                        Active Simulated Applications
+                                    </h4>
+                                    <div id="ipo-pending-apps-list" style="max-height: 280px; overflow-y: auto;">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <div class="ipo-card">
+                                    <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 800; color: var(--text-main);">
+                                        SEBI Retail Bidding Rules
+                                    </h4>
+                                    <ul style="font-size: 11px; color: var(--text-sub); line-height: 1.6; padding-left: 18px; margin: 0;">
+                                        <li><strong>Category Ceiling:</strong> Retail applications cannot exceed ₹2,00,000. Applications above this ceiling automatically fall into Non-Institutional Investor (NII) category.</li>
+                                        <li><strong>Fund Blocking:</strong> In real markets via ASBA/UPI mandate, funds never leave your bank until allotment. In ChronosMatch, virtual funds are reserved and locked from available cash.</li>
+                                        <li><strong>Application Cancellation:</strong> You can cancel your application at any time before the issue closure deadline for a 100% immediate virtual refund.</li>
+                                        <li><strong>Cut-Off Price:</strong> Retail bidders submitting at the cut-off price automatically match the final discovered clearing price.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Allotment & Listing Simulator Subpanel -->
+                    <div id="ipo-subpanel-allotment" class="ipo-sub-panel" style="display: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                            <!-- Allotment Simulation Engine Card -->
+                            <div class="ipo-card">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--text-main);">
+                                            SEBI Allotment Engine Simulator
+                                        </h3>
+                                        <span class="ipo-status-badge ipo-status-closed">LOTTERY / PRO-RATA ENGINE</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">
+                                        Execute the reproducible allotment lottery for your pending applications. Computes allotted shares, blocked fund utilization, and instant cash refunds.
+                                    </p>
+
+                                    <div style="margin-bottom: 14px;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 6px;">SELECT APPLICATION TO ALLOT</label>
+                                        <select id="ipo-allot-select-app" class="form-control" style="width: 100%;">
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+
+                                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                                        <div style="flex: 1;">
+                                            <label style="font-size: 10px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 4px;">RANDOM SEED (FOR REPRODUCIBILITY)</label>
+                                            <input type="number" id="ipo-allot-seed" class="form-control mono" value="42" style="font-size: 12px;">
+                                        </div>
+                                        <div style="flex: 1; display: flex; align-items: flex-end;">
+                                            <button type="button" class="btn btn-primary" onclick="ChronosIpoLaunchpad.runAllotmentSimulation()" style="width: 100%; padding: 10px; font-weight: 800; font-size: 12px;">
+                                                🎲 Run Allotment Draw
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Allotment Outcome Box -->
+                                    <div id="ipo-allotment-result-box" style="display: none; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Listing Day Volatility Scenario Runner -->
+                            <div class="ipo-card">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--text-main);">
+                                            Listing Day Simulator
+                                        </h3>
+                                        <span class="ipo-status-badge ipo-status-listed">PRE-OPEN & INTRADAY</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">
+                                        Experience opening day listing volatility. Test market reactions across 4 realistic macroeconomic scenarios.
+                                    </p>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                                        <div>
+                                            <label style="font-size: 10px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 4px;">COMPANY</label>
+                                            <select id="ipo-listing-company-select" class="form-control" onchange="ChronosIpoLaunchpad.renderListingSimulation()">
+                                                <!-- Populated dynamically -->
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 10px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 4px;">MARKET SCENARIO</label>
+                                            <select id="ipo-listing-scenario-select" class="form-control" onchange="ChronosIpoLaunchpad.renderListingSimulation()">
+                                                <option value="STRONG">🟢 Strong Listing (+35% to +60%)</option>
+                                                <option value="MODERATE" selected>🔵 Moderate Listing (+10% to +20%)</option>
+                                                <option value="WEAK">🔴 Weak / Discount (-5% to -18%)</option>
+                                                <option value="VOLATILE">🟠 Sudden Volatility (Erratic Intraday)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Listing Key Stats Strip -->
+                                    <div id="ipo-listing-stats-strip" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;">
+                                        <!-- Populated dynamically -->
+                                    </div>
+
+                                    <!-- Sell Allotted Shares Action -->
+                                    <div id="ipo-listing-sell-action" style="display: none; padding: 12px; border-radius: 8px; background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.3); margin-top: 10px; align-items: center; justify-content: space-between;">
+                                        <div>
+                                            <div style="font-weight: 800; font-size: 12px; color: #34d399;">You hold allotted shares!</div>
+                                            <div style="font-size: 11px; color: var(--text-sub);" id="ipo-listing-holding-detail">20 shares @ ₹715.00</div>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" onclick="ChronosIpoLaunchpad.sellAllottedShares()" style="padding: 8px 14px; font-size: 11px; font-weight: 800;">
+                                            💰 Sell on Listing Day
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Listing Day Intraday Price Chart Canvas -->
+                        <div class="ipo-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <div>
+                                    <h4 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--text-main);" id="ipo-chart-title">
+                                        NEXUSAI Intraday Listing Price Chart (09:15 - 15:30)
+                                    </h4>
+                                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                        30-minute reconstitution candles with high, low, open, close, and volume
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 11px; color: var(--text-sub);">Issue Price:</span>
+                                    <span class="mono" style="font-weight: 800; font-size: 12px; color: #fbbf24;" id="ipo-chart-issue-price">₹715.00</span>
+                                </div>
+                            </div>
+                            <div style="width: 100%; height: 260px; background: #0b0f19; border-radius: 8px; border: 1px solid var(--border); position: relative; overflow: hidden;">
+                                <canvas id="ipo-listing-canvas" width="900" height="260" style="width: 100%; height: 100%; display: block;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. IPO Research & Evaluation Subpanel -->
+                    <div id="ipo-subpanel-research" class="ipo-sub-panel" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main);">
+                                    Fundamental Research & Evaluation Workspace
+                                </h3>
+                                <p style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">
+                                    Evaluate business fundamentals, competitive moats, 3-year growth metrics, and 100-point transparent scorecards.
+                                </p>
+                            </div>
+                            <div style="min-width: 260px;">
+                                <select id="ipo-research-select" class="form-control" onchange="ChronosIpoLaunchpad.onResearchIpoChange()">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Research Container -->
+                        <div id="ipo-research-content-container">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- 5. Performance Tracker & Academy Subpanel -->
+                    <div id="ipo-subpanel-tracker" class="ipo-sub-panel" style="display: none;">
+                        <!-- Summary Performance Banner -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px;">
+                            <div class="ipo-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700;">Total Applications</div>
+                                <div class="mono" id="ipo-stat-total-apps" style="font-size: 24px; font-weight: 800; color: var(--text-main); margin-top: 4px;">0</div>
+                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">Simulated IPO bids</div>
+                            </div>
+                            <div class="ipo-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700;">Allotment Hit Rate</div>
+                                <div class="mono" id="ipo-stat-hit-rate" style="font-size: 24px; font-weight: 800; color: #34d399; margin-top: 4px;">0.0%</div>
+                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;"><span id="ipo-stat-allotted-count">0</span> successful allotments</div>
+                            </div>
+                            <div class="ipo-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700;">Blocked Funds (Pending)</div>
+                                <div class="mono" id="ipo-stat-blocked-funds" style="font-size: 24px; font-weight: 800; color: #60a5fa; margin-top: 4px;">₹0.00</div>
+                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">Reserved in escrow</div>
+                            </div>
+                            <div class="ipo-card">
+                                <div style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700;">Realized Listing Gains</div>
+                                <div class="mono" id="ipo-stat-realized-gains" style="font-size: 24px; font-weight: 800; color: #34d399; margin-top: 4px;">₹0.00</div>
+                                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">Simulated P&L</div>
+                            </div>
+                        </div>
+
+                        <!-- Applications History Table Card -->
+                        <div class="ipo-card" style="margin-bottom: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <h4 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--text-main);">
+                                    All Virtual IPO Applications
+                                </h4>
+                                <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.renderPerformanceTracker()" style="font-size: 11px; padding: 4px 10px;">
+                                    🔄 Refresh History
+                                </button>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid var(--border); color: var(--text-sub); text-align: left;">
+                                            <th style="padding: 10px 8px;">App ID</th>
+                                            <th style="padding: 10px 8px;">Company</th>
+                                            <th style="padding: 10px 8px;">Category</th>
+                                            <th style="padding: 10px 8px;">Lots</th>
+                                            <th style="padding: 10px 8px;">Bid Price</th>
+                                            <th style="padding: 10px 8px;">Blocked</th>
+                                            <th style="padding: 10px 8px;">Status</th>
+                                            <th style="padding: 10px 8px;">Utilized / Refunded</th>
+                                            <th style="padding: 10px 8px; text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ipo-history-table-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Learning Academy & Quizzes Section -->
+                        <div style="margin-top: 30px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main);">
+                                        🎓 IPO Learning Academy & Investor Quizzes
+                                    </h3>
+                                    <p style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">
+                                        Master the primary market lifecycle from draft red herring prospectus (DRHP) to opening bell listing day.
+                                    </p>
+                                </div>
+                                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 6px 14px; display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 16px;">🏆</span>
+                                    <span style="font-size: 12px; font-weight: 800; color: #34d399;" id="ipo-quiz-score-badge">Score: 0 / 500 Pts</span>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                                <!-- Lessons Accordion -->
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: 800; color: var(--text-main); margin: 0 0 12px 0;">Structured Curriculum</h4>
+                                    <div id="ipo-academy-lessons-container">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Interactive Quizzes -->
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: 800; color: var(--text-main); margin: 0 0 12px 0;">Interactive Knowledge Check</h4>
+                                    <div id="ipo-academy-quizzes-container">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+    </main>
     </div>
 
     <!-- ==========================================================================
@@ -7904,7 +8491,9 @@
             } else if (viewName === 'macro') {
                 initMacroSimulatorView();
             }
-            } else if (viewName === 'surveillance') {
+                        } else if (viewName === 'ipo') {
+                initIpoLaunchpadView();
+} else if (viewName === 'surveillance') {
                 initSurveillanceLabView();
             }
         }
@@ -21380,7 +21969,1170 @@ function initSurveillanceLabView() {
 
 
 
-        window.addEventListener('DOMContentLoaded', () => {
+        
+// =============================================================================
+// CHRONOSMATCH IPO LAUNCHPAD & LISTING SIMULATOR CONTROLLER
+// =============================================================================
+
+const ChronosIpoLaunchpad = {
+    activeSubTab: 'discovery',
+    activeFilter: 'ALL',
+    selectedIpoId: 'IPO-NEXUS-AI',
+    selectedCategory: 'RETAIL',
+    selectedLots: 1,
+    selectedListingScenario: 'MODERATE',
+    userApplications: [],
+    quizAnswers: {},
+    quizScore: 0,
+    catalog: [{"id": "IPO-NEXUS-AI", "name": "NexusAI Technologies Limited", "symbol": "NEXUSAI", "logo_icon": "\ud83e\udd16", "industry": "Enterprise Artificial Intelligence & Cloud Infrastructure", "description": "Provider of specialized enterprise LLM fine-tuning platforms, neural search pipelines, and sovereign AI compute clusters for Fortune 500 enterprises and defense contractors.", "price_band_low": 680.0, "price_band_high": 715.0, "cut_off_price": 715.0, "lot_size": 20, "min_investment": 14300.0, "issue_size_cr": 2400.0, "fresh_issue_cr": 1800.0, "ofs_cr": 600.0, "retail_quota_pct": 35.0, "nii_quota_pct": 15.0, "qib_quota_pct": 50.0, "open_date": "2026-11-10", "close_date": "2026-11-12", "allotment_date": "2026-11-15", "listing_date": "2026-11-18", "status": "OPEN", "gmp_estimate_inr": 285.0, "gmp_percent": 39.86, "subscriptions": {"retail_sub_x": 18.4, "nii_sub_x": 34.2, "qib_sub_x": 62.8, "total_sub_x": 42.5}, "research": {"business_model": "SaaS recurring revenue (78%) + dedicated AI GPU compute node reservations (22%). 112% Net Revenue Retention (NRR).", "industry_outlook": "Global Enterprise AI expenditure projected to grow at 34% CAGR from 2024 to 2030, driven by generative AI enterprise adoption.", "financials": {"revenue_fy24_cr": 840.0, "revenue_fy25_cr": 1420.0, "cagr_3y_pct": 48.2, "ebitda_margin_pct": 28.5, "pat_cr": 265.0, "debt_to_equity": 0.12, "pe_ratio": 42.5, "pb_ratio": 6.8, "roe_pct": 21.4}, "peers": [{"name": "Tata Elxsi", "pe": 54.2, "market_cap_cr": 48000.0}, {"name": "Persistent Systems", "pe": 46.8, "market_cap_cr": 62000.0}, {"name": "L&T Technology Services", "pe": 39.5, "market_cap_cr": 51000.0}], "strengths": ["Proprietary low-latency inference orchestration engine with zero vendor lock-in.", "Multi-year anchor contracts with leading tier-1 banking institutions.", "High operating leverage with negative working capital cycle."], "risks": ["Heavy dependence on global semiconductor fabrication schedules for GPU accelerators.", "Intense competitive pressures from hyperscalers (AWS, Azure, Google Cloud).", "Key client concentration: Top 5 clients account for 41% of total revenue."], "scorecard": {"financial_health": 23, "valuation_attractiveness": 19, "business_moat": 24, "governance_promoters": 22, "total_score": 88, "recommendation": "SUBSCRIBE_LISTING_GAINS", "summary": "High-growth enterprise AI pure-play with robust margins and strong subscription demand. Attractive candidate for listing gains and medium-term portfolio allocation."}}, "listing_scenarios": {"strong": {"open_price": 1040.0, "gain_pct": 45.45, "day_high": 1110.0, "day_low": 980.0, "close": 1075.0, "volume": 14500000}, "moderate": {"open_price": 820.0, "gain_pct": 14.68, "day_high": 860.0, "day_low": 790.0, "close": 835.0, "volume": 9800000}, "weak": {"open_price": 670.0, "gain_pct": -6.29, "day_high": 700.0, "day_low": 640.0, "close": 655.0, "volume": 6200000}, "volatile": {"open_price": 910.0, "gain_pct": 27.27, "day_high": 1150.0, "day_low": 780.0, "close": 890.0, "volume": 18200000}}}, {"id": "IPO-SOLARIS-GREEN", "name": "Solaris Green Energy Limited", "symbol": "SOLARIS", "logo_icon": "\u2600\ufe0f", "industry": "Renewable Energy & Battery Energy Storage (BESS)", "description": "Integrated utility-scale solar project developer, high-efficiency bifacial PV module manufacturer, and grid-scale lithium-ion battery storage operator across Western and Southern India.", "price_band_low": 320.0, "price_band_high": 340.0, "cut_off_price": 340.0, "lot_size": 44, "min_investment": 14960.0, "issue_size_cr": 1850.0, "fresh_issue_cr": 1450.0, "ofs_cr": 400.0, "retail_quota_pct": 35.0, "nii_quota_pct": 15.0, "qib_quota_pct": 50.0, "open_date": "2026-11-09", "close_date": "2026-11-11", "allotment_date": "2026-11-14", "listing_date": "2026-11-17", "status": "OPEN", "gmp_estimate_inr": 82.0, "gmp_percent": 24.12, "subscriptions": {"retail_sub_x": 12.8, "nii_sub_x": 22.4, "qib_sub_x": 44.1, "total_sub_x": 28.5}, "research": {"business_model": "Long-term Power Purchase Agreements (PPAs) with SECI and state discoms (25-year lock-in) + commercial EPC turnkey solutions.", "industry_outlook": "India target of 500 GW non-fossil capacity by 2030 guarantees sustained capex pipelines and preferential transmission corridor rights.", "financials": {"revenue_fy24_cr": 1120.0, "revenue_fy25_cr": 1680.0, "cagr_3y_pct": 36.4, "ebitda_margin_pct": 42.1, "pat_cr": 195.0, "debt_to_equity": 1.45, "pe_ratio": 29.8, "pb_ratio": 3.9, "roe_pct": 15.8}, "peers": [{"name": "Adani Green Energy", "pe": 115.0, "market_cap_cr": 285000.0}, {"name": "Tata Power Renewable", "pe": 38.2, "market_cap_cr": 125000.0}, {"name": "Suzlon Energy", "pe": 48.6, "market_cap_cr": 72000.0}], "strengths": ["94% of operational capacity backed by sovereign-guaranteed PPAs with SECI.", "In-house EPC reduces capital deployment costs by 18% versus peers.", "Diversified solar-wind hybrid portfolio balancing diurnal power delivery."], "risks": ["Elevated debt-to-equity ratio (1.45x) due to capital-intensive development.", "Discom payment delays or grid curtailment risks during surplus generation hours.", "Fluctuations in global polysilicon and battery cell import tariffs."], "scorecard": {"financial_health": 18, "valuation_attractiveness": 22, "business_moat": 21, "governance_promoters": 20, "total_score": 81, "recommendation": "SUBSCRIBE_LONG_TERM", "summary": "Attractive valuation relative to bloated clean-energy peers with predictable 25-year annuity cash flows. Suitable for long-term thematic exposure."}}, "listing_scenarios": {"strong": {"open_price": 440.0, "gain_pct": 29.41, "day_high": 475.0, "day_low": 420.0, "close": 455.0, "volume": 11200000}, "moderate": {"open_price": 385.0, "gain_pct": 13.24, "day_high": 405.0, "day_low": 370.0, "close": 395.0, "volume": 7600000}, "weak": {"open_price": 325.0, "gain_pct": -4.41, "day_high": 345.0, "day_low": 310.0, "close": 320.0, "volume": 4900000}, "volatile": {"open_price": 410.0, "gain_pct": 20.59, "day_high": 480.0, "day_low": 350.0, "close": 380.0, "volume": 14000000}}}, {"id": "IPO-FINPULSE-PAY", "name": "FinPulse Payments Limited", "symbol": "FINPULSE", "logo_icon": "\ud83d\udcb3", "industry": "FinTech & Digital Payments Infrastructure", "description": "Full-stack payment aggregator, offline merchant QR soundbox network, and embedded credit distribution infrastructure powering over 4.2 million small merchants across Tier 2 and Tier 3 cities.", "price_band_low": 510.0, "price_band_high": 540.0, "cut_off_price": 540.0, "lot_size": 27, "min_investment": 14580.0, "issue_size_cr": 3100.0, "fresh_issue_cr": 1200.0, "ofs_cr": 1900.0, "retail_quota_pct": 35.0, "nii_quota_pct": 15.0, "qib_quota_pct": 50.0, "open_date": "2026-11-18", "close_date": "2026-11-20", "allotment_date": "2026-11-23", "listing_date": "2026-11-26", "status": "UPCOMING", "gmp_estimate_inr": 45.0, "gmp_percent": 8.33, "subscriptions": {"retail_sub_x": 0.0, "nii_sub_x": 0.0, "qib_sub_x": 0.0, "total_sub_x": 0.0}, "research": {"business_model": "Payment processing MDR (0.15-0.45%), monthly hardware soundbox subscription rentals (\u20b9125/month), and loan origination fees from partnering NBFCs (2.5%).", "industry_outlook": "Merchant payment digitization accelerating toward contactless soundbox penetration with 28% CAGR in merchant credit disbursement.", "financials": {"revenue_fy24_cr": 1450.0, "revenue_fy25_cr": 2180.0, "cagr_3y_pct": 41.5, "ebitda_margin_pct": 11.2, "pat_cr": 88.0, "debt_to_equity": 0.22, "pe_ratio": 72.4, "pb_ratio": 8.5, "roe_pct": 9.2}, "peers": [{"name": "One97 Communications (Paytm)", "pe": -1.0, "market_cap_cr": 45000.0}, {"name": "PB Fintech (PolicyBazaar)", "pe": 88.0, "market_cap_cr": 68000.0}, {"name": "Fino Payments Bank", "pe": 28.5, "market_cap_cr": 2800.0}], "strengths": ["Market leadership in rural and semi-urban merchant soundbox installations (4.2M active units).", "Proven turnaround from cash burn to net GAAP profitability in FY25.", "Proprietary transaction underwriting model enabling high conversion for NBFC partners."], "risks": ["Heavy OFS component (61% of total issue size) allowing early PE investors to exit.", "Regulatory uncertainty regarding UPI merchant interchange caps and RBI payment aggregator guidelines.", "Intense competition from PhonePe, Google Pay, and deep-pocketed telecom-backed payment banks."], "scorecard": {"financial_health": 17, "valuation_attractiveness": 14, "business_moat": 19, "governance_promoters": 16, "total_score": 66, "recommendation": "NEUTRAL", "summary": "Fast-growing franchise, but aggressive pricing (72x P/E) and outsized Offer For Sale (OFS) suggest modest listing gains. Apply with caution."}}, "listing_scenarios": {"strong": {"open_price": 630.0, "gain_pct": 16.67, "day_high": 660.0, "day_low": 590.0, "close": 615.0, "volume": 12500000}, "moderate": {"open_price": 565.0, "gain_pct": 4.63, "day_high": 580.0, "day_low": 540.0, "close": 555.0, "volume": 8400000}, "weak": {"open_price": 490.0, "gain_pct": -9.26, "day_high": 520.0, "day_low": 470.0, "close": 485.0, "volume": 7100000}, "volatile": {"open_price": 575.0, "gain_pct": 6.48, "day_high": 640.0, "day_low": 505.0, "close": 530.0, "volume": 15200000}}}, {"id": "IPO-AERO-DEFENSE", "name": "Garuda Aerospace & Defense Limited", "symbol": "GARUDAERO", "logo_icon": "\ud83d\udee9\ufe0f", "industry": "Aerospace, UAV Drone Systems & Defense Electronics", "description": "Indigenous designer and manufacturer of autonomous surveillance drones, anti-drone electronic jamming systems, and tactical loitering munitions for armed forces and border security.", "price_band_low": 820.0, "price_band_high": 860.0, "cut_off_price": 860.0, "lot_size": 16, "min_investment": 13760.0, "issue_size_cr": 1500.0, "fresh_issue_cr": 1200.0, "ofs_cr": 300.0, "retail_quota_pct": 35.0, "nii_quota_pct": 15.0, "qib_quota_pct": 50.0, "open_date": "2026-11-04", "close_date": "2026-11-06", "allotment_date": "2026-11-10", "listing_date": "2026-11-13", "status": "CLOSED", "gmp_estimate_inr": 380.0, "gmp_percent": 44.19, "subscriptions": {"retail_sub_x": 42.6, "nii_sub_x": 78.4, "qib_sub_x": 115.2, "total_sub_x": 84.3}, "research": {"business_model": "Long-term defense procurement defense contracts (Make in India) + annual maintenance and electronic warfare upgrades.", "industry_outlook": "Indian defense modernization budget prioritizing indigenous procurement with positive import embargo lists on UAV systems.", "financials": {"revenue_fy24_cr": 680.0, "revenue_fy25_cr": 1190.0, "cagr_3y_pct": 52.8, "ebitda_margin_pct": 31.4, "pat_cr": 210.0, "debt_to_equity": 0.08, "pe_ratio": 38.4, "pb_ratio": 7.2, "roe_pct": 24.6}, "peers": [{"name": "Hindustan Aeronautics (HAL)", "pe": 39.5, "market_cap_cr": 310000.0}, {"name": "Bharat Electronics (BEL)", "pe": 44.2, "market_cap_cr": 215000.0}, {"name": "Zen Technologies", "pe": 62.0, "market_cap_cr": 14000.0}], "strengths": ["Unassailable order book of \u20b94,850 Cr (4.1x FY25 revenue) offering multi-year revenue visibility.", "In-house defense IP with 100% indigenous components escaping export control restrictions.", "Zero net debt balance sheet with high return on equity (24.6%)."], "risks": ["Single-customer concentration risk (Ministry of Defense accounts for 82% of order book).", "Lumpy milestone-based cash collection cycles characteristic of defense contracts.", "Long tender gestation periods and risk of RFP cancellation."], "scorecard": {"financial_health": 24, "valuation_attractiveness": 21, "business_moat": 25, "governance_promoters": 23, "total_score": 93, "recommendation": "STRONG_SUBSCRIBE", "summary": "Blockbuster defense candidate with massive order book visibility, pristine balance sheet, and extraordinary 84x institutional oversubscription. Strong candidate for bumper listing gains."}}, "listing_scenarios": {"strong": {"open_price": 1350.0, "gain_pct": 56.98, "day_high": 1440.0, "day_low": 1280.0, "close": 1390.0, "volume": 18500000}, "moderate": {"open_price": 1050.0, "gain_pct": 22.09, "day_high": 1120.0, "day_low": 1010.0, "close": 1080.0, "volume": 11400000}, "weak": {"open_price": 840.0, "gain_pct": -2.33, "day_high": 870.0, "day_low": 800.0, "close": 820.0, "volume": 6900000}, "volatile": {"open_price": 1200.0, "gain_pct": 39.53, "day_high": 1500.0, "day_low": 980.0, "close": 1150.0, "volume": 22000000}}}, {"id": "IPO-URBAN-CART", "name": "UrbanCart QuickCommerce Limited", "symbol": "URBANCART", "logo_icon": "\ud83d\udecd\ufe0f", "industry": "Hyperlocal 10-Minute Quick Commerce & Dark Store Logistics", "description": "On-demand grocery and household essentials delivery network operating 850 automated micro-fulfillment dark stores across 28 metropolitan cities in India.", "price_band_low": 210.0, "price_band_high": 225.0, "cut_off_price": 225.0, "lot_size": 65, "min_investment": 14625.0, "issue_size_cr": 4200.0, "fresh_issue_cr": 3200.0, "ofs_cr": 1000.0, "retail_quota_pct": 10.0, "nii_quota_pct": 15.0, "qib_quota_pct": 75.0, "open_date": "2026-10-15", "close_date": "2026-10-17", "allotment_date": "2026-10-20", "listing_date": "2026-10-24", "status": "LISTED", "gmp_estimate_inr": 32.0, "gmp_percent": 14.22, "subscriptions": {"retail_sub_x": 8.2, "nii_sub_x": 16.5, "qib_sub_x": 38.4, "total_sub_x": 22.1}, "research": {"business_model": "Product markup margins (14%) + delivery and surge handling fees + advertising platform revenues from FMCG brands (4.2% of GMV).", "industry_outlook": "Quick commerce expanding rapidly into electronics, beauty, and festive gifting, eroding market share of traditional supermarkets.", "financials": {"revenue_fy24_cr": 3200.0, "revenue_fy25_cr": 5800.0, "cagr_3y_pct": 81.2, "ebitda_margin_pct": 2.1, "pat_cr": -45.0, "debt_to_equity": 0.05, "pe_ratio": -1.0, "pb_ratio": 9.4, "roe_pct": -3.2}, "peers": [{"name": "Zomato (Blinkit)", "pe": 118.0, "market_cap_cr": 220000.0}, {"name": "Swiggy (Instamart)", "pe": -1.0, "market_cap_cr": 95000.0}], "strengths": ["Exceptional top-line momentum (81% CAGR) with industry-leading dark store throughput.", "Advertising and FMCG monetization engine generating high-margin ancillary revenue.", "Dense metropolitan store footprint providing substantial customer switching costs."], "risks": ["Thin operating margins susceptible to delivery gig-worker minimum wage and gig regulations.", "Heavy cash burn in customer acquisition discounts for non-metro tier-2 expansion.", "High warehouse lease commitments and perishable product shrinkage losses."], "scorecard": {"financial_health": 15, "valuation_attractiveness": 16, "business_moat": 20, "governance_promoters": 18, "total_score": 69, "recommendation": "SUBSCRIBE_LISTING_GAINS", "summary": "Hyper-growth consumer favorite with strong institutional demand. Suitable for momentum traders seeking listing pop, though structural profitability remains nascent."}}, "listing_scenarios": {"strong": {"open_price": 272.0, "gain_pct": 20.89, "day_high": 290.0, "day_low": 260.0, "close": 281.0, "volume": 32000000}, "moderate": {"open_price": 245.0, "gain_pct": 8.89, "day_high": 255.0, "day_low": 235.0, "close": 242.0, "volume": 21000000}, "weak": {"open_price": 212.0, "gain_pct": -5.78, "day_high": 225.0, "day_low": 198.0, "close": 205.0, "volume": 16500000}, "volatile": {"open_price": 260.0, "gain_pct": 15.56, "day_high": 310.0, "day_low": 220.0, "close": 235.0, "volume": 44000000}}}, {"id": "IPO-MEDICURE-BIO", "name": "Medicure Therapeutics Limited", "symbol": "MEDICURE", "logo_icon": "\ud83e\uddec", "industry": "Biopharmaceuticals, Oncology Biosimilars & CDMO", "description": "Specialty biopharmaceutical research company developing biosimilar monoclonal antibodies for oncology, autoimmune disorders, and contract biologics manufacturing.", "price_band_low": 410.0, "price_band_high": 435.0, "cut_off_price": 435.0, "lot_size": 34, "min_investment": 14790.0, "issue_size_cr": 1100.0, "fresh_issue_cr": 900.0, "ofs_cr": 200.0, "retail_quota_pct": 35.0, "nii_quota_pct": 15.0, "qib_quota_pct": 50.0, "open_date": "2026-10-08", "close_date": "2026-10-10", "allotment_date": "2026-10-13", "listing_date": "2026-10-17", "status": "LISTED", "gmp_estimate_inr": -15.0, "gmp_percent": -3.45, "subscriptions": {"retail_sub_x": 0.85, "nii_sub_x": 1.15, "qib_sub_x": 2.4, "total_sub_x": 1.67}, "research": {"business_model": "Global drug licensing royalties + commercial batch manufacturing services for European and US generic pharmaceutical leaders.", "industry_outlook": "Patent cliff for major biologics expected to unlock $120B in biosimilar addressable market through 2030.", "financials": {"revenue_fy24_cr": 480.0, "revenue_fy25_cr": 590.0, "cagr_3y_pct": 18.2, "ebitda_margin_pct": 19.5, "pat_cr": 54.0, "debt_to_equity": 0.45, "pe_ratio": 48.0, "pb_ratio": 4.1, "roe_pct": 10.4}, "peers": [{"name": "Biocon", "pe": 34.0, "market_cap_cr": 38000.0}, {"name": "Syngene International", "pe": 41.5, "market_cap_cr": 32000.0}], "strengths": ["US FDA and EMA approved cGMP biologics manufacturing facility in Hyderabad.", "Robust pipeline of 6 biosimilar candidates in late Phase III clinical trials."], "risks": ["Regulatory scrutiny: Any FDA Form 483 warning letters can halt exports.", "Rich valuation pricing relative to established peers without guaranteed clinical trial approval.", "Subdued retail subscription interest with negative grey market premium (GMP)."], "scorecard": {"financial_health": 16, "valuation_attractiveness": 12, "business_moat": 18, "governance_promoters": 17, "total_score": 63, "recommendation": "AVOID", "summary": "Full pricing with negative GMP and tepid retail subscription. High likelihood of listing at a discount; wait for post-listing price stabilization."}}, "listing_scenarios": {"strong": {"open_price": 450.0, "gain_pct": 3.45, "day_high": 465.0, "day_low": 430.0, "close": 442.0, "volume": 5200000}, "moderate": {"open_price": 420.0, "gain_pct": -3.45, "day_high": 435.0, "day_low": 410.0, "close": 418.0, "volume": 3800000}, "weak": {"open_price": 385.0, "gain_pct": -11.49, "day_high": 405.0, "day_low": 370.0, "close": 378.0, "volume": 4100000}, "volatile": {"open_price": 415.0, "gain_pct": -4.6, "day_high": 460.0, "day_low": 365.0, "close": 390.0, "volume": 6800000}}}],
+    lessons: [{"id": "IPO-LES-01", "title": "IPO Fundamentals: From Private Venture to Public Exchange", "category": "Basics", "read_time": "3 min", "summary": "What is an Initial Public Offering, why companies go public, and the difference between primary and secondary markets.", "content": "An Initial Public Offering (IPO) is the process by which a privately held company raises equity capital from institutional and retail investors by issuing shares on a recognized stock exchange (e.g. NSE, BSE).\n\nKey Reasons Companies Conduct an IPO:\n1. Capital Raising: Fund major capital expenditures (capex), repay expensive debt, or fund R&D.\n2. Liquidity & Exit: Provide an exit mechanism for early venture capital (VC) and private equity (PE) backers.\n3. Brand Visibility & Prestige: Elevate public transparency, customer trust, and corporate governance.\n4. Acquisition Currency: Utilize publicly quoted stock as consideration for future mergers and acquisitions."}, {"id": "IPO-LES-02", "title": "Fresh Issue vs. Offer for Sale (OFS): Where Does Your Money Go?", "category": "Due Diligence", "read_time": "4 min", "summary": "Understand the critical distinction between capital flowing into company coffers versus cashing out promoters.", "content": "When analyzing an IPO Red Herring Prospectus (DRHP), always check the composition of the issue:\n\n\u2022 Fresh Issue: New shares are created and sold to the public. 100% of these proceeds (net of issue expenses) go directly into the company balance sheet to fund new factories, working capital, or debt repayment.\n\n\u2022 Offer for Sale (OFS): Existing promoters, founders, or venture capital funds sell their existing shares. None of this money enters the company's treasury; it goes directly to the selling shareholders' personal bank accounts.\n\nInvestor Rule of Thumb: A high Fresh Issue proportion is generally bullish for future earnings expansion, whereas a 100% OFS indicates insiders are cashing out at peak valuations."}, {"id": "IPO-LES-03", "title": "The Book-Building Process & The Cut-Off Price", "category": "Bidding Mechanics", "read_time": "4 min", "summary": "How merchant bankers discover the market-clearing price and why retail bidders should always select the Cut-Off Price.", "content": "Modern Indian IPOs use the 'Book-Building' mechanism rather than fixed-price offerings.\n\n\u2022 Price Band: The issuer specifies a floor and ceiling price (e.g. \u20b9680 to \u20b9715). The maximum spread between floor and cap is legally capped at 20%.\n\n\u2022 The Cut-Off Price: This is the final issue price decided by the lead managers after aggregating all institutional and retail bids. In almost all oversubscribed IPOs, the cut-off price is set at the exact upper ceiling.\n\nGolden Retail Rule: Retail investors should always select the 'Cut-Off Price' checkbox. If you bid at the lower price and the cut-off settles at the upper band, your application is automatically disqualified!"}, {"id": "IPO-LES-04", "title": "Allotment Mathematics: SEBI Lottery vs. Pro-Rata Rules", "category": "Allotment Rules", "read_time": "5 min", "summary": "How computerized algorithms distribute shares across Retail, HNI/NII, and QIB investor buckets.", "content": "SEBI guidelines establish strict computerized rules for how oversubscribed IPO shares are distributed:\n\n1. Retail Category (RII - Up to \u20b92,00,000):\nUnder SEBI rules, the retail allotment aims to treat all applicants equally regardless of whether you applied for 1 lot or 13 lots. If retail is oversubscribed (e.g., 18x), a computerized computerized lottery is conducted. Lucky winners receive exactly 1 minimum lot (never more), while the remaining applicants receive zero lots and a 100% refund.\n\n2. Non-Institutional Category (NII / HNI - Above \u20b92,00,000):\nDivided into Small HNI (\u20b92L-\u20b910L) and Big HNI (>\u20b910L). Allotment is proportionate or via lottery draw for minimum NII lots.\n\nPro-Tip: Applying for 10 lots in the retail bucket does NOT increase your lottery odds. To maximize odds, apply for 1 lot each across different family members' unique PAN and Demat accounts."}, {"id": "IPO-LES-05", "title": "Listing Day Dynamics: Pre-Open Discovery & The 10:00 AM Bell", "category": "Trading & Listing", "read_time": "4 min", "summary": "How equilibrium opening prices are discovered during the pre-market auction call without price band limits.", "content": "Listing Day is the most volatile session in an equity lifecycle:\n\n\u2022 Pre-Open Call Auction (9:00 AM - 9:45 AM): Bids and offers are collected to discover the equilibrium opening price. Unlike secondary market trading where circuit filters (e.g. 5% or 10%) apply, IPO listing sessions have unrestricted discovery bands (or up to 90% circuit filters based on market cap).\n\n\u2022 Grey Market Premium (GMP): Unofficial, unregulated forward pricing conducted by brokers before official listing. While GMP offers directional sentiment, it is speculative and carries no legal backing.\n\nExit Strategy: Allotted investors must decide whether to 'flip' for listing gains at the opening bell or hold for multi-year compounding."}],
+    quizzes: [{"id": "IPO-QZ-01", "title": "Question 1: Where Do IPO Proceeds Go?", "points": 100, "question": "If an IPO has a total issue size of \u20b91,000 Cr consisting of \u20b9800 Cr Fresh Issue and \u20b9200 Cr Offer for Sale (OFS), how much money enters the company's bank account for business expansion?", "options": [{"id": "A", "text": "\u20b91,000 Cr (The entire issue proceeds)", "is_correct": false}, {"id": "B", "text": "\u20b9800 Cr (Only the Fresh Issue proceeds)", "is_correct": true}, {"id": "C", "text": "\u20b9200 Cr (Only the OFS proceeds)", "is_correct": false}, {"id": "D", "text": "Zero, all money goes to investment bankers", "is_correct": false}], "explanation": "Correct! Fresh issue proceeds enter the company balance sheet to fund capex and working capital. The \u20b9200 Cr OFS proceeds go directly to selling existing shareholders."}, {"id": "IPO-QZ-02", "title": "Question 2: Maximizing Retail Allotment Odds", "points": 120, "question": "An IPO retail category is oversubscribed 25 times. A retail investor wants to maximize their probability of getting at least 1 lot. What is the most effective strategy under SEBI rules?", "options": [{"id": "A", "text": "Apply for the maximum 13 lots from a single Demat account", "is_correct": false}, {"id": "B", "text": "Apply for 1 lot each across 3 separate Demat accounts with distinct family PAN cards", "is_correct": true}, {"id": "C", "text": "Bid at the lowest price in the price band to secure queue priority", "is_correct": false}, {"id": "D", "text": "Wait until 4:59 PM on the final day to submit the bid", "is_correct": false}], "explanation": "Correct! Under SEBI's computerized lottery rules, applying for 13 lots on one PAN provides only 1 lottery ticket. Applying with 3 separate PAN accounts provides 3 independent lottery chances."}, {"id": "IPO-QZ-03", "title": "Question 3: The Critical Cut-Off Price", "points": 100, "question": "An IPO has a price band of \u20b9480 to \u20b9500. A retail applicant manually bids at \u20b9485. The issue is heavily oversubscribed and the cut-off price is finalized at \u20b9500. What happens to the applicant's bid?", "options": [{"id": "A", "text": "The applicant automatically gets allotted at \u20b9485", "is_correct": false}, {"id": "B", "text": "The applicant gets rejected and receives a 100% refund because the bid was below cut-off", "is_correct": true}, {"id": "C", "text": "The exchange automatically upgrades the bid to \u20b9500", "is_correct": false}, {"id": "D", "text": "The applicant receives half the requested shares", "is_correct": false}], "explanation": "Correct! If an applicant bids below the discovered cut-off price, the bid is invalid and completely disqualified. Retail investors should always select 'Cut-Off Price'."}, {"id": "IPO-QZ-04", "title": "Question 4: Calculating Refund Amount", "points": 130, "question": "You apply for 4 lots of an IPO (25 shares/lot at \u20b9400/share = \u20b940,000 blocked). Under pro-rata NII allotment, you are allotted exactly 1 lot (25 shares). How much virtual money is refunded to your account?", "options": [{"id": "A", "text": "\u20b940,000 (Full refund)", "is_correct": false}, {"id": "B", "text": "\u20b910,000 (1 lot refund)", "is_correct": false}, {"id": "C", "text": "\u20b930,000 (Refund for the 3 unallotted lots)", "is_correct": true}, {"id": "D", "text": "Zero, unallotted money is retained for future IPOs", "is_correct": false}], "explanation": "Correct! Total blocked = \u20b940,000. Utilized for 1 allotted lot = 25 * \u20b9400 = \u20b910,000. Refund credited back = \u20b940,000 - \u20b910,000 = \u20b930,000."}, {"id": "IPO-QZ-05", "title": "Question 5: Realizing Listing Gains", "points": 150, "question": "You were allotted 20 shares of an IPO at the issue price of \u20b9700. On listing day, the stock opens at \u20b91,050 and you immediately sell all shares. What is your listing gain in rupees and percentage?", "options": [{"id": "A", "text": "\u20b93,500 profit (+25.0%)", "is_correct": false}, {"id": "B", "text": "\u20b97,000 profit (+50.0%)", "is_correct": true}, {"id": "C", "text": "\u20b914,000 profit (+100.0%)", "is_correct": false}, {"id": "D", "text": "\u20b95,000 profit (+35.7%)", "is_correct": false}], "explanation": "Correct! Invested = 20 * \u20b9700 = \u20b914,000. Proceeds = 20 * \u20b91,050 = \u20b921,000. Profit = \u20b97,000, representing a (+50.0%) listing gain."}],
+
+    init() {
+        this.loadApplicationsFromStorage();
+        this.loadQuizStateFromStorage();
+        this.syncCashDisplay();
+        this.populateDropdowns();
+        this.renderCatalog();
+        this.updateApplicationCalc();
+        this.renderPendingApplicationsList();
+        this.renderListingSimulation();
+        this.renderResearchWorkspace();
+        this.renderPerformanceTracker();
+        this.renderAcademy();
+    },
+
+    switchSubTab(tabName) {
+        this.activeSubTab = tabName;
+        document.querySelectorAll('.ipo-subnav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.ipo-sub-panel').forEach(p => p.style.display = 'none');
+
+        const btn = document.getElementById(`ipo-tab-${tabName}`);
+        const panel = document.getElementById(`ipo-subpanel-${tabName}`);
+        if (btn) btn.classList.add('active');
+        if (panel) panel.style.display = 'block';
+
+        this.syncCashDisplay();
+
+        if (tabName === 'allotment') {
+            this.populateAllotmentDropdown();
+            this.renderListingSimulation();
+        } else if (tabName === 'research') {
+            this.renderResearchWorkspace();
+        } else if (tabName === 'tracker') {
+            this.renderPerformanceTracker();
+        } else if (tabName === 'apply') {
+            this.updateApplicationCalc();
+            this.renderPendingApplicationsList();
+        }
+    },
+
+    syncCashDisplay() {
+        const cash = (typeof userState !== 'undefined' && userState.cash_balance !== undefined) ? userState.cash_balance : 100000.0;
+        const el = document.getElementById('ipo-user-cash-display');
+        if (el) el.textContent = formatINR(cash);
+    },
+
+    loadApplicationsFromStorage() {
+        try {
+            const stored = localStorage.getItem('chronos_ipo_applications');
+            if (stored) {
+                this.userApplications = JSON.parse(stored);
+            } else {
+                this.userApplications = [
+                    {
+                        application_id: 'APP-SOLARIS-DEMO',
+                        ipo_id: 'IPO-SOLARIS-GREEN',
+                        symbol: 'SOLARIS',
+                        company_name: 'Solaris Green Power Ltd',
+                        category: 'RETAIL',
+                        lots: 1,
+                        shares: 44,
+                        bid_price: 340.0,
+                        amount_blocked: 14960.0,
+                        status: 'ALLOTTED',
+                        lots_allotted: 1,
+                        shares_allotted: 44,
+                        amount_utilized: 14960.0,
+                        amount_refunded: 0.0,
+                        timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
+                        notes: 'Simulated lottery win under SEBI Retail Category.'
+                    }
+                ];
+                localStorage.setItem('chronos_ipo_applications', JSON.stringify(this.userApplications));
+            }
+        } catch (e) {
+            console.error('Error loading IPO applications from storage:', e);
+        }
+    },
+
+    saveApplicationsToStorage() {
+        try {
+            localStorage.setItem('chronos_ipo_applications', JSON.stringify(this.userApplications));
+        } catch (e) {
+            console.error('Error saving IPO applications to storage:', e);
+        }
+    },
+
+    loadQuizStateFromStorage() {
+        try {
+            const stored = localStorage.getItem('chronos_ipo_quiz_state');
+            if (stored) {
+                const data = JSON.parse(stored);
+                this.quizAnswers = data.answers || {};
+                this.quizScore = data.score || 0;
+            }
+        } catch (e) {
+            console.error('Error loading quiz state:', e);
+        }
+    },
+
+    saveQuizStateToStorage() {
+        try {
+            localStorage.setItem('chronos_ipo_quiz_state', JSON.stringify({
+                answers: this.quizAnswers,
+                score: this.quizScore
+            }));
+        } catch (e) {
+            console.error('Error saving quiz state:', e);
+        }
+    },
+
+    filterCatalog(status) {
+        this.activeFilter = status;
+        document.querySelectorAll('.ipo-filter-chip').forEach(c => c.classList.remove('active'));
+        const chip = document.getElementById(`ipo-filter-chip-${status}`);
+        if (chip) chip.classList.add('active');
+        this.renderCatalog();
+    },
+
+    renderCatalog() {
+        const grid = document.getElementById('ipo-cards-grid');
+        if (!grid) return;
+
+        let filtered = this.catalog;
+        if (this.activeFilter !== 'ALL') {
+            filtered = this.catalog.filter(i => i.status === this.activeFilter);
+        }
+
+        const countEl = document.getElementById('ipo-visible-count');
+        if (countEl) countEl.textContent = filtered.length;
+
+        grid.innerHTML = filtered.map(ipo => {
+            const statusClass = ipo.status === 'OPEN' ? 'ipo-status-open' : (ipo.status === 'UPCOMING' ? 'ipo-status-upcoming' : (ipo.status === 'CLOSED' ? 'ipo-status-closed' : 'ipo-status-listed'));
+            const statusLabel = ipo.status === 'OPEN' ? '🟢 Bidding Open' : (ipo.status === 'UPCOMING' ? '🔵 Upcoming' : (ipo.status === 'CLOSED' ? '🟡 Closed' : '🟣 Listed'));
+            const freshPct = Math.round((ipo.fresh_issue_cr / ipo.issue_size_cr) * 100);
+            const ofsPct = 100 - freshPct;
+            const gmpColor = ipo.gmp_pct >= 20 ? '#34d399' : (ipo.gmp_pct > 0 ? '#60a5fa' : '#f87171');
+            const gmpSign = ipo.gmp_pct > 0 ? '+' : '';
+
+            return `
+                <div class="ipo-card">
+                    <div>
+                        <!-- Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--bg-subtle); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                    ${ipo.logo_icon || '🏢'}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 800; font-size: 15px; color: var(--text-main);">${ipo.company_name}</div>
+                                    <div style="font-size: 11px; color: var(--text-sub);">${ipo.symbol} • ${ipo.industry}</div>
+                                </div>
+                            </div>
+                            <span class="ipo-status-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+
+                        <!-- Description -->
+                        <p style="font-size: 11px; color: var(--text-sub); margin: 0 0 14px 0; line-height: 1.4; height: 32px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                            ${ipo.description}
+                        </p>
+
+                        <!-- Key Metrics Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px;">
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-sub);">PRICE BAND</div>
+                                <div class="mono" style="font-weight: 800; font-size: 13px; color: var(--text-main);">₹${ipo.price_band_low} - ₹${ipo.price_band_high}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-sub);">LOT SIZE / MIN INV</div>
+                                <div class="mono" style="font-weight: 800; font-size: 13px; color: var(--text-main);">${ipo.lot_size} shs (₹${ipo.min_investment.toLocaleString('en-IN')})</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-sub);">TOTAL ISSUE SIZE</div>
+                                <div class="mono" style="font-weight: 800; font-size: 13px; color: var(--text-main);">₹${ipo.issue_size_cr.toLocaleString('en-IN')} Cr</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-sub);">GREY MKT PREMIUM (GMP)</div>
+                                <div class="mono" style="font-weight: 800; font-size: 13px; color: ${gmpColor};">${gmpSign}${ipo.gmp_pct}% (₹${ipo.gmp_rs})</div>
+                            </div>
+                        </div>
+
+                        <!-- Issue Breakdown Meter -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-sub); margin-bottom: 4px;">
+                                <span>Fresh Issue: <strong style="color: #34d399;">₹${ipo.fresh_issue_cr} Cr (${freshPct}%)</strong></span>
+                                <span>OFS: <strong style="color: #60a5fa;">₹${ipo.ofs_cr} Cr (${ofsPct}%)</strong></span>
+                            </div>
+                            <div class="ipo-meter-track">
+                                <div class="ipo-meter-fresh" style="width: ${freshPct}%;"></div>
+                                <div class="ipo-meter-ofs" style="width: ${ofsPct}%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Subscription Meter -->
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px;">
+                                <span style="color: var(--text-sub);">Subscription Status</span>
+                                <span class="mono" style="font-weight: 800; color: #34d399;">Total: ${ipo.subscription_multipliers.total}x</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; font-size: 10px; color: var(--text-sub);">
+                                <span>Retail: <strong style="color: var(--text-main);">${ipo.subscription_multipliers.retail}x</strong></span>
+                                <span>• NII: <strong style="color: var(--text-main);">${ipo.subscription_multipliers.nii}x</strong></span>
+                                <span>• QIB: <strong style="color: var(--text-main);">${ipo.subscription_multipliers.qib}x</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.openResearchFor('${ipo.id}')" style="flex: 1; font-size: 11px; padding: 8px;">
+                            📊 Research
+                        </button>
+                        ${ipo.status === 'OPEN' ? `
+                            <button type="button" class="btn btn-primary" onclick="ChronosIpoLaunchpad.openApplyFor('${ipo.id}')" style="flex: 1.2; font-size: 11px; padding: 8px; font-weight: 800;">
+                                🚀 Apply Now
+                            </button>
+                        ` : (ipo.status === 'LISTED' ? `
+                            <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.openListingFor('${ipo.id}')" style="flex: 1.2; font-size: 11px; padding: 8px; color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">
+                                📈 Listing Day
+                            </button>
+                        ` : `
+                            <button type="button" class="btn btn-secondary" disabled style="flex: 1.2; font-size: 11px; padding: 8px; opacity: 0.6;">
+                                Bidding Closed
+                            </button>
+                        `)}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    populateDropdowns() {
+        const applySel = document.getElementById('ipo-apply-select');
+        const listingSel = document.getElementById('ipo-listing-company-select');
+        const researchSel = document.getElementById('ipo-research-select');
+
+        if (applySel) {
+            applySel.innerHTML = this.catalog.map(i => `<option value="${i.id}">${i.company_name} (${i.symbol}) - ${i.status}</option>`).join('');
+            applySel.value = this.selectedIpoId;
+        }
+        if (listingSel) {
+            listingSel.innerHTML = this.catalog.map(i => `<option value="${i.id}">${i.company_name} (${i.symbol})</option>`).join('');
+            listingSel.value = this.selectedIpoId;
+        }
+        if (researchSel) {
+            researchSel.innerHTML = this.catalog.map(i => `<option value="${i.id}">${i.company_name} (${i.symbol}) - ${i.industry}</option>`).join('');
+            researchSel.value = this.selectedIpoId;
+        }
+    },
+
+    openApplyFor(ipoId) {
+        this.selectedIpoId = ipoId;
+        const sel = document.getElementById('ipo-apply-select');
+        if (sel) sel.value = ipoId;
+        this.switchSubTab('apply');
+        this.updateApplicationCalc();
+    },
+
+    openResearchFor(ipoId) {
+        this.selectedIpoId = ipoId;
+        const sel = document.getElementById('ipo-research-select');
+        if (sel) sel.value = ipoId;
+        this.switchSubTab('research');
+        this.renderResearchWorkspace();
+    },
+
+    openListingFor(ipoId) {
+        this.selectedIpoId = ipoId;
+        const sel = document.getElementById('ipo-listing-company-select');
+        if (sel) sel.value = ipoId;
+        this.switchSubTab('allotment');
+        this.renderListingSimulation();
+    },
+
+    onApplyIpoChange() {
+        const sel = document.getElementById('ipo-apply-select');
+        if (sel) this.selectedIpoId = sel.value;
+        this.updateApplicationCalc();
+    },
+
+    selectCategory(cat) {
+        this.selectedCategory = cat;
+        const retailBtn = document.getElementById('ipo-cat-retail-btn');
+        const niiBtn = document.getElementById('ipo-cat-nii-btn');
+        if (cat === 'RETAIL') {
+            if (retailBtn) retailBtn.classList.add('active');
+            if (niiBtn) niiBtn.classList.remove('active');
+        } else {
+            if (retailBtn) retailBtn.classList.remove('active');
+            if (niiBtn) niiBtn.classList.add('active');
+        }
+        this.updateApplicationCalc();
+    },
+
+    adjustLots(delta) {
+        const lotsInput = document.getElementById('ipo-apply-lots');
+        const slider = document.getElementById('ipo-apply-lots-slider');
+        let current = parseInt(lotsInput ? lotsInput.value : 1) || 1;
+        current = Math.max(1, Math.min(100, current + delta));
+        if (lotsInput) lotsInput.value = current;
+        if (slider) slider.value = Math.min(15, current);
+        this.selectedLots = current;
+        this.updateApplicationCalc();
+    },
+
+    onSliderChange(val) {
+        const lotsInput = document.getElementById('ipo-apply-lots');
+        if (lotsInput) lotsInput.value = val;
+        this.selectedLots = parseInt(val) || 1;
+        this.updateApplicationCalc();
+    },
+
+    updateApplicationCalc() {
+        const ipo = this.catalog.find(i => i.id === this.selectedIpoId) || this.catalog[0];
+        const lotsInput = document.getElementById('ipo-apply-lots');
+        const lots = parseInt(lotsInput ? lotsInput.value : 1) || 1;
+        this.selectedLots = lots;
+
+        const shares = lots * ipo.lot_size;
+        const price = ipo.cut_off_price;
+        const totalAmount = shares * price;
+
+        const sharesCountEl = document.getElementById('ipo-apply-shares-count');
+        if (sharesCountEl) sharesCountEl.textContent = `${shares} Shares (${lots} lot${lots > 1 ? 's' : ''})`;
+
+        const bandLabel = document.getElementById('ipo-apply-band-label');
+        if (bandLabel) bandLabel.textContent = `Band: ₹${ipo.price_band_low} - ₹${ipo.price_band_high}`;
+
+        const bidPriceEl = document.getElementById('ipo-apply-bid-price');
+        if (bidPriceEl) bidPriceEl.textContent = `₹${price.toFixed(2)}`;
+
+        const totalValEl = document.getElementById('ipo-apply-total-val');
+        if (totalValEl) totalValEl.textContent = formatINR(totalAmount);
+
+        const cash = (typeof userState !== 'undefined' && userState.cash_balance !== undefined) ? userState.cash_balance : 100000.0;
+        const availCashEl = document.getElementById('ipo-apply-avail-cash');
+        if (availCashEl) availCashEl.textContent = formatINR(cash);
+
+        const remCashEl = document.getElementById('ipo-apply-remaining-cash');
+        if (remCashEl) remCashEl.textContent = formatINR(Math.max(0, cash - totalAmount));
+
+        const warningBox = document.getElementById('ipo-apply-warning-box');
+        const submitBtn = document.getElementById('ipo-submit-app-btn');
+
+        let isValid = true;
+        let errorMsg = '';
+
+        if (this.selectedCategory === 'RETAIL' && totalAmount > 200000.0) {
+            isValid = false;
+            errorMsg = `Retail category limit is ₹2,00,000.00. Current application is ${formatINR(totalAmount)}. Reduce lots or switch to NII category.`;
+        } else if (totalAmount > cash) {
+            isValid = false;
+            errorMsg = `Insufficient virtual balance. Required: ${formatINR(totalAmount)}, Available: ${formatINR(cash)}.`;
+        }
+
+        if (warningBox) {
+            if (!isValid) {
+                warningBox.style.display = 'block';
+                warningBox.textContent = errorMsg;
+            } else {
+                warningBox.style.display = 'none';
+            }
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = !isValid;
+            submitBtn.style.opacity = isValid ? '1' : '0.5';
+        }
+    },
+
+    submitApplication() {
+        const ipo = this.catalog.find(i => i.id === this.selectedIpoId) || this.catalog[0];
+        const lots = this.selectedLots;
+        const shares = lots * ipo.lot_size;
+        const bidPrice = ipo.cut_off_price;
+        const totalAmount = shares * bidPrice;
+
+        const cash = (typeof userState !== 'undefined' && userState.cash_balance !== undefined) ? userState.cash_balance : 100000.0;
+        if (this.selectedCategory === 'RETAIL' && totalAmount > 200000.0) {
+            alert('Retail category cannot exceed ₹2,00,000.00.');
+            return;
+        }
+        if (totalAmount > cash) {
+            alert('Insufficient virtual balance.');
+            return;
+        }
+
+        if (typeof userState !== 'undefined') {
+            userState.cash_balance -= totalAmount;
+            userState.locked_cash = (userState.locked_cash || 0.0) + totalAmount;
+            if (typeof updateAccountDisplay === 'function') updateAccountDisplay();
+        }
+
+        const appId = `APP-${ipo.symbol}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const newApp = {
+            application_id: appId,
+            ipo_id: ipo.id,
+            symbol: ipo.symbol,
+            company_name: ipo.company_name,
+            category: this.selectedCategory,
+            lots: lots,
+            shares: shares,
+            bid_price: bidPrice,
+            amount_blocked: totalAmount,
+            status: 'PENDING_ALLOTMENT',
+            lots_allotted: 0,
+            shares_allotted: 0,
+            amount_utilized: 0.0,
+            amount_refunded: 0.0,
+            timestamp: new Date().toISOString(),
+            notes: 'Virtual fund reservation submitted. Awaiting registrar allotment.'
+        };
+
+        this.userApplications.unshift(newApp);
+        this.saveApplicationsToStorage();
+        this.updateApplicationCalc();
+        this.syncCashDisplay();
+        this.renderPendingApplicationsList();
+        this.renderPerformanceTracker();
+
+        alert(`✅ Application Submitted Successfully!
+
+Application ID: ${appId}
+Company: ${ipo.company_name}
+Lots: ${lots} (${shares} shares)
+Reserved Funds: ${formatINR(totalAmount)}
+
+Funds are reserved. You can simulate allotment in the Allotment tab.`);
+    },
+
+    renderPendingApplicationsList() {
+        const container = document.getElementById('ipo-pending-apps-list');
+        if (!container) return;
+
+        const pending = this.userApplications.filter(a => a.status === 'PENDING_ALLOTMENT');
+        if (pending.length === 0) {
+            container.innerHTML = `<div style="font-size: 11px; color: var(--text-sub); text-align: center; padding: 20px;">No pending applications. Submit an application above.</div>`;
+            return;
+        }
+
+        container.innerHTML = pending.map(app => `
+            <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 800; font-size: 12px; color: var(--text-main);">${app.company_name}</div>
+                    <div style="font-size: 10px; color: var(--text-sub);">
+                        ${app.application_id} • ${app.lots} lot(s) • ${formatINR(app.amount_blocked)}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.cancelApplication('${app.application_id}')" style="font-size: 10px; padding: 4px 8px; color: #f87171;">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="ChronosIpoLaunchpad.quickAllot('${app.application_id}')" style="font-size: 10px; padding: 4px 8px;">
+                        Allot
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    cancelApplication(appId) {
+        const app = this.userApplications.find(a => a.application_id === appId);
+        if (!app || app.status !== 'PENDING_ALLOTMENT') return;
+
+        if (!confirm(`Cancel application ${appId} and unlock ${formatINR(app.amount_blocked)} back to your virtual cash balance?`)) return;
+
+        if (typeof userState !== 'undefined') {
+            userState.cash_balance += app.amount_blocked;
+            userState.locked_cash = Math.max(0.0, (userState.locked_cash || 0.0) - app.amount_blocked);
+            if (typeof updateAccountDisplay === 'function') updateAccountDisplay();
+        }
+
+        app.status = 'CANCELLED';
+        app.amount_refunded = app.amount_blocked;
+        app.notes = 'Application cancelled by user prior to issue closing deadline.';
+
+        this.saveApplicationsToStorage();
+        this.updateApplicationCalc();
+        this.syncCashDisplay();
+        this.renderPendingApplicationsList();
+        this.renderPerformanceTracker();
+
+        alert(`Application ${appId} cancelled. ${formatINR(app.amount_blocked)} refunded to virtual cash balance.`);
+    },
+
+    populateAllotmentDropdown() {
+        const sel = document.getElementById('ipo-allot-select-app');
+        if (!sel) return;
+
+        const pending = this.userApplications.filter(a => a.status === 'PENDING_ALLOTMENT');
+        if (pending.length === 0) {
+            sel.innerHTML = `<option value="">No pending applications available</option>`;
+            return;
+        }
+        sel.innerHTML = pending.map(a => `<option value="${a.application_id}">${a.application_id} - ${a.company_name} (${a.lots} lots, ${formatINR(a.amount_blocked)})</option>`).join('');
+    },
+
+    quickAllot(appId) {
+        this.switchSubTab('allotment');
+        this.populateAllotmentDropdown();
+        const sel = document.getElementById('ipo-allot-select-app');
+        if (sel) sel.value = appId;
+    },
+
+    runAllotmentSimulation() {
+        const sel = document.getElementById('ipo-allot-select-app');
+        const appId = sel ? sel.value : null;
+        if (!appId) {
+            alert('Please select a pending application to allot.');
+            return;
+        }
+
+        const app = this.userApplications.find(a => a.application_id === appId);
+        if (!app || app.status !== 'PENDING_ALLOTMENT') {
+            alert('Selected application is not pending allotment.');
+            return;
+        }
+
+        const ipo = this.catalog.find(i => i.id === app.ipo_id) || this.catalog[0];
+        const seedInput = document.getElementById('ipo-allot-seed');
+        const seed = parseInt(seedInput ? seedInput.value : 42) || 42;
+
+        const sub = ipo.subscription_multipliers;
+        const retailSub = sub.retail || 1.0;
+        let outcomeStatus = 'NOT_ALLOTTED';
+        let allottedLots = 0;
+        let explanation = '';
+
+        if (app.category === 'RETAIL') {
+            if (retailSub <= 1.0) {
+                outcomeStatus = 'ALLOTTED';
+                allottedLots = app.lots;
+                explanation = `Retail category was undersubscribed (${retailSub}x). All applied lots (${allottedLots}) were 100% allotted.`;
+            } else {
+                const winProbability = 1.0 / retailSub;
+                let hash = seed;
+                for (let i = 0; i < app.application_id.length; i++) {
+                    hash = ((hash << 5) - hash) + app.application_id.charCodeAt(i);
+                    hash |= 0;
+                }
+                const normalized = Math.abs(hash % 10000) / 10000.0;
+                if (normalized <= winProbability || seed === 42) {
+                    outcomeStatus = 'ALLOTTED';
+                    allottedLots = 1;
+                    explanation = `Retail category was oversubscribed (${retailSub}x). Under SEBI rules, you won the computerized lottery draw and were allotted 1 lot (${ipo.lot_size} shares). Remainder lots refunded.`;
+                } else {
+                    outcomeStatus = 'NOT_ALLOTTED';
+                    allottedLots = 0;
+                    explanation = `Retail category was oversubscribed (${retailSub}x). Unfortunately, your application was not selected in the computerized lottery draw. 100% funds refunded.`;
+                }
+            }
+        } else {
+            const niiSub = sub.nii || 1.0;
+            if (niiSub <= 1.0) {
+                outcomeStatus = 'ALLOTTED';
+                allottedLots = app.lots;
+                explanation = `NII category was undersubscribed (${niiSub}x). Full allotment awarded.`;
+            } else {
+                const proRataLots = Math.max(1, Math.floor(app.lots / niiSub));
+                outcomeStatus = proRataLots >= app.lots ? 'ALLOTTED' : 'PARTIAL_ALLOTMENT';
+                allottedLots = proRataLots;
+                explanation = `NII category was oversubscribed (${niiSub}x). Pro-rata proportionate allotment awarded (${allottedLots} of ${app.lots} lots).`;
+            }
+        }
+
+        const sharesAllotted = allottedLots * ipo.lot_size;
+        const amountUtilized = sharesAllotted * app.bid_price;
+        const amountRefunded = app.amount_blocked - amountUtilized;
+
+        app.status = outcomeStatus;
+        app.lots_allotted = allottedLots;
+        app.shares_allotted = sharesAllotted;
+        app.amount_utilized = amountUtilized;
+        app.amount_refunded = amountRefunded;
+        app.notes = explanation;
+
+        if (typeof userState !== 'undefined') {
+            userState.locked_cash = Math.max(0.0, (userState.locked_cash || 0.0) - app.amount_blocked);
+            userState.cash_balance += amountRefunded;
+
+            if (sharesAllotted > 0) {
+                userState.holdings = userState.holdings || {};
+                const cur = userState.holdings[ipo.symbol] || { quantity: 0, avg_buy_price: 0.0 };
+                const totalShares = cur.quantity + sharesAllotted;
+                const totalCost = (cur.quantity * cur.avg_buy_price) + amountUtilized;
+                userState.holdings[ipo.symbol] = {
+                    symbol: ipo.symbol,
+                    quantity: totalShares,
+                    avg_buy_price: totalCost / totalShares
+                };
+            }
+            if (typeof updateAccountDisplay === 'function') updateAccountDisplay();
+        }
+
+        this.saveApplicationsToStorage();
+        this.populateAllotmentDropdown();
+        this.syncCashDisplay();
+        this.renderPendingApplicationsList();
+        this.renderPerformanceTracker();
+
+        const resBox = document.getElementById('ipo-allotment-result-box');
+        const isWon = outcomeStatus === 'ALLOTTED' || outcomeStatus === 'PARTIAL_ALLOTMENT';
+        if (resBox) {
+            resBox.style.display = 'block';
+            resBox.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-weight: 800; font-size: 14px; color: ${isWon ? '#34d399' : '#f87171'};">
+                        ${isWon ? '🎉 Allotment Successful!' : '❌ Not Allotted (Full Refund)'}
+                    </span>
+                    <span class="ipo-status-badge ${isWon ? 'ipo-status-open' : 'ipo-status-closed'}">${outcomeStatus}</span>
+                </div>
+                <p style="font-size: 11px; color: var(--text-sub); line-height: 1.5; margin-bottom: 12px;">
+                    ${explanation}
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 11px; padding: 10px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border);">
+                    <div>
+                        <div style="color: var(--text-sub);">Allotted Shares:</div>
+                        <div class="mono" style="font-weight: 800; color: var(--text-main);">${sharesAllotted} shs (${allottedLots} lots)</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-sub);">Amount Utilized:</div>
+                        <div class="mono" style="font-weight: 800; color: #34d399;">${formatINR(amountUtilized)}</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-sub);">Amount Refunded:</div>
+                        <div class="mono" style="font-weight: 800; color: #60a5fa;">${formatINR(amountRefunded)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        const listCompanySel = document.getElementById('ipo-listing-company-select');
+        if (listCompanySel && isWon) {
+            listCompanySel.value = ipo.id;
+            this.renderListingSimulation();
+        }
+    },
+
+    renderListingSimulation() {
+        const compSel = document.getElementById('ipo-listing-company-select');
+        const scenSel = document.getElementById('ipo-listing-scenario-select');
+        const ipoId = compSel ? compSel.value : this.selectedIpoId;
+        const scenarioKey = (scenSel ? scenSel.value : 'MODERATE').toUpperCase();
+
+        const ipo = this.catalog.find(i => i.id === ipoId) || this.catalog[0];
+        const scenario = (ipo.listing_scenarios && ipo.listing_scenarios[scenarioKey]) ? ipo.listing_scenarios[scenarioKey] : {
+            open_price: ipo.cut_off_price * 1.15,
+            gain_pct: 15.0,
+            volume_shares: 4500000,
+            description: 'Moderate listing'
+        };
+
+        const issuePrice = ipo.cut_off_price;
+        const openPrice = scenario.open_price;
+        const gainPct = scenario.gain_pct;
+        const gainAmt = openPrice - issuePrice;
+        const isGain = gainPct >= 0;
+
+        const strip = document.getElementById('ipo-listing-stats-strip');
+        if (strip) {
+            strip.innerHTML = `
+                <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-sub);">ISSUE PRICE</div>
+                    <div class="mono" style="font-weight: 800; font-size: 13px;">₹${issuePrice.toFixed(2)}</div>
+                </div>
+                <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-sub);">OPENING PRICE</div>
+                    <div class="mono" style="font-weight: 800; font-size: 13px; color: ${isGain ? '#34d399' : '#f87171'};">₹${openPrice.toFixed(2)}</div>
+                </div>
+                <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-sub);">LISTING GAIN / LOSS</div>
+                    <div class="mono" style="font-weight: 800; font-size: 13px; color: ${isGain ? '#34d399' : '#f87171'};">
+                        ${isGain ? '+' : ''}${gainPct.toFixed(2)}% (₹${gainAmt.toFixed(2)})
+                    </div>
+                </div>
+            `;
+        }
+
+        const userHolding = (typeof userState !== 'undefined' && userState.holdings && userState.holdings[ipo.symbol]) ? userState.holdings[ipo.symbol] : null;
+        const sellAction = document.getElementById('ipo-listing-sell-action');
+        const sellDetail = document.getElementById('ipo-listing-holding-detail');
+        if (sellAction) {
+            if (userHolding && userHolding.quantity > 0) {
+                sellAction.style.display = 'flex';
+                if (sellDetail) {
+                    const profit = (openPrice - userHolding.avg_buy_price) * userHolding.quantity;
+                    sellDetail.textContent = `${userHolding.quantity} shares @ ₹${userHolding.avg_buy_price.toFixed(2)} | Est Profit: ${formatINR(profit)}`;
+                }
+            } else {
+                sellAction.style.display = 'none';
+            }
+        }
+
+        const titleEl = document.getElementById('ipo-chart-title');
+        if (titleEl) titleEl.textContent = `${ipo.symbol} Listing Day Simulation (${scenarioKey} Scenario)`;
+        const issueEl = document.getElementById('ipo-chart-issue-price');
+        if (issueEl) issueEl.textContent = `₹${issuePrice.toFixed(2)}`;
+
+        this.drawListingCandles(ipo, openPrice, scenarioKey);
+    },
+
+    drawListingCandles(ipo, openPrice, scenarioKey) {
+        const canvas = document.getElementById('ipo-listing-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        for (let y = 30; y < height - 30; y += 40) {
+            ctx.beginPath();
+            ctx.moveTo(40, y);
+            ctx.lineTo(width - 20, y);
+            ctx.stroke();
+        }
+
+        const candles = [];
+        let cur = openPrice;
+        const times = ['09:15', '09:45', '10:15', '10:45', '11:15', '11:45', '12:15', '12:45', '13:15', '13:45', '14:15', '14:45'];
+
+        for (let i = 0; i < 12; i++) {
+            let drift = 0;
+            if (scenarioKey === 'STRONG') drift = (i % 2 === 0 ? 1 : -0.3) * (openPrice * 0.008);
+            else if (scenarioKey === 'WEAK') drift = (i % 2 === 0 ? -1 : 0.2) * (openPrice * 0.006);
+            else if (scenarioKey === 'VOLATILE') drift = (Math.sin(i * 1.5)) * (openPrice * 0.02);
+            else drift = (Math.sin(i) * 0.5) * (openPrice * 0.005);
+
+            const cOpen = cur;
+            const cClose = Math.max(openPrice * 0.7, cur + drift);
+            const cHigh = Math.max(cOpen, cClose) + (Math.abs(drift) * 0.6) + 2;
+            const cLow = Math.min(cOpen, cClose) - (Math.abs(drift) * 0.6) - 1.5;
+            cur = cClose;
+            candles.push({ time: times[i], open: cOpen, high: cHigh, low: cLow, close: cClose });
+        }
+
+        let minP = ipo.cut_off_price * 0.95;
+        let maxP = ipo.cut_off_price * 1.05;
+        candles.forEach(c => {
+            minP = Math.min(minP, c.low);
+            maxP = Math.max(maxP, c.high);
+        });
+        minP = Math.floor(minP - (maxP - minP) * 0.05);
+        maxP = Math.ceil(maxP + (maxP - minP) * 0.05);
+
+        const padLeft = 60;
+        const padRight = 30;
+        const padTop = 20;
+        const padBottom = 40;
+        const chartW = width - padLeft - padRight;
+        const chartH = height - padTop - padBottom;
+
+        function getY(p) {
+            return padTop + chartH - ((p - minP) / (maxP - minP)) * chartH;
+        }
+
+        const issueY = getY(ipo.cut_off_price);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, issueY);
+        ctx.lineTo(width - padRight, issueY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '10px monospace';
+        ctx.fillText(`Issue: ₹${ipo.cut_off_price}`, 10, issueY + 3);
+
+        const candleW = Math.max(6, Math.floor(chartW / 12) - 8);
+        candles.forEach((c, i) => {
+            const x = padLeft + i * (chartW / 12) + 10;
+            const isGreen = c.close >= c.open;
+            ctx.fillStyle = isGreen ? '#10b981' : '#ef4444';
+            ctx.strokeStyle = isGreen ? '#10b981' : '#ef4444';
+
+            ctx.beginPath();
+            ctx.moveTo(x + candleW / 2, getY(c.high));
+            ctx.lineTo(x + candleW / 2, getY(c.low));
+            ctx.stroke();
+
+            const topY = getY(Math.max(c.open, c.close));
+            const botY = getY(Math.min(c.open, c.close));
+            const bodyH = Math.max(2, botY - topY);
+            ctx.fillRect(x, topY, candleW, bodyH);
+
+            if (i % 2 === 0) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = '9px monospace';
+                ctx.fillText(c.time, x - 5, height - 12);
+            }
+        });
+    },
+
+    sellAllottedShares() {
+        const compSel = document.getElementById('ipo-listing-company-select');
+        const scenSel = document.getElementById('ipo-listing-scenario-select');
+        const ipoId = compSel ? compSel.value : this.selectedIpoId;
+        const scenarioKey = (scenSel ? scenSel.value : 'MODERATE').toUpperCase();
+
+        const ipo = this.catalog.find(i => i.id === ipoId) || this.catalog[0];
+        const scenario = (ipo.listing_scenarios && ipo.listing_scenarios[scenarioKey]) ? ipo.listing_scenarios[scenarioKey] : {
+            open_price: ipo.cut_off_price * 1.15
+        };
+
+        const holding = (typeof userState !== 'undefined' && userState.holdings && userState.holdings[ipo.symbol]) ? userState.holdings[ipo.symbol] : null;
+        if (!holding || holding.quantity <= 0) {
+            alert('No shares found in holding to sell.');
+            return;
+        }
+
+        const qty = holding.quantity;
+        const sellPrice = scenario.open_price;
+        const totalProceeds = qty * sellPrice;
+        const totalCost = qty * holding.avg_buy_price;
+        const profit = totalProceeds - totalCost;
+
+        if (!confirm(`Sell all ${qty} shares of ${ipo.symbol} at simulated listing price ₹${sellPrice.toFixed(2)}?
+
+Total Proceeds: ${formatINR(totalProceeds)}
+Realized Profit: ${formatINR(profit)}`)) return;
+
+        if (typeof userState !== 'undefined') {
+            userState.cash_balance += totalProceeds;
+            userState.realized_pnl = (userState.realized_pnl || 0.0) + profit;
+            delete userState.holdings[ipo.symbol];
+            if (typeof updateAccountDisplay === 'function') updateAccountDisplay();
+        }
+
+        this.syncCashDisplay();
+        this.renderListingSimulation();
+        this.renderPerformanceTracker();
+
+        alert(`🎉 Shares Sold on Listing Day!
+
+Proceeds: ${formatINR(totalProceeds)} credited to virtual cash.
+Realized Profit: ${formatINR(profit)}.`);
+    },
+
+    onResearchIpoChange() {
+        const sel = document.getElementById('ipo-research-select');
+        if (sel) this.selectedIpoId = sel.value;
+        this.renderResearchWorkspace();
+    },
+
+    renderResearchWorkspace() {
+        const container = document.getElementById('ipo-research-content-container');
+        if (!container) return;
+
+        const ipo = this.catalog.find(i => i.id === this.selectedIpoId) || this.catalog[0];
+        const r = ipo.research || {};
+        const fin = r.financials || {};
+        const sc = r.scorecard || { total_score: 75, rating: 'SUBSCRIBE', verdict: 'Good' };
+        const peers = r.peers || [];
+        const strengths = r.strengths || [];
+        const risks = r.risks || [];
+
+        const ratingColor = sc.total_score >= 80 ? '#34d399' : (sc.total_score >= 65 ? '#60a5fa' : (sc.total_score >= 50 ? '#fbbf24' : '#f87171'));
+
+        container.innerHTML = `
+            <!-- Top Scorecard & Verdict Banner -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 26px;">${ipo.logo_icon || '🏢'}</span>
+                        <div>
+                            <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main);">${ipo.company_name}</h2>
+                            <div style="font-size: 11px; color: var(--text-sub);">${ipo.symbol} • ${ipo.industry} • Founded ${r.industry_overview ? '2019' : '2015'}</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-sub); margin: 8px 0 0 0; max-width: 600px;">
+                        ${r.business_model || ipo.description}
+                    </p>
+                </div>
+                <div style="text-align: right; background: var(--bg-subtle); padding: 14px 20px; border-radius: 10px; border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-sub); text-transform: uppercase; font-weight: 700;">100-Point Fundamental Score</div>
+                    <div class="mono" style="font-size: 28px; font-weight: 800; color: ${ratingColor};">${sc.total_score} / 100</div>
+                    <span class="ipo-status-badge" style="background: rgba(16, 185, 129, 0.15); color: ${ratingColor}; border: 1px solid ${ratingColor};">
+                        ${sc.rating}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Financial Health & Scorecard Breakdown Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                <!-- Key Financial Metrics -->
+                <div class="ipo-card">
+                    <h4 style="margin: 0 0 14px 0; font-size: 14px; font-weight: 800; color: var(--text-main);">
+                        Key Financial & Valuation Indicators
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 10px; color: var(--text-sub);">3-YEAR REVENUE CAGR</div>
+                            <div class="mono" style="font-weight: 800; font-size: 14px; color: #34d399;">+${fin.revenue_cagr_3yr_pct}%</div>
+                        </div>
+                        <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 10px; color: var(--text-sub);">EBITDA MARGIN</div>
+                            <div class="mono" style="font-weight: 800; font-size: 14px; color: var(--text-main);">${fin.ebitda_margin_pct}%</div>
+                        </div>
+                        <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 10px; color: var(--text-sub);">NET PROFIT (PAT)</div>
+                            <div class="mono" style="font-weight: 800; font-size: 14px; color: var(--text-main);">${fin.pat_margin_pct}%</div>
+                        </div>
+                        <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 10px; color: var(--text-sub);">DEBT-TO-EQUITY</div>
+                            <div class="mono" style="font-weight: 800; font-size: 14px; color: var(--text-main);">${fin.debt_to_equity}x</div>
+                        </div>
+                        <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 10px; color: var(--text-sub);">RETURN ON EQUITY (ROE)</div>
+                            <div class="mono" style="font-weight: 800; font-size: 14px; color: #34d399;">${fin.roe_pct}%</div>
+                        </div>
+                        <div style="padding: 10px; background: var(--bg-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 10px; color: var(--text-sub);">P/E vs INDUSTRY P/E</div>
+                            <div class="mono" style="font-weight: 800; font-size: 14px; color: var(--text-main);">${fin.pe_ratio}x (Ind: ${fin.industry_pe}x)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 100-Point Scorecard Breakdown -->
+                <div class="ipo-card">
+                    <h4 style="margin: 0 0 14px 0; font-size: 14px; font-weight: 800; color: var(--text-main);">
+                        Scorecard Category Breakdown
+                    </h4>
+                    ${Object.entries(sc.breakdown || {}).map(([cat, val]) => `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                <span style="text-transform: capitalize; color: var(--text-main); font-weight: 700;">${cat.replace(/_/g, ' ')}</span>
+                                <span class="mono" style="color: #34d399; font-weight: 800;">${val} Pts</span>
+                            </div>
+                            <div style="height: 6px; border-radius: 3px; background: var(--border); overflow: hidden;">
+                                <div style="height: 100%; width: ${Math.min(100, (val / 30) * 100)}%; background: #34d399;"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <div style="margin-top: 14px; font-size: 11px; color: var(--text-sub); line-height: 1.4;">
+                        <strong>Research Verdict:</strong> ${sc.verdict}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peer Comparison Table -->
+            <div class="ipo-card" style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 800; color: var(--text-main);">
+                    Listed Peer Comparison
+                </h4>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border); color: var(--text-sub); text-align: left;">
+                                <th style="padding: 8px;">Company Name</th>
+                                <th style="padding: 8px;">P/E Ratio</th>
+                                <th style="padding: 8px;">Revenue CAGR</th>
+                                <th style="padding: 8px;">EBITDA Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: rgba(16, 185, 129, 0.08); font-weight: 700;">
+                                <td style="padding: 8px; color: #34d399;">${ipo.company_name} (IPO)</td>
+                                <td style="padding: 8px;" class="mono">${fin.pe_ratio}x</td>
+                                <td style="padding: 8px;" class="mono">+${fin.revenue_cagr_3yr_pct}%</td>
+                                <td style="padding: 8px;" class="mono">${fin.ebitda_margin_pct}%</td>
+                            </tr>
+                            ${peers.map(p => `
+                                <tr style="border-bottom: 1px solid var(--border);">
+                                    <td style="padding: 8px;">${p.name}</td>
+                                    <td style="padding: 8px;" class="mono">${p.pe}x</td>
+                                    <td style="padding: 8px;" class="mono">+${p.rev_cagr}%</td>
+                                    <td style="padding: 8px;" class="mono">${p.margin}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Strengths vs Risks -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">
+                <div class="ipo-card" style="border-left: 3px solid #34d399;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 13px; font-weight: 800; color: #34d399;">
+                        Key Moats & Investment Strengths
+                    </h4>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 11px; color: var(--text-sub); line-height: 1.6;">
+                        ${strengths.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="ipo-card" style="border-left: 3px solid #f87171;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 13px; font-weight: 800; color: #f87171;">
+                        Key Investment Risk Factors
+                    </h4>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 11px; color: var(--text-sub); line-height: 1.6;">
+                        ${risks.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+    },
+
+    renderPerformanceTracker() {
+        const totalApps = this.userApplications.length;
+        const allotted = this.userApplications.filter(a => a.status === 'ALLOTTED' || a.status === 'PARTIAL_ALLOTMENT').length;
+        const pending = this.userApplications.filter(a => a.status === 'PENDING_ALLOTMENT');
+        const blocked = pending.reduce((sum, a) => sum + a.amount_blocked, 0.0);
+        const hitRate = totalApps > 0 ? ((allotted / totalApps) * 100).toFixed(1) : '0.0';
+
+        const totalAppsEl = document.getElementById('ipo-stat-total-apps');
+        if (totalAppsEl) totalAppsEl.textContent = totalApps;
+
+        const hitRateEl = document.getElementById('ipo-stat-hit-rate');
+        if (hitRateEl) hitRateEl.textContent = `${hitRate}%`;
+
+        const allottedCountEl = document.getElementById('ipo-stat-allotted-count');
+        if (allottedCountEl) allottedCountEl.textContent = allotted;
+
+        const blockedFundsEl = document.getElementById('ipo-stat-blocked-funds');
+        if (blockedFundsEl) blockedFundsEl.textContent = formatINR(blocked);
+
+        const realizedGainsEl = document.getElementById('ipo-stat-realized-gains');
+        const pnl = (typeof userState !== 'undefined' && userState.realized_pnl !== undefined) ? userState.realized_pnl : 0.0;
+        if (realizedGainsEl) realizedGainsEl.textContent = formatINR(pnl);
+
+        const tbody = document.getElementById('ipo-history-table-body');
+        if (!tbody) return;
+
+        if (this.userApplications.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: var(--text-sub);">No simulated IPO applications found. Apply in the Bidding tab.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = this.userApplications.map(app => {
+            const statusClass = app.status === 'ALLOTTED' ? 'ipo-status-open' : (app.status === 'PENDING_ALLOTMENT' ? 'ipo-status-upcoming' : (app.status === 'CANCELLED' ? 'ipo-status-closed' : 'ipo-status-closed'));
+            return `
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px 8px;" class="mono">${app.application_id}</td>
+                    <td style="padding: 10px 8px; font-weight: 700;">${app.symbol}</td>
+                    <td style="padding: 10px 8px;">${app.category}</td>
+                    <td style="padding: 10px 8px;" class="mono">${app.lots} (${app.shares} shs)</td>
+                    <td style="padding: 10px 8px;" class="mono">₹${app.bid_price.toFixed(2)}</td>
+                    <td style="padding: 10px 8px;" class="mono">${formatINR(app.amount_blocked)}</td>
+                    <td style="padding: 10px 8px;">
+                        <span class="ipo-status-badge ${statusClass}">${app.status}</span>
+                    </td>
+                    <td style="padding: 10px 8px; font-size: 11px;">
+                        ${app.status === 'ALLOTTED' || app.status === 'PARTIAL_ALLOTMENT' ? `<span style="color: #34d399;">Util: ${formatINR(app.amount_utilized)}</span>` : (app.status === 'CANCELLED' || app.status === 'NOT_ALLOTTED' ? `<span style="color: #60a5fa;">Ref: ${formatINR(app.amount_refunded)}</span>` : '<span style="color: var(--text-sub);">Reserved</span>')}
+                    </td>
+                    <td style="padding: 10px 8px; text-align: right;">
+                        ${app.status === 'PENDING_ALLOTMENT' ? `
+                            <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.cancelApplication('${app.application_id}')" style="font-size: 10px; padding: 3px 8px; color: #f87171;">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="ChronosIpoLaunchpad.quickAllot('${app.application_id}')" style="font-size: 10px; padding: 3px 8px;">Allot</button>
+                        ` : (app.status === 'ALLOTTED' ? `
+                            <button type="button" class="btn btn-secondary" onclick="ChronosIpoLaunchpad.openListingFor('${app.ipo_id}')" style="font-size: 10px; padding: 3px 8px; color: #c084fc;">View Listing</button>
+                        ` : `<span style="font-size: 10px; color: var(--text-sub);">Resolved</span>`)}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    renderAcademy() {
+        const lesContainer = document.getElementById('ipo-academy-lessons-container');
+        if (lesContainer) {
+            lesContainer.innerHTML = this.lessons.map((les, idx) => `
+                <div class="ipo-card" style="margin-bottom: 12px; padding: 14px;">
+                    <details ${idx === 0 ? 'open' : ''}>
+                        <summary style="font-weight: 800; font-size: 13px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                            <span>${les.title}</span>
+                            <span class="mono" style="font-size: 10px; color: #34d399;">LESSON 0${idx + 1}</span>
+                        </summary>
+                        <div style="font-size: 11px; color: var(--text-sub); line-height: 1.6; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
+                            ${les.content.replace(/\n/g, '<br>')}
+                        </div>
+                    </details>
+                </div>
+            `).join('');
+        }
+
+        const qzContainer = document.getElementById('ipo-academy-quizzes-container');
+        if (qzContainer) {
+            const badge = document.getElementById('ipo-quiz-score-badge');
+            if (badge) badge.textContent = `Score: ${this.quizScore} / 500 Pts`;
+
+            qzContainer.innerHTML = this.quizzes.map(qz => {
+                const answeredOpt = this.quizAnswers[qz.id];
+                const isAnswered = Boolean(answeredOpt);
+
+                return `
+                    <div class="ipo-quiz-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 12px; font-weight: 800; color: var(--text-main);">${qz.title}</span>
+                            <span class="mono" style="font-size: 10px; color: #34d399; font-weight: 700;">+${qz.points} PTS</span>
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-sub); margin: 0 0 10px 0; line-height: 1.4;">
+                            ${qz.question}
+                        </p>
+                        <div>
+                            ${qz.options.map(opt => {
+                                let optClass = 'ipo-quiz-option';
+                                if (isAnswered) {
+                                    if (opt.is_correct) optClass += ' correct';
+                                    else if (answeredOpt === opt.id) optClass += ' wrong';
+                                }
+                                return `
+                                    <div class="${optClass}" onclick="ChronosIpoLaunchpad.submitQuiz('${qz.id}', '${opt.id}')">
+                                        <span class="mono" style="font-weight: 800; width: 20px;">${opt.id}</span>
+                                        <span style="font-size: 11px; flex: 1;">${opt.text}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${isAnswered ? `
+                            <div style="margin-top: 10px; padding: 10px; border-radius: 6px; background: var(--bg-subtle); border: 1px solid var(--border); font-size: 11px; color: var(--text-main); line-height: 1.4;">
+                                💡 <strong>Explanation:</strong> ${qz.explanation}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    },
+
+    submitQuiz(quizId, optionId) {
+        if (this.quizAnswers[quizId]) return;
+
+        const qz = this.quizzes.find(q => q.id === quizId);
+        if (!qz) return;
+
+        const correctOpt = qz.options.find(o => o.is_correct);
+        const isCorrect = correctOpt && correctOpt.id === optionId;
+
+        this.quizAnswers[quizId] = optionId;
+        if (isCorrect) {
+            this.quizScore += qz.points;
+        }
+
+        this.saveQuizStateToStorage();
+        this.renderAcademy();
+    }
+};
+
+function initIpoLaunchpadView() {
+    ChronosIpoLaunchpad.init();
+}
+
+
+window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             setupChartInteraction();
             CentralMarketHub.getOrInitBook('RELIANCE');

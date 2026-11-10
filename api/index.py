@@ -29,6 +29,15 @@ from chronosmatch.engine.observatory import (
     run_deterministic_experiment,
     simulate_price_impact,
 )
+from chronosmatch.engine.ipo_simulator import (
+    IPO_CATALOG,
+    IPO_LESSONS,
+    IPO_QUIZZES,
+    calculate_ipo_application,
+    simulate_allotment,
+    simulate_listing_day,
+)
+
 from chronosmatch.engine.surveillance_engine import (
     DEFAULT_THRESHOLDS as SURVEILLANCE_DEFAULT_THRESHOLDS,
     DETECTION_RULES as SURVEILLANCE_RULES,
@@ -140,6 +149,31 @@ for default_sym in ["BTCUSDT", "ETHUSDT", "AAPL"]:
 # REQUEST / RESPONSE MODELS
 # ==========================================================================
 
+
+
+class IpoApplyRequest(BaseModel):
+    email: str
+    ipo_id: str
+    lots: int = Field(1, ge=1)
+    category: str = "RETAIL"
+    bid_price: Optional[float] = None
+
+
+class IpoCancelRequest(BaseModel):
+    email: str
+    application_id: str
+
+
+class IpoAllotRequest(BaseModel):
+    email: str
+    application_id: str
+    seed: Optional[int] = None
+
+
+class IpoQuizSubmitRequest(BaseModel):
+    quiz_id: str
+    selected_option_id: str
+    email: Optional[str] = None
 
 class SurveillanceSimulateRequest(BaseModel):
     scenario_id: Optional[str] = None
@@ -1792,6 +1826,195 @@ def submit_surveillance_challenge(req: ChallengeSubmitRequest):
         "explanation": target["explanation"],
     }
 
+
+
+# ==========================================================================
+# IPO LAUNCHPAD & LISTING SIMULATOR ENDPOINTS
+# ==========================================================================
+
+@app.get("/api/ipo/catalog")
+def get_ipo_catalog(status: Optional[str] = Query(None, description="Optional status filter: ALL, OPEN, UPCOMING, CLOSED, LISTED")):
+    """Retrieve simulated IPO catalog with optional status filter."""
+    if hasattr(status, "default"):
+        status = status.default
+    catalog = IPO_CATALOG
+    if status and str(status).upper() != "ALL":
+        catalog = [item for item in catalog if item.get("status", "").upper() == str(status).upper()]
+    return {
+        "status": "success",
+        "count": len(catalog),
+        "data": catalog,
+    }
+
+
+@app.get("/api/ipo/{ipo_id}")
+def get_ipo_details(ipo_id: str):
+    """Retrieve in-depth details, financials, and evaluation scorecard for a specific IPO."""
+    ipo = next((item for item in IPO_CATALOG if item["id"] == ipo_id or item["symbol"].upper() == ipo_id.upper()), None)
+    if not ipo:
+        raise HTTPException(status_code=404, detail=f"IPO '{ipo_id}' not found in catalog.")
+    return {
+        "status": "success",
+        "data": ipo,
+    }
+
+
+@app.post("/api/ipo/apply")
+def apply_ipo(req: IpoApplyRequest):
+    """Submit virtual IPO application, reserve funds, and record allotment tracking."""
+    try:
+        app_record = db.apply_for_ipo(
+            email=req.email,
+            ipo_id=req.ipo_id,
+            lots=req.lots,
+            category=req.category,
+            bid_price=req.bid_price,
+        )
+        account = db.get_account(req.email)
+        return {
+            "status": "success",
+            "message": f"Successfully applied for {req.lots} lot(s) of {app_record.get('symbol', req.ipo_id)}.",
+            "application": app_record,
+            "account": {
+                "cash_balance": account["cash_balance"] if account else 0.0,
+            },
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit IPO application: {str(e)}")
+
+
+@app.post("/api/ipo/cancel")
+def cancel_ipo(req: IpoCancelRequest):
+    """Cancel a pending IPO application and unlock reserved virtual capital."""
+    try:
+        res = db.cancel_ipo_application(email=req.email, application_id=req.application_id)
+        account = db.get_account(req.email)
+        return {
+            "status": "success",
+            "message": f"Application {req.application_id} cancelled. ₹{res['amount_refunded']:,.2f} refunded to cash balance.",
+            "data": res,
+            "account": {
+                "cash_balance": account["cash_balance"] if account else 0.0,
+            },
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to cancel IPO application: {str(e)}")
+
+
+@app.post("/api/ipo/simulate-allotment")
+def simulate_ipo_allotment(req: IpoAllotRequest):
+    """Run SEBI-aligned allotment algorithm for a pending application."""
+    try:
+        res = db.process_ipo_allotment(email=req.email, application_id=req.application_id, seed=req.seed)
+        account = db.get_account(req.email)
+        holdings = db.get_holdings(req.email)
+        return {
+            "status": "success",
+            "data": res,
+            "account": {
+                "cash_balance": account["cash_balance"] if account else 0.0,
+                "holdings": holdings,
+            },
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process allotment: {str(e)}")
+
+
+@app.get("/api/ipo/listing-day/{ipo_id}")
+def get_listing_day_simulation(
+    ipo_id: str,
+    scenario: Optional[str] = Query("MODERATE", description="STRONG, MODERATE, WEAK, or VOLATILE"),
+    seed: Optional[int] = Query(None, description="Optional random seed"),
+):
+    """Simulate listing day price discovery, intraday candles, and gains/losses."""
+    if hasattr(scenario, "default"):
+        scenario = scenario.default
+    if hasattr(seed, "default"):
+        seed = seed.default
+    ipo = next((item for item in IPO_CATALOG if item["id"] == ipo_id or item["symbol"].upper() == ipo_id.upper()), None)
+    if not ipo:
+        raise HTTPException(status_code=404, detail=f"IPO '{ipo_id}' not found in catalog.")
+    
+    simulation = simulate_listing_day(ipo, scenario=scenario or "MODERATE", seed=seed)
+    return {
+        "status": "success",
+        "data": simulation,
+    }
+
+
+@app.get("/api/ipo/applications/{email}")
+def get_user_ipo_applications(email: str):
+    """Retrieve all simulated IPO applications and performance metrics for a user."""
+    apps = db.get_user_ipo_applications(email)
+    
+    total_apps = len(apps)
+    allotted_count = sum(1 for a in apps if a.get("status") in {"ALLOTTED", "PARTIAL_ALLOTMENT"})
+    unsuccessful_count = sum(1 for a in apps if a.get("status") == "NOT_ALLOTTED")
+    pending_count = sum(1 for a in apps if a.get("status") == "PENDING_ALLOTMENT")
+    total_blocked = sum(a.get("amount_blocked", 0.0) for a in apps if a.get("status") == "PENDING_ALLOTMENT")
+    total_invested = sum(a.get("amount_utilized", 0.0) for a in apps if a.get("status") in {"ALLOTTED", "PARTIAL_ALLOTMENT"})
+    
+    return {
+        "status": "success",
+        "email": email,
+        "summary": {
+            "total_applications": total_apps,
+            "allotted_count": allotted_count,
+            "unsuccessful_count": unsuccessful_count,
+            "pending_count": pending_count,
+            "allotment_hit_rate_pct": round((allotted_count / total_apps * 100), 1) if total_apps > 0 else 0.0,
+            "total_blocked_funds": round(total_blocked, 2),
+            "total_invested": round(total_invested, 2),
+        },
+        "applications": apps,
+    }
+
+
+@app.get("/api/ipo/lessons")
+def get_ipo_lessons_and_quizzes():
+    """Retrieve educational lessons and sanitized quizzes for the IPO Learning Academy."""
+    sanitized_quizzes = []
+    for qz in IPO_QUIZZES:
+        sanitized_quizzes.append({
+            "id": qz["id"],
+            "title": qz["title"],
+            "difficulty": qz.get("difficulty", "Intermediate"),
+            "question": qz["question"],
+            "options": [{"id": o["id"], "text": o["text"]} for o in qz["options"]],
+            "points": qz["points"],
+        })
+    return {
+        "status": "success",
+        "lessons": IPO_LESSONS,
+        "quizzes": sanitized_quizzes,
+    }
+
+
+@app.post("/api/ipo/quiz/submit")
+def submit_ipo_quiz(req: IpoQuizSubmitRequest):
+    """Verify an IPO quiz submission and return feedback and explanation."""
+    target = next((q for q in IPO_QUIZZES if q["id"] == req.quiz_id), None)
+    if not target:
+        raise HTTPException(status_code=404, detail="Quiz ID not found.")
+    
+    correct_option = next((o for o in target["options"] if o.get("is_correct")), None)
+    is_correct = bool(correct_option and correct_option["id"] == req.selected_option_id)
+    points_awarded = target["points"] if is_correct else 0
+
+    return {
+        "status": "success",
+        "quiz_id": req.quiz_id,
+        "is_correct": is_correct,
+        "points_awarded": points_awarded,
+        "correct_option_id": correct_option["id"] if correct_option else None,
+        "explanation": target["explanation"],
+    }
 
 @app.websocket("/api/market/ws")
 @app.websocket("/ws/events")
