@@ -8490,11 +8490,10 @@
                 initCorporateActionsView();
             } else if (viewName === 'macro') {
                 initMacroSimulatorView();
-            }
-                        } else if (viewName === 'ipo') {
-                initIpoLaunchpadView();
-} else if (viewName === 'surveillance') {
+            } else if (viewName === 'surveillance') {
                 initSurveillanceLabView();
+            } else if (viewName === 'ipo') {
+                initIpoLaunchpadView();
             }
         }
 
@@ -9412,7 +9411,7 @@
                 book.asks = newAsks;
             },
 
-            // Update Candlestick OHLC values and auto-create new candle on interval expiry
+            // Update Candlestick OHLC values and auto-create new candle on interval expiry or progressive simulation advance
             updateCandlesForTick(symbol, price, qty) {
                 const tf = currentTimeframe;
                 const candles = this.getOrInitCandles(symbol, tf);
@@ -9423,7 +9422,13 @@
                 const nowSec = Math.floor(Date.now() / 1000);
                 const last = candles[candles.length - 1];
 
-                if (nowSec >= last.bucketEnd) {
+                if (!this.candleTickCounts) this.candleTickCounts = {};
+                this.candleTickCounts[symbol] = (this.candleTickCounts[symbol] || 0) + 1;
+                const maxTicksPerCandle = tf === '1m' ? 12 : (tf === '5m' ? 18 : 25);
+                const shouldAdvance = (nowSec >= last.bucketEnd) || (this.candleTickCounts[symbol] >= maxTicksPerCandle);
+
+                if (shouldAdvance) {
+                    this.candleTickCounts[symbol] = 0;
                     const newBucketEnd = Math.ceil(nowSec / intervalSec) * intervalSec;
                     const newCandle = {
                         time: nowSec,
@@ -9736,7 +9741,7 @@
                 // Attempt WebSocket if supported and running under http/https on server
                 this.initWebSocket();
 
-                // 1. High-frequency active symbol streaming loop (ticks every ~650ms)
+                // 1. High-frequency active symbol streaming loop (ticks every ~1100ms, 1-2s continuous updates)
                 this.activeTickTimer = setInterval(() => {
                     const sym = currentSymbol;
                     const stock = quotesMap[sym];
@@ -9745,11 +9750,11 @@
                     const tick = stock.tick || 0.05;
                     const r = Math.random();
                     let deltaTicks = 0;
-                    if (r < 0.25) deltaTicks = -1;
-                    else if (r < 0.50) deltaTicks = 1;
-                    else if (r < 0.62) deltaTicks = -2;
-                    else if (r < 0.74) deltaTicks = 2;
-                    else deltaTicks = 0; // 26% liquidity update at current price
+                    if (r < 0.28) deltaTicks = -1;
+                    else if (r < 0.56) deltaTicks = 1;
+                    else if (r < 0.70) deltaTicks = -2;
+                    else if (r < 0.84) deltaTicks = 2;
+                    else deltaTicks = 0; // liquidity update at current price
 
                     let newPrice = Math.round((stock.price + deltaTicks * tick) * 100) / 100;
                     newPrice = Math.max(tick * 5, newPrice);
@@ -9762,7 +9767,7 @@
                         qty: tradeQty,
                         side: tradeSide
                     });
-                }, 650);
+                }, 1100);
 
                 // 2. Background catalog ticker loop (ticks every ~2200ms)
                 this.streamTimer = setInterval(() => {
@@ -9931,7 +9936,8 @@
         }
 
         function filterWatchlist() {
-            const q = document.getElementById('search-stock-input').value.trim().toLowerCase();
+            const searchInp = document.getElementById('search-stock-input');
+            const q = (searchInp && typeof searchInp.value === 'string') ? searchInp.value.trim().toLowerCase() : '';
             renderWatchlist(q);
         }
 
@@ -9953,7 +9959,7 @@
             if (!container) return;
             if (searchQuery === null) {
                 const searchInp = document.getElementById('search-stock-input');
-                searchQuery = searchInp ? searchInp.value.trim().toLowerCase() : '';
+                searchQuery = (searchInp && typeof searchInp.value === 'string') ? searchInp.value.trim().toLowerCase() : '';
             }
             let items = Object.values(quotesMap);
 
@@ -10002,11 +10008,14 @@
 
         function selectStock(sym) {
             currentSymbol = sym;
-            CentralMarketHub.selectSymbol(sym);
+            if (typeof CentralMarketHub !== 'undefined' && CentralMarketHub.selectSymbol) {
+                CentralMarketHub.selectSymbol(sym);
+            }
             renderActiveStock();
             renderWatchlist();
             resetToMarketPrice();
             calculateTradeTotal();
+            loadCandleData();
         }
 
         // ==========================================================================
@@ -10029,19 +10038,26 @@
             const isPos = stock.change_pct >= 0;
             const sign = isPos ? '+' : '';
             const chgEl = document.getElementById('active-stock-change');
-            chgEl.className = `stock-change-badge mono ${isPos ? 'pos' : 'neg'}`;
-            chgEl.innerText = `${isPos ? '▲' : '▼'} ${sign}${formatINR(stock.change_val)} (${sign}${stock.change_pct.toFixed(2)}%)`;
+            if (chgEl) {
+                chgEl.className = `stock-change-badge mono ${isPos ? 'pos' : 'neg'}`;
+                chgEl.innerText = `${isPos ? '▲' : '▼'} ${sign}${formatINR(stock.change_val)} (${sign}${stock.change_pct.toFixed(2)}%)`;
+            }
 
-            document.getElementById('stat-high').innerText = formatINR(stock.day_high);
-            document.getElementById('stat-low').innerText = formatINR(stock.day_low);
-            document.getElementById('stat-open').innerText = formatINR(stock.open_price);
+            const highEl = document.getElementById('stat-high');
+            const lowEl = document.getElementById('stat-low');
+            const openEl = document.getElementById('stat-open');
+            if (highEl) highEl.innerText = formatINR(stock.day_high);
+            if (lowEl) lowEl.innerText = formatINR(stock.day_low);
+            if (openEl) openEl.innerText = formatINR(stock.open_price);
 
             renderOrderBook(stock);
         }
 
         function renderOrderBook(stock) {
-            CentralMarketHub.renderLayerTwoOrderBook();
-            CentralMarketHub.renderLayerThreeStatistics();
+            if (typeof CentralMarketHub !== 'undefined') {
+                CentralMarketHub.renderLayerTwoOrderBook();
+                CentralMarketHub.renderLayerThreeStatistics();
+            }
         }
 
         function fillPriceFromBook(p) {
@@ -10057,8 +10073,10 @@
         // ==========================================================================
         function setChartType(type) {
             currentChartType = type;
-            document.getElementById('btn-chart-candle').classList.toggle('active', type === 'candle');
-            document.getElementById('btn-chart-line').classList.toggle('active', type === 'line');
+            const btnCandle = document.getElementById('btn-chart-candle');
+            const btnLine = document.getElementById('btn-chart-line');
+            if (btnCandle) btnCandle.classList.toggle('active', type === 'candle');
+            if (btnLine) btnLine.classList.toggle('active', type === 'line');
             drawChart();
         }
 
@@ -10073,14 +10091,19 @@
                 });
             }
             const labelEl = document.getElementById('chart-interval-label');
-            if (labelEl && CentralMarketHub.TF_CONFIG[tf]) {
+            if (labelEl && typeof CentralMarketHub !== 'undefined' && CentralMarketHub.TF_CONFIG && CentralMarketHub.TF_CONFIG[tf]) {
                 labelEl.innerText = CentralMarketHub.TF_CONFIG[tf].label;
             }
-            CentralMarketHub.setTimeframe(tf);
+            if (typeof CentralMarketHub !== 'undefined' && CentralMarketHub.setTimeframe) {
+                CentralMarketHub.setTimeframe(tf);
+            }
+            loadCandleData();
         }
 
         function loadCandleData() {
-            candleDataPoints = CentralMarketHub.getOrInitCandles(currentSymbol, currentTimeframe);
+            if (typeof CentralMarketHub !== 'undefined' && CentralMarketHub.getOrInitCandles) {
+                candleDataPoints = CentralMarketHub.getOrInitCandles(currentSymbol, currentTimeframe);
+            }
             drawChart();
         }
 
@@ -10090,17 +10113,22 @@
             const canvas = document.getElementById('chart-canvas');
             if (!canvas) return;
 
-            canvas.addEventListener('mousemove', (e) => {
+            canvas.onmousemove = (e) => {
                 if (!candleDataPoints || candleDataPoints.length === 0) return;
                 const rect = canvas.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
                 const mouseY = e.clientY - rect.top;
 
-                const maxVisible = CentralMarketHub.visibleCandles || 36;
+                const padLeft = 14;
+                const padRight = 68;
+                const chartW = rect.width - padLeft - padRight;
+                const maxVisible = (typeof CentralMarketHub !== 'undefined' && CentralMarketHub.visibleCandles) ? CentralMarketHub.visibleCandles : 36;
                 const visibleCandles = candleDataPoints.slice(-maxVisible);
                 const candleCount = visibleCandles.length;
-                const slotW = (rect.width - 20) / candleCount;
-                let idx = Math.floor((mouseX - 10) / slotW);
+                if (candleCount === 0 || chartW <= 0) return;
+
+                const slotW = chartW / candleCount;
+                let idx = Math.floor((mouseX - padLeft) / slotW);
                 if (idx < 0) idx = 0;
                 if (idx >= candleCount) idx = candleCount - 1;
 
@@ -10111,178 +10139,311 @@
                     candleIdx: idx
                 };
                 drawChart();
-            });
+            };
 
-            canvas.addEventListener('mouseleave', () => {
+            canvas.onmouseleave = () => {
                 chartHoverState.active = false;
                 const tip = document.getElementById('chart-tooltip');
                 if (tip) tip.style.display = 'none';
                 drawChart();
-            });
+            };
 
-            // Smooth zooming via mouse wheel
-            canvas.addEventListener('wheel', (e) => {
+            canvas.onwheel = (e) => {
                 e.preventDefault();
                 if (!candleDataPoints || candleDataPoints.length === 0) return;
                 const zoomDelta = e.deltaY > 0 ? 2 : -2;
-                CentralMarketHub.visibleCandles = Math.min(50, Math.max(14, (CentralMarketHub.visibleCandles || 36) + zoomDelta));
+                if (typeof CentralMarketHub !== 'undefined') {
+                    CentralMarketHub.visibleCandles = Math.min(60, Math.max(12, (CentralMarketHub.visibleCandles || 36) + zoomDelta));
+                }
                 drawChart();
-            }, { passive: false });
+            };
+
+            const wrap = canvas.parentElement;
+            if (wrap && window.ResizeObserver && !wrap.__hasResizeObserver) {
+                const ro = new ResizeObserver(() => {
+                    requestAnimationFrame(() => drawChart());
+                });
+                ro.observe(wrap);
+                wrap.__hasResizeObserver = true;
+            }
         }
 
         function drawChart() {
             const canvas = document.getElementById('chart-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
+            if (!ctx) return;
 
-            // Anti-flicker: only resize canvas buffer when bounding box changes
-            const targetW = Math.floor(rect.width * dpr);
-            const targetH = Math.floor(rect.height * dpr);
+            const wrap = canvas.parentElement;
+            const rect = canvas.getBoundingClientRect();
+            let w = canvas.clientWidth || (rect ? rect.width : 0) || (wrap ? wrap.clientWidth : 0) || 800;
+            let h = canvas.clientHeight || (rect ? rect.height : 0) || (wrap ? wrap.clientHeight : 0) || 330;
+            w = Math.max(320, Math.floor(w));
+            h = Math.max(220, Math.floor(h));
+
+            const dpr = window.devicePixelRatio || 1;
+            const targetW = Math.round(w * dpr);
+            const targetH = Math.round(h * dpr);
+
             if (canvas.width !== targetW || canvas.height !== targetH) {
                 canvas.width = targetW;
                 canvas.height = targetH;
             }
 
-            ctx.save();
-            ctx.scale(dpr, dpr);
-
-            const w = rect.width;
-            const h = rect.height;
+            // Always reset transform cleanly to DPR (idempotent, no scale accumulation)
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, w, h);
 
             if (!candleDataPoints || candleDataPoints.length < 2) {
-                ctx.restore();
+                if (typeof CentralMarketHub !== 'undefined' && CentralMarketHub.getOrInitCandles) {
+                    candleDataPoints = CentralMarketHub.getOrInitCandles(currentSymbol, currentTimeframe);
+                }
+            }
+            if (!candleDataPoints || candleDataPoints.length < 2) {
                 return;
             }
 
-            const maxVisible = CentralMarketHub.visibleCandles || 36;
+            const maxVisible = (typeof CentralMarketHub !== 'undefined' && CentralMarketHub.visibleCandles) ? CentralMarketHub.visibleCandles : 36;
             const visibleCandles = candleDataPoints.slice(-maxVisible);
+            const candleCount = visibleCandles.length;
+            if (candleCount === 0) return;
+
+            const padLeft = 14;
+            const padRight = 68;
+            const padTop = 16;
+            const padBottom = 26;
+            const chartW = w - padLeft - padRight;
+            const chartH = h - padTop - padBottom;
 
             const highs = visibleCandles.map(c => c.high);
             const lows = visibleCandles.map(c => c.low);
-            const minP = Math.min(...lows) * 0.998;
-            const maxP = Math.max(...highs) * 1.002;
-            const range = maxP - minP || 1;
+            const currentStock = quotesMap[currentSymbol] || { price: visibleCandles[candleCount - 1].close };
+            const currentLivePrice = currentStock.price;
+
+            let minP = Math.min(...lows, currentLivePrice);
+            let maxP = Math.max(...highs, currentLivePrice);
+            const pDiff = (maxP - minP) || 1;
+            minP -= pDiff * 0.04;
+            maxP += pDiff * 0.04;
+            const range = (maxP - minP) || 1;
 
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const gridColor = isLight ? 'rgba(148, 163, 184, 0.22)' : 'rgba(148, 163, 184, 0.12)';
+            const textMuted = isLight ? '#64748b' : '#94a3b8';
 
-            // Horizontal Grid Lines & Price Labels (Left-aligned matching screenshot)
-            ctx.strokeStyle = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+            // 1. Horizontal Price Grid Lines & Right-Axis Price Labels
+            ctx.save();
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = gridColor;
             ctx.lineWidth = 1;
+            ctx.fillStyle = textMuted;
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
 
-            for (let i = 1; i <= 4; i++) {
-                const y = (h / 5) * i;
+            const priceStepCount = 5;
+            for (let i = 0; i <= priceStepCount; i++) {
+                const y = padTop + (chartH / priceStepCount) * i;
+                const p = maxP - (range / priceStepCount) * i;
+
                 ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(w, y);
+                ctx.moveTo(padLeft, y);
+                ctx.lineTo(w - padRight, y);
                 ctx.stroke();
 
-                const pLabel = maxP - (range / 5) * i;
-                ctx.fillStyle = isLight ? '#94a3b8' : '#64748b';
-                ctx.font = '10px JetBrains Mono';
-                ctx.fillText(formatINR(pLabel), 6, y - 4);
+                ctx.fillText(formatINR(p), w - padRight + 6, y);
             }
+            ctx.restore();
 
-            const candleCount = visibleCandles.length;
-            const slotW = (w - 20) / candleCount;
-            const candleW = Math.max(2, slotW * 0.7);
+            // 2. Vertical Time Grid Lines & Formatted Time Labels
+            ctx.save();
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 1;
+            ctx.fillStyle = textMuted;
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
 
+            const timeStep = Math.max(1, Math.floor(candleCount / 5));
+            for (let i = 0; i < candleCount; i += timeStep) {
+                const c = visibleCandles[i];
+                const slotW = chartW / candleCount;
+                const x = padLeft + i * slotW + slotW / 2;
+
+                ctx.beginPath();
+                ctx.moveTo(x, padTop);
+                ctx.lineTo(x, padTop + chartH);
+                ctx.stroke();
+
+                let tLabel = '';
+                if (c && c.time) {
+                    const d = typeof c.time === 'number' ? new Date(c.time * 1000) : new Date();
+                    tLabel = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+                }
+                if (tLabel) {
+                    ctx.fillText(tLabel, x, padTop + chartH + 7);
+                }
+            }
+            ctx.restore();
+
+            // 3. Bottom Volume Bars (Subtle 18% height)
+            const maxVol = Math.max(...visibleCandles.map(c => c.volume || 1000), 1000);
+            const volMaxH = Math.min(45, chartH * 0.18);
+            const slotW = chartW / candleCount;
+            const barW = Math.max(2, slotW * 0.7);
+
+            visibleCandles.forEach((c, idx) => {
+                const x = padLeft + idx * slotW + slotW / 2;
+                const volH = Math.max(2, ((c.volume || 1000) / maxVol) * volMaxH);
+                const isGreen = c.close >= c.open;
+                ctx.fillStyle = isGreen ? 'rgba(16, 185, 129, 0.22)' : 'rgba(244, 63, 94, 0.22)';
+                ctx.fillRect(x - barW / 2, padTop + chartH - volH, barW, volH);
+            });
+
+            const priceToY = (p) => padTop + chartH - ((p - minP) / range) * chartH;
+
+            // 4. Render Candlestick or Line
             if (currentChartType === 'candle') {
-                // Candlestick Rendering with dynamic bodies and wicks
                 visibleCandles.forEach((c, idx) => {
-                    const x = 10 + idx * slotW + slotW / 2;
-                    const yOpen = h - ((c.open - minP) / range) * (h - 40) - 20;
-                    const yClose = h - ((c.close - minP) / range) * (h - 40) - 20;
-                    const yHigh = h - ((c.high - minP) / range) * (h - 40) - 20;
-                    const yLow = h - ((c.low - minP) / range) * (h - 40) - 20;
+                    const x = padLeft + idx * slotW + slotW / 2;
+                    const yOpen = priceToY(c.open);
+                    const yClose = priceToY(c.close);
+                    const yHigh = priceToY(c.high);
+                    const yLow = priceToY(c.low);
 
                     const isGreen = c.close >= c.open;
                     const color = isGreen ? '#10b981' : '#f43f5e';
 
-                    // High/Low Wick
                     ctx.strokeStyle = color;
-                    ctx.lineWidth = 1.2;
+                    ctx.lineWidth = 1.5;
                     ctx.beginPath();
                     ctx.moveTo(x, yHigh);
                     ctx.lineTo(x, yLow);
                     ctx.stroke();
 
-                    // Body
                     const bodyTop = Math.min(yOpen, yClose);
                     const bodyH = Math.max(2, Math.abs(yClose - yOpen));
                     ctx.fillStyle = color;
-                    ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
+                    ctx.fillRect(x - barW / 2, bodyTop, barW, bodyH);
                 });
             } else {
-                // Smooth Line Chart
                 const pts = visibleCandles.map((c, idx) => {
-                    const x = 10 + idx * slotW + slotW / 2;
-                    const y = h - ((c.close - minP) / range) * (h - 40) - 20;
-                    return { x, y };
+                    const x = padLeft + idx * slotW + slotW / 2;
+                    const y = priceToY(c.close);
+                    return { x, y, price: c.close };
                 });
 
                 const isUp = visibleCandles[candleCount - 1].close >= visibleCandles[0].close;
                 const strokeColor = isUp ? '#10b981' : '#f43f5e';
 
-                // Area fill
-                const grad = ctx.createLinearGradient(0, 0, 0, h);
-                grad.addColorStop(0, isUp ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)');
+                const grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
+                grad.addColorStop(0, isUp ? 'rgba(16, 185, 129, 0.28)' : 'rgba(244, 63, 94, 0.28)');
                 grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
 
                 ctx.beginPath();
-                ctx.moveTo(pts[0].x, h);
+                ctx.moveTo(pts[0].x, padTop + chartH);
                 pts.forEach(p => ctx.lineTo(p.x, p.y));
-                ctx.lineTo(pts[pts.length - 1].x, h);
+                ctx.lineTo(pts[pts.length - 1].x, padTop + chartH);
                 ctx.closePath();
                 ctx.fillStyle = grad;
                 ctx.fill();
 
-                // Line
                 ctx.beginPath();
                 ctx.moveTo(pts[0].x, pts[0].y);
-                pts.forEach(p => ctx.lineTo(p.x, p.y));
+                for (let i = 1; i < pts.length; i++) {
+                    ctx.lineTo(pts[i].x, pts[i].y);
+                }
                 ctx.strokeStyle = strokeColor;
-                ctx.lineWidth = 2.2;
+                ctx.lineWidth = 2.4;
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+
+                const lastPt = pts[pts.length - 1];
+                ctx.beginPath();
+                ctx.arc(lastPt.x, lastPt.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = strokeColor;
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(lastPt.x, lastPt.y, 7, 0, Math.PI * 2);
+                ctx.strokeStyle = isUp ? 'rgba(16, 185, 129, 0.5)' : 'rgba(244, 63, 94, 0.5)';
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
 
-            // Hover Crosshairs and Tooltip
+            // 5. Current Price Indicator (Horizontal dashed line + right-axis pill)
+            const yCur = priceToY(currentLivePrice);
+            const isCurPos = currentStock.change_pct >= 0;
+            const curPillColor = isCurPos ? '#10b981' : '#f43f5e';
+
+            ctx.save();
+            ctx.setLineDash([4, 3]);
+            ctx.strokeStyle = curPillColor;
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(padLeft, yCur);
+            ctx.lineTo(w - padRight, yCur);
+            ctx.stroke();
+            ctx.restore();
+
+            const badgeW = 64;
+            const badgeH = 18;
+            const badgeX = w - padRight + 4;
+            const badgeY = Math.max(padTop - 4, Math.min(padTop + chartH - badgeH + 4, yCur - badgeH / 2));
+
+            ctx.fillStyle = curPillColor;
+            if (typeof ctx.roundRect === 'function') {
+                ctx.beginPath();
+                ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 4);
+                ctx.fill();
+            } else {
+                ctx.fillRect(badgeX, badgeY, badgeW, badgeH);
+            }
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(formatINR(currentLivePrice), badgeX + badgeW / 2, badgeY + badgeH / 2);
+
+            // 6. Interactive Crosshairs & Floating Tooltip
             const tip = document.getElementById('chart-tooltip');
             if (chartHoverState.active && chartHoverState.candleIdx >= 0 && chartHoverState.candleIdx < candleCount) {
                 const c = visibleCandles[chartHoverState.candleIdx];
-                const candleX = 10 + chartHoverState.candleIdx * slotW + slotW / 2;
+                const candleX = padLeft + chartHoverState.candleIdx * slotW + slotW / 2;
 
                 ctx.save();
-                ctx.setLineDash([4, 4]);
-                ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 0.35)';
+                ctx.setLineDash([3, 3]);
+                ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.45)';
                 ctx.lineWidth = 1;
 
-                // Vertical Crosshair
                 ctx.beginPath();
-                ctx.moveTo(candleX, 0);
-                ctx.lineTo(candleX, h);
+                ctx.moveTo(candleX, padTop);
+                ctx.lineTo(candleX, padTop + chartH);
                 ctx.stroke();
 
-                // Horizontal Crosshair at mouse y
+                const crossY = Math.max(padTop, Math.min(padTop + chartH, chartHoverState.y));
                 ctx.beginPath();
-                ctx.moveTo(0, chartHoverState.y);
-                ctx.lineTo(w, chartHoverState.y);
+                ctx.moveTo(padLeft, crossY);
+                ctx.lineTo(w - padRight, crossY);
                 ctx.stroke();
                 ctx.restore();
 
-                // Price label on axis at crosshair y
-                const crossPrice = maxP - ((chartHoverState.y - 20) / (h - 40)) * range;
-                if (crossPrice >= minP && crossPrice <= maxP) {
-                    ctx.fillStyle = '#3b82f6';
-                    ctx.fillRect(w - 78, Math.max(2, chartHoverState.y - 9), 74, 18);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = '10px JetBrains Mono';
-                    ctx.fillText(formatINR(crossPrice), w - 74, Math.max(14, chartHoverState.y + 4));
+                const crossPrice = maxP - ((crossY - padTop) / chartH) * range;
+                ctx.fillStyle = '#3b82f6';
+                if (typeof ctx.roundRect === 'function') {
+                    ctx.beginPath();
+                    ctx.roundRect(w - padRight + 4, crossY - 9, badgeW, 18, 4);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(w - padRight + 4, crossY - 9, badgeW, 18);
                 }
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 9px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(formatINR(crossPrice), w - padRight + 4 + badgeW / 2, crossY);
 
-                // Update floating tooltip HTML and position
                 if (tip) {
                     const isGreen = c.close >= c.open;
                     const timeStr = typeof c.time === 'number'
@@ -10298,18 +10459,19 @@
                             <span style="color: var(--text-sub);">High:</span> <span class="mono" style="color: var(--green);">${formatINR(c.high)}</span>
                             <span style="color: var(--text-sub);">Low:</span> <span class="mono" style="color: var(--red);">${formatINR(c.low)}</span>
                             <span style="color: var(--text-sub);">Close:</span> <span class="mono" style="font-weight: 700; color: ${isGreen ? 'var(--green)' : 'var(--red)'};">${formatINR(c.close)}</span>
+                            <span style="color: var(--text-sub);">Volume:</span> <span class="mono">${(c.volume || 1000).toLocaleString('en-IN')}</span>
                         </div>
                     `;
                     tip.style.display = 'block';
-                    const tooltipW = 150;
-                    const tooltipH = 80;
+                    const tooltipW = 160;
+                    const tooltipH = 95;
                     let left = chartHoverState.x + 14;
-                    if (left + tooltipW > rect.width) {
+                    if (left + tooltipW > w - padRight) {
                         left = chartHoverState.x - tooltipW - 14;
                     }
-                    let top = chartHoverState.y - 40;
+                    let top = chartHoverState.y - 45;
                     if (top < 10) top = 10;
-                    if (top + tooltipH > rect.height) top = rect.height - tooltipH - 10;
+                    if (top + tooltipH > h) top = h - tooltipH - 10;
 
                     tip.style.left = `${left}px`;
                     tip.style.top = `${top}px`;
@@ -10317,8 +10479,6 @@
             } else if (tip) {
                 tip.style.display = 'none';
             }
-
-            ctx.restore();
         }
 
         // 9. ORDER ENTRY & MATCHING SIMULATION
@@ -10360,22 +10520,31 @@
         }
 
         function resetToMarketPrice() {
-            const p = quotesMap[currentSymbol].price;
-            document.getElementById('input-order-price').value = p.toFixed(2);
-            document.getElementById('input-order-stop-price').value = p.toFixed(2);
+            const stock = quotesMap[currentSymbol];
+            if (!stock) return;
+            const p = stock.price;
+            const priceInp = document.getElementById('input-order-price');
+            const stopInp = document.getElementById('input-order-stop-price');
+            if (priceInp) priceInp.value = p.toFixed(2);
+            if (stopInp) stopInp.value = p.toFixed(2);
             calculateTradeTotal();
         }
 
         function applyQuickPct(pct) {
             const stock = quotesMap[currentSymbol];
-            const price = currentOrderType === 'MARKET' ? stock.price : (parseFloat(document.getElementById('input-order-price').value) || stock.price);
+            if (!stock) return;
+            const priceInp = document.getElementById('input-order-price');
+            const price = currentOrderType === 'MARKET' ? stock.price : ((priceInp && parseFloat(priceInp.value)) || stock.price);
+
+            const qtyInp = document.getElementById('input-order-qty');
+            if (!qtyInp) return;
 
             if (currentTradeSide === 'BUY') {
                 const maxAffordable = Math.floor((userState.cash_balance * pct) / price);
-                document.getElementById('input-order-qty').value = Math.max(1, maxAffordable);
+                qtyInp.value = Math.max(1, maxAffordable);
             } else {
                 const owned = userState.holdings[currentSymbol]?.quantity || 0;
-                document.getElementById('input-order-qty').value = Math.max(1, Math.floor(owned * pct));
+                qtyInp.value = Math.max(1, Math.floor(owned * pct));
             }
             calculateTradeTotal();
         }
@@ -10384,22 +10553,30 @@
             const stock = quotesMap[currentSymbol];
             if (!stock) return;
 
-            const price = currentOrderType === 'MARKET' ? stock.price : (parseFloat(document.getElementById('input-order-price').value) || stock.price);
-            const qty = parseFloat(document.getElementById('input-order-qty').value) || 0;
+            const priceInp = document.getElementById('input-order-price');
+            const qtyInp = document.getElementById('input-order-qty');
+            const price = currentOrderType === 'MARKET' ? stock.price : ((priceInp && parseFloat(priceInp.value)) || stock.price);
+            const qty = (qtyInp && parseFloat(qtyInp.value)) || 0;
             const total = price * qty;
 
-            document.getElementById('summary-unit-price').innerText = formatINR(price);
-            document.getElementById('summary-total-amount').innerText = formatINR(total);
+            const unitEl = document.getElementById('summary-unit-price');
+            const totEl = document.getElementById('summary-total-amount');
+            const ownedEl = document.getElementById('owned-shares-count');
+            const balEl = document.getElementById('balance-avail-value');
+            const submitBtn = document.getElementById('btn-submit-order');
+
+            if (unitEl) unitEl.innerText = formatINR(price);
+            if (totEl) totEl.innerText = formatINR(total);
 
             const owned = userState.holdings[currentSymbol]?.quantity || 0;
-            document.getElementById('owned-shares-count').innerText = `Owned: ${owned} shares`;
+            if (ownedEl) ownedEl.innerText = `Owned: ${owned} shares`;
 
             if (currentTradeSide === 'BUY') {
-                document.getElementById('balance-avail-value').innerText = formatINR(userState.cash_balance);
-                document.getElementById('btn-submit-order').innerText = `Review Buy Order (${qty} shares for ${formatINR(total)})`;
+                if (balEl) balEl.innerText = formatINR(userState.cash_balance);
+                if (submitBtn) submitBtn.innerText = `Review Buy Order (${qty} shares for ${formatINR(total)})`;
             } else {
-                document.getElementById('balance-avail-value').innerText = `${owned} ${stock.ticker}`;
-                document.getElementById('btn-submit-order').innerText = `Review Sell Order (${qty} shares for ${formatINR(total)})`;
+                if (balEl) balEl.innerText = `${owned} ${stock.ticker || stock.symbol}`;
+                if (submitBtn) submitBtn.innerText = `Review Sell Order (${qty} shares for ${formatINR(total)})`;
             }
         }
 
@@ -23132,30 +23309,36 @@ function initIpoLaunchpadView() {
 }
 
 
-window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            setupChartInteraction();
-            CentralMarketHub.getOrInitBook('RELIANCE');
-            selectStock('RELIANCE');
-            checkUserAuth();
-            fetchMarketQuotes();
-            loadCandleData();
+        function initTradingTerminal() {
+            try { initTheme(); } catch (e) { console.error('initTheme error:', e); }
+            try { setupChartInteraction(); } catch (e) { console.error('setupChartInteraction error:', e); }
+            try { if (typeof CentralMarketHub !== 'undefined') CentralMarketHub.getOrInitBook('RELIANCE'); } catch (e) { console.error('getOrInitBook error:', e); }
+            try { selectStock('RELIANCE'); } catch (e) { console.error('selectStock error:', e); }
+            try { checkUserAuth(); } catch (e) { console.error('checkUserAuth error:', e); }
+            try { fetchMarketQuotes(); } catch (e) { console.error('fetchMarketQuotes error:', e); }
+            try { loadCandleData(); } catch (e) { console.error('loadCandleData error:', e); }
+            try { if (typeof CentralMarketHub !== 'undefined') CentralMarketHub.startStreaming(); } catch (e) { console.error('startStreaming error:', e); }
 
-            CentralMarketHub.startStreaming();
             window.addEventListener('resize', () => {
-                drawChart();
+                try { drawChart(); } catch (e) {}
                 if (currentView === 'lab') {
-                    drawBacktestChart();
-                    drawFallacyChart();
+                    if (typeof drawBacktestChart === 'function') drawBacktestChart();
+                    if (typeof drawFallacyChart === 'function') drawFallacyChart();
                 } else if (currentView === 'observatory') {
-                    renderObservatoryCharts();
+                    if (typeof renderObservatoryCharts === 'function') renderObservatoryCharts();
                 } else if (currentView === 'chaos') {
-                    renderChaosCharts();
+                    if (typeof renderChaosCharts === 'function') renderChaosCharts();
                 } else if (currentView === 'arena') {
-                    renderArenaCharts();
+                    if (typeof renderArenaCharts === 'function') renderArenaCharts();
                 }
             });
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTradingTerminal);
+        } else {
+            initTradingTerminal();
+        }
     </script>
 </body>
 </html>
